@@ -132,7 +132,7 @@
                             <label for="applicant_nik" class="block text-xs font-semibold text-slate-700 mb-1">
                                 NIK Pemohon (16 Digit) <span class="text-rose-500">*</span>
                             </label>
-                            <input type="text" id="applicant_nik" name="applicant_nik" value="{{ old('applicant_nik') }}" maxlength="16" required placeholder="Masukkan NIK Pemohon (16 Angka)" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition font-mono">
+                            <input type="text" id="applicant_nik" name="applicant_nik" value="{{ old('applicant_nik') }}" maxlength="16" required placeholder="Masukkan NIK Pemohon (16 Angka)" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition">
                             <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-applicant_nik">NIK wajib 16 digit angka.</span>
                         </div>
 
@@ -596,7 +596,7 @@
                     </div>
                     <div class="bg-white p-3 rounded-lg border border-slate-200/70 shadow-2xs">
                         <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider mb-0.5">NIK Pemohon</span>
-                        <span id="modal-applicant-nik-val" class="font-bold text-slate-900 text-xs font-mono tracking-wide block">-</span>
+                        <span id="modal-applicant-nik-val" class="font-bold text-slate-900 text-xs block">-</span>
                     </div>
                     <div class="bg-white p-3 rounded-lg border border-slate-200/70 shadow-2xs">
                         <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider mb-0.5">No. HP / WhatsApp</span>
