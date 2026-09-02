@@ -1,6 +1,6 @@
 /**
  * Dissolve Animation Engine for Web Warga (Kalurahan Purwobinangun)
- * Handles smooth entry & re-entry dissolve effects on scroll for all cards and inner elements.
+ * Handles smooth entry & re-entry dissolve effects on scroll for all distinct cards and inner elements.
  */
 
 export function initDissolveEffects() {
@@ -10,7 +10,6 @@ export function initDissolveEffects() {
 
     // Check IntersectionObserver support
     if (!('IntersectionObserver' in window)) {
-        // Fallback for older browsers: show all directly
         document.querySelectorAll('.dissolve-card, .dissolve-child').forEach(el => {
             el.classList.add('is-visible');
         });
@@ -24,71 +23,54 @@ export function initDissolveEffects() {
             if (entry.isIntersecting) {
                 el.classList.add('is-visible');
             } else {
-                // When scrolling out of view, remove is-visible so it dissolves in again upon re-entry
+                // When scrolling out of view (up or down), remove is-visible so it dissolves in again upon re-entry
                 el.classList.remove('is-visible');
             }
         });
     }, {
         root: null,
-        rootMargin: '0px 0px -25px 0px',
-        threshold: 0.05
+        rootMargin: '0px 0px -30px 0px',
+        threshold: 0.08
     });
 
     const isExcluded = (el) => {
-        return el.closest('.modal-overlay, #preview-modal, #camera-modal, .swal2-container, .modal-dialog-box, nav.sticky, #live-clock, #live-date') !== null;
+        return el.closest('header, .hero-purwobinangun, nav, .modal-overlay, #preview-modal, #camera-modal, .swal2-container, .modal-dialog-box, #live-clock, #live-date') !== null;
     };
 
-    function attachDissolveToCard(card) {
+    function attachDissolve(card) {
         if (!card || isExcluded(card)) return;
 
         if (!card.classList.contains('dissolve-card')) {
             card.classList.add('dissolve-card');
-            dissolveObserver.observe(card);
-
-            // Find child sub-elements to stagger dissolve inside the card
-            const subElements = card.querySelectorAll(':scope > div, :scope > form > div, :scope .grid > div, :scope ul > li, :scope .space-y-4 > div, :scope .space-y-6 > div, :scope .grid > a');
-            let delayIndex = 0;
-
-            subElements.forEach(child => {
-                if (isExcluded(child)) return;
-                // Avoid double assigning if already marked
-                if (!child.classList.contains('dissolve-child') && !child.classList.contains('dissolve-card')) {
-                    child.classList.add('dissolve-child');
-                    // Calculate smooth staggered delay (cap at 360ms to keep it snappy)
-                    const delay = Math.min(delayIndex * 50, 350);
-                    child.style.setProperty('--dissolve-delay', `${delay}ms`);
-                    delayIndex++;
-                }
-            });
         }
+        dissolveObserver.observe(card);
     }
 
     function scanElements() {
-        // Select all cards and content sections on Web Warga
+        // Select all cards on Web Warga (excluding headbar and nav)
         const selectors = [
-            'section.hero-purwobinangun',
+            'main .space-y-6 > div',
+            'main .civic-card',
             'main .bg-white.rounded-xl',
             'main .bg-white.rounded-2xl',
-            'main .bg-white.rounded-lg',
-            'main .civic-card',
+            'main .bg-gradient-to-r.rounded-xl',
             'main .border.rounded-xl',
             'main .border-2.rounded-xl',
-            'main .bg-gradient-to-r',
-            'main .space-y-6 > div',
             'aside > div',
-            'footer > div > div'
+            'footer > div > div',
+            '.dissolve-card'
         ];
 
         const cards = document.querySelectorAll(selectors.join(', '));
         cards.forEach(card => {
-            attachDissolveToCard(card);
+            attachDissolve(card);
         });
     }
 
     // Initial scan on load
     scanElements();
 
-    // Re-scan when DOM changes (e.g. form step navigation, dynamic filters, live searches)
+    // Re-scan when DOM changes (e.g. form step navigation, dynamic filters)
     const mutationObserver = new MutationObserver(() => {
         scanElements();
     });
@@ -100,6 +82,5 @@ export function initDissolveEffects() {
         attributeFilter: ['class', 'style']
     });
 
-    // Also listen to custom events or window resize to recalculate
     window.addEventListener('resize', scanElements, { passive: true });
 }
