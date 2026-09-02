@@ -101,3 +101,84 @@ input[type=number] {
     appearance: textfield !important;
 }
 
+/* ==========================================================================
+   Smooth Dissolve Effect for Web Warga (Cards & Inner Elements)
+   ========================================================================== */
+
+/* Dissolve Base State for Cards */
+.dissolve-card {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+}
+
+/* Dissolve Active (Visible) State for Cards */
+.dissolve-card.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Hover Support on Active Civic Cards */
+.civic-card.dissolve-card.is-visible:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px -6px rgba(5, 156, 184, 0.2), 0 8px 12px -6px rgba(9, 91, 140, 0.15);
+}
+
+/* Dissolve Base State for Inner Child Elements */
+.dissolve-child {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: var(--dissolve-delay, 0ms);
+    will-change: opacity, transform;
+}
+
+/* Cascade Dissolve: when parent card is visible, inner children dissolve in smoothly */
+.dissolve-card.is-visible .dissolve-child,
+.dissolve-child.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Exclude Modals, Popups, Overlays, and Fixed Toolbars from Dissolve Transforms */
+.modal-overlay,
+.modal-overlay *,
+.modal-dialog-box,
+.modal-dialog-box *,
+.swal2-container,
+.swal2-container *,
+.camera-modal,
+.camera-modal *,
+#preview-modal,
+#preview-modal *,
+#camera-modal,
+#camera-modal * {
+    will-change: auto;
+}
+
+/* Print Styles Override: ensure everything is visible in prints */
+@media print {
+    .dissolve-card,
+    .dissolve-child,
+    .dissolve-card.is-visible,
+    .dissolve-card.is-visible .dissolve-child {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+}
+
+/* Accessibility: respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+    .dissolve-card,
+    .dissolve-child {
+        transition-duration: 0.01ms !important;
+        transform: none !important;
+        opacity: 1 !important;
+    }
+}
+
+
