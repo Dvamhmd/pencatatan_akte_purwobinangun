@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminBirthController;
+use App\Http\Controllers\Admin\AdminCitizenController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminDeathController;
-use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\AuthController as AdminAuthController;
+use App\Http\Controllers\Auth\WargaAuthController;
 use App\Http\Controllers\BirthCertificateController;
 use App\Http\Controllers\DeathCertificateController;
 use App\Http\Controllers\HomeController;
@@ -18,25 +20,20 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/panduan-persyaratan', [HomeController::class, 'guidelines'])->name('guidelines');
 
-// Layanan Akte Kelahiran
-Route::prefix('akte-kelahiran')->name('birth.')->group(function () {
-    Route::get('/buat', [BirthCertificateController::class, 'create'])->name('create');
-    Route::post('/buat', [BirthCertificateController::class, 'store'])->name('store');
-    Route::get('/sukses', [BirthCertificateController::class, 'success'])->name('success');
-    Route::get('/daftar-pengajuan', [BirthCertificateController::class, 'list'])->name('list');
+// Autentikasi Khusus Warga (NIK & Password)
+Route::prefix('warga')->name('warga.')->group(function () {
+    Route::get('/login', [WargaAuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [WargaAuthController::class, 'login'])->name('login.submit');
+    Route::get('/daftar', [WargaAuthController::class, 'showRegisterForm'])->name('register');
+    Route::post('/daftar', [WargaAuthController::class, 'register'])->name('register.submit');
+    Route::post('/logout', [WargaAuthController::class, 'logout'])->name('logout');
 });
 
-// Shortcut Route Daftar Pengajuan Warga
-Route::get('/daftar-pengajuan', [BirthCertificateController::class, 'list'])->name('submissions.index');
+// Shortcut Login / Register Warga
+Route::get('/login', [WargaAuthController::class, 'showLoginForm'])->name('login');
+Route::get('/daftar', [WargaAuthController::class, 'showRegisterForm'])->name('register');
 
-// Layanan Akte Kematian
-Route::prefix('akte-kematian')->name('death.')->group(function () {
-    Route::get('/buat', [DeathCertificateController::class, 'create'])->name('create');
-    Route::post('/buat', [DeathCertificateController::class, 'store'])->name('store');
-    Route::get('/sukses', [DeathCertificateController::class, 'success'])->name('success');
-});
-
-// Lacak Permohonan
+// Lacak Permohonan Akta (Publik & Detail Berbasis Hak Akses KK)
 Route::prefix('lacak')->name('tracking.')->group(function () {
     Route::get('/', [TrackingController::class, 'index'])->name('index');
     Route::get('/{type}/{registrationNo}', [TrackingController::class, 'show'])->name('show');
@@ -45,15 +42,41 @@ Route::prefix('lacak')->name('tracking.')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
+| Warga Protected Routes - Memerlukan Login Akun Warga Aktif
+|--------------------------------------------------------------------------
+*/
+Route::middleware('auth.warga')->group(function () {
+    
+    // Layanan Akte Kelahiran
+    Route::prefix('akte-kelahiran')->name('birth.')->group(function () {
+        Route::get('/buat', [BirthCertificateController::class, 'create'])->name('create');
+        Route::post('/buat', [BirthCertificateController::class, 'store'])->name('store');
+        Route::get('/sukses', [BirthCertificateController::class, 'success'])->name('success');
+        Route::get('/daftar-pengajuan', [BirthCertificateController::class, 'list'])->name('list');
+    });
+
+    // Shortcut Route Daftar Pengajuan Warga
+    Route::get('/daftar-pengajuan', [BirthCertificateController::class, 'list'])->name('submissions.index');
+
+    // Layanan Akte Kematian
+    Route::prefix('akte-kematian')->name('death.')->group(function () {
+        Route::get('/buat', [DeathCertificateController::class, 'create'])->name('create');
+        Route::post('/buat', [DeathCertificateController::class, 'store'])->name('store');
+        Route::get('/sukses', [DeathCertificateController::class, 'success'])->name('success');
+    });
+});
+
+/*
+|--------------------------------------------------------------------------
 | Admin Routes - Panel Petugas Kalurahan
 |--------------------------------------------------------------------------
 */
 Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-    Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [AdminAuthController::class, 'login'])->name('login.submit');
+    Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 
-    Route::middleware('auth')->group(function () {
+    Route::middleware('auth.admin')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
         // Kelola Akte Kelahiran
@@ -70,6 +93,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('/{death}', [AdminDeathController::class, 'show'])->name('show');
             Route::put('/{death}/status', [AdminDeathController::class, 'updateStatus'])->name('update_status');
             Route::get('/{death}/cetak-surat', [AdminDeathController::class, 'printLetter'])->name('print_letter');
+        });
+
+        // Kelola & Verifikasi Akun Warga
+        Route::prefix('warga')->name('citizens.')->group(function () {
+            Route::get('/', [AdminCitizenController::class, 'index'])->name('index');
+            Route::get('/{citizen}', [AdminCitizenController::class, 'show'])->name('show');
+            Route::post('/{citizen}/verify', [AdminCitizenController::class, 'verify'])->name('verify');
         });
     });
 });

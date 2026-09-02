@@ -4,13 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class BirthCertificate extends Model
 {
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'registration_no',
+        'family_card_no',
         'child_name',
         'gender',
         'birth_place',
@@ -53,6 +56,11 @@ class BirthCertificate extends Model
         'father_birth_date' => 'date',
         'mother_birth_date' => 'date',
     ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
     public static function generateRegistrationNo(): string
     {

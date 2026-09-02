@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\DeathCertificate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class DeathCertificateController extends Controller
@@ -16,11 +17,15 @@ class DeathCertificateController extends Controller
             'Potrowangsan', 'Surodadi', 'Tawangrejo', 'Turgo', 'Watuadeg', 'Somokaton'
         ];
 
-        return view('death.create', compact('padukuhanList'));
+        $user = Auth::user();
+
+        return view('death.create', compact('padukuhanList', 'user'));
     }
 
     public function store(Request $request)
     {
+        $user = Auth::user();
+
         $validated = $request->validate([
             // Data Almarhum
             'deceased_nik' => 'required|digits:16',
@@ -63,6 +68,10 @@ class DeathCertificateController extends Controller
         $data['registration_no'] = DeathCertificate::generateRegistrationNo();
         $data['status'] = 'pending';
 
+        // Bind data KK dan Akun Warga yang login
+        $data['user_id'] = $user ? $user->id : null;
+        $data['family_card_no'] = $user ? $user->family_card_no : ($request->input('family_card_no') ?? null);
+
         // Simpan File
         $fileFields = ['doc_death_statement', 'doc_family_card', 'doc_deceased_ktp', 'doc_applicant_ktp'];
         foreach ($fileFields as $field) {
@@ -82,6 +91,13 @@ class DeathCertificateController extends Controller
     {
         $registrationNo = $request->query('registration_no');
         $death = DeathCertificate::where('registration_no', $registrationNo)->firstOrFail();
+
+        // Otorisasi: Warga hanya boleh melihat sukses dari KK miliknya
+        if (Auth::check() && Auth::user()->isWarga()) {
+            if ($death->family_card_no && $death->family_card_no !== Auth::user()->family_card_no) {
+                abort(403, 'Anda tidak memiliki hak akses ke data permohonan ini.');
+            }
+        }
 
         return view('death.success', compact('death'));
     }

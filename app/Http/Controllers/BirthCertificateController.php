@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BirthCertificate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class BirthCertificateController extends Controller
@@ -16,11 +17,15 @@ class BirthCertificateController extends Controller
             'Potrowangsan', 'Surodadi', 'Tawangrejo', 'Turgo', 'Watuadeg', 'Somokaton'
         ];
 
-        return view('birth.create', compact('padukuhanList'));
+        $user = Auth::user();
+
+        return view('birth.create', compact('padukuhanList', 'user'));
     }
 
     public function store(Request $request)
     {
+        $user = Auth::user();
+
         $validated = $request->validate([
             // Data Pemohon
             'applicant_name' => 'required|string|max:255',
@@ -80,6 +85,10 @@ class BirthCertificateController extends Controller
         $data['registration_no'] = BirthCertificate::generateRegistrationNo();
         $data['status'] = 'pending';
 
+        // Bind data KK dan Akun Warga yang login
+        $data['user_id'] = $user ? $user->id : null;
+        $data['family_card_no'] = $user ? $user->family_card_no : ($request->input('family_card_no') ?? null);
+
         // Jika Jenis Kelahiran kustom diisi
         if ($request->filled('birth_type_custom') && $request->input('birth_type') === 'Input Jumlah') {
             $data['birth_type'] = 'Kembar ' . $request->input('birth_type_custom');
@@ -136,6 +145,13 @@ class BirthCertificateController extends Controller
         $registrationNo = $request->query('registration_no');
         $birth = BirthCertificate::where('registration_no', $registrationNo)->firstOrFail();
 
+        // Otorisasi: Warga hanya boleh melihat sukses dari KK miliknya
+        if (Auth::check() && Auth::user()->isWarga()) {
+            if ($birth->family_card_no && $birth->family_card_no !== Auth::user()->family_card_no) {
+                abort(403, 'Anda tidak memiliki hak akses ke data permohonan ini.');
+            }
+        }
+
         return view('birth.success', compact('birth'));
     }
 
@@ -143,8 +159,13 @@ class BirthCertificateController extends Controller
     {
         $status = $request->input('status');
         $search = $request->input('search');
+        $user = Auth::user();
 
+        // STRICT SCOPING: Hanya tampilkan pengajuan dari Nomor KK akun warga yang login
         $query = BirthCertificate::query();
+        if ($user && $user->isWarga()) {
+            $query->where('family_card_no', $user->family_card_no);
+        }
 
         if ($status && in_array($status, ['pending', 'verified', 'in_process', 'completed', 'rejected'])) {
             $query->where('status', $status);
@@ -162,10 +183,16 @@ class BirthCertificateController extends Controller
 
         $submissions = $query->latest()->paginate(10)->withQueryString();
         
-        $totalCount = BirthCertificate::count();
-        $pendingCount = BirthCertificate::where('status', 'pending')->count();
-        $verifiedCount = BirthCertificate::where('status', 'verified')->count();
-        $completedCount = BirthCertificate::where('status', 'completed')->count();
+        // Statistik Dihitung Khusus Berdasarkan KK Warga yang Login
+        $baseStatsQuery = BirthCertificate::query();
+        if ($user && $user->isWarga()) {
+            $baseStatsQuery->where('family_card_no', $user->family_card_no);
+        }
+
+        $totalCount = (clone $baseStatsQuery)->count();
+        $pendingCount = (clone $baseStatsQuery)->where('status', 'pending')->count();
+        $verifiedCount = (clone $baseStatsQuery)->where('status', 'verified')->count();
+        $completedCount = (clone $baseStatsQuery)->where('status', 'completed')->count();
 
         return view('birth.list', compact(
             'submissions',
@@ -174,8 +201,8 @@ class BirthCertificateController extends Controller
             'totalCount',
             'pendingCount',
             'verifiedCount',
-            'completedCount'
+            'completedCount',
+            'user'
         ));
     }
 }
-

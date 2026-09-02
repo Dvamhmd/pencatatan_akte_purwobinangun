@@ -18,40 +18,40 @@
         max-height: 100% !important;
         margin: 0 !important;
         z-index: 999999 !important;
-        display: none;
+        display: flex !important;
         align-items: center;
         justify-content: center;
-        background-color: rgba(15, 23, 42, 0.7) !important;
-        backdrop-filter: blur(4px) !important;
-        -webkit-backdrop-filter: blur(4px) !important;
+        background-color: rgba(15, 23, 42, 0.72) !important;
+        backdrop-filter: blur(6px) !important;
+        -webkit-backdrop-filter: blur(6px) !important;
         opacity: 0;
         visibility: hidden;
         pointer-events: none;
-        transition: opacity 0.28s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.28s;
+        transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         padding: 1rem;
         box-sizing: border-box;
         overflow-y: auto !important;
         overscroll-behavior: contain;
     }
     .modal-overlay.active {
-        display: flex !important;
         opacity: 1 !important;
         visibility: visible !important;
         pointer-events: auto !important;
     }
     .modal-dialog-box {
         opacity: 0;
-        transform: scale(0.92) translateY(15px);
-        transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+        transform: scale(0.90) translateY(32px);
+        transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1);
         width: 100% !important;
         max-width: 38rem !important;
         max-height: calc(100% - 1.5rem) !important;
         display: flex !important;
         flex-direction: column !important;
         z-index: 1000000 !important;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4) !important;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45) !important;
         margin: auto !important;
         overflow: hidden;
+        will-change: transform, opacity;
     }
     .modal-overlay.active .modal-dialog-box {
         opacity: 1 !important;
@@ -139,7 +139,7 @@
                             <label for="applicant_name" class="block text-xs font-semibold text-slate-700 mb-1">
                                 Nama Lengkap Pemohon <span class="text-rose-500">*</span>
                             </label>
-                            <input type="text" id="applicant_name" name="applicant_name" value="{{ old('applicant_name') }}" required placeholder="Masukkan Nama Lengkap Pemohon" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition">
+                            <input type="text" id="applicant_name" name="applicant_name" value="{{ old('applicant_name', $user->name ?? '') }}" required placeholder="Masukkan Nama Lengkap Pemohon" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition">
                             <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-applicant_name">Nama lengkap pemohon wajib diisi.</span>
                         </div>
 
@@ -148,7 +148,7 @@
                             <label for="applicant_nik" class="block text-xs font-semibold text-slate-700 mb-1">
                                 NIK Pemohon (16 Digit) <span class="text-rose-500">*</span>
                             </label>
-                            <input type="text" id="applicant_nik" name="applicant_nik" value="{{ old('applicant_nik') }}" maxlength="16" required placeholder="Masukkan NIK Pemohon (16 Angka)" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition">
+                            <input type="text" id="applicant_nik" name="applicant_nik" value="{{ old('applicant_nik', $user->nik ?? '') }}" maxlength="16" required placeholder="Masukkan NIK Pemohon (16 Angka)" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition">
                             <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-applicant_nik">NIK wajib 16 digit angka.</span>
                         </div>
 
@@ -170,7 +170,7 @@
                             <label for="applicant_phone" class="block text-xs font-semibold text-slate-700 mb-1">
                                 No. HP / WhatsApp Aktif <span class="text-rose-500">*</span>
                             </label>
-                            <input type="text" id="applicant_phone" name="applicant_phone" value="{{ old('applicant_phone') }}" required placeholder="Masukkan Nomor HP / WhatsApp Aktif" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition">
+                            <input type="text" id="applicant_phone" name="applicant_phone" value="{{ old('applicant_phone', $user->phone ?? '') }}" required placeholder="Masukkan Nomor HP / WhatsApp Aktif" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition">
                             <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-applicant_phone">Nomor HP/WA aktif wajib diisi.</span>
                         </div>
 
@@ -190,8 +190,8 @@
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">RT / RW</label>
                             <div class="grid grid-cols-2 gap-2">
-                                <input type="text" id="rt" name="rt" value="{{ old('rt', '01') }}" placeholder="RT" class="text-xs px-3 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] text-center">
-                                <input type="text" id="rw" name="rw" value="{{ old('rw', '01') }}" placeholder="RW" class="text-xs px-3 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] text-center">
+                                <input type="text" id="rt" name="rt" value="{{ old('rt', $user->rt ?? '01') }}" placeholder="RT" class="text-xs px-3 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] text-center">
+                                <input type="text" id="rw" name="rw" value="{{ old('rw', $user->rw ?? '01') }}" placeholder="RW" class="text-xs px-3 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] text-center">
                             </div>
                         </div>
 
@@ -200,7 +200,7 @@
                             <label for="address" class="block text-xs font-semibold text-slate-700 mb-1">
                                 Alamat Lengkap <span class="text-rose-500">*</span>
                             </label>
-                            <textarea id="address" name="address" rows="2" required placeholder="Masukkan Alamat Lengkap" class="w-full text-xs px-3.5 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition">{{ old('address') }}</textarea>
+                            <textarea id="address" name="address" rows="2" required placeholder="Masukkan Alamat Lengkap" class="w-full text-xs px-3.5 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition">{{ old('address', $user->address ?? '') }}</textarea>
                             <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-address">Alamat lengkap pemohon wajib diisi.</span>
                         </div>
                     </div>

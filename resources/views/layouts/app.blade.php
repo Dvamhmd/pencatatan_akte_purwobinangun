@@ -34,10 +34,32 @@
                     <span id="live-clock">15:00:00 WIB</span>
                 </span>
             </div>
-            <div class="flex items-center space-x-3 text-[11px]">
-                <a href="https://www.purwobinangun.desa.id/pengaduan" target="_blank" class="hover:text-[#b8ede6] transition inline-flex items-center gap-1">
+            <div class="flex items-center space-x-2.5 text-[11px]">
+                <a href="https://www.purwobinangun.desa.id/pengaduan" target="_blank" class="hover:text-[#b8ede6] transition hidden sm:inline-flex items-center gap-1">
                     <i class="fa-solid fa-bullhorn"></i> Pengaduan
                 </a>
+                <span class="text-teal-400/60 hidden sm:inline">|</span>
+                
+                @if(Auth::check() && Auth::user()->isWarga())
+                    <span class="inline-flex items-center gap-1.5 bg-black/25 px-2.5 py-1 rounded text-teal-100 font-semibold border border-white/10">
+                        <i class="fa-solid fa-circle-user text-amber-300"></i>
+                        <span class="truncate max-w-[120px] sm:max-w-[160px]">{{ Auth::user()->name }}</span>
+                        <span class="hidden md:inline-block bg-teal-900/60 text-teal-200 text-[10px] px-1.5 py-0.5 rounded font-mono font-normal">
+                            KK: {{ Auth::user()->family_card_no }}
+                        </span>
+                    </span>
+                    <form action="{{ route('warga.logout') }}" method="POST" class="inline">
+                        @csrf
+                        <button type="submit" class="bg-rose-600/80 hover:bg-rose-700 text-white px-2 py-1 rounded transition inline-flex items-center gap-1" title="Keluar dari Akun Warga">
+                            <i class="fa-solid fa-right-from-bracket"></i> <span class="hidden sm:inline">Keluar</span>
+                        </button>
+                    </form>
+                @else
+                    <a href="{{ route('warga.login') }}" class="bg-teal-50 hover:bg-white text-[#095b8c] font-extrabold px-2.5 py-1 rounded transition inline-flex items-center gap-1 shadow-xs">
+                        <i class="fa-solid fa-user-lock text-amber-600"></i> Masuk / Daftar Warga
+                    </a>
+                @endif
+
                 <span class="text-teal-400/60">|</span>
                 <a href="{{ route('admin.login') }}" class="bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold px-2.5 py-1 rounded transition inline-flex items-center gap-1 shadow-xs">
                     <i class="fa-solid fa-user-shield"></i> Portal Petugas

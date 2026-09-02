@@ -16,7 +16,13 @@
                     <h2 class="font-bold text-sm md:text-base tracking-wide uppercase">
                         DAFTAR PENGAJUAN PERMOHONAN AKTA
                     </h2>
-                    <p class="text-[11px] text-teal-100 font-normal">Sistem Pelayanan Administrasi Kependudukan Kalurahan Purwobinangun</p>
+                    <p class="text-[11px] text-teal-100 font-normal">
+                        @if(Auth::check() && Auth::user()->isWarga())
+                            Menampilkan data pengajuan untuk Nomor KK: <strong class="text-amber-300 font-mono">{{ Auth::user()->family_card_no }}</strong> ({{ Auth::user()->name }})
+                        @else
+                            Sistem Pelayanan Administrasi Kependudukan Kalurahan Purwobinangun
+                        @endif
+                    </p>
                 </div>
             </div>
             <a href="{{ route('birth.create') }}" class="bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold text-xs px-3.5 py-2 rounded-lg transition shadow-xs flex items-center gap-1.5">

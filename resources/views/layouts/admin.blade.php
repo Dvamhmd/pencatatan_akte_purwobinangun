@@ -59,6 +59,25 @@
             </a>
 
             <div class="pt-5 pb-2 px-4 text-xs uppercase font-bold tracking-wider text-teal-300">
+                Manajemen Pengguna
+            </div>
+
+            <a href="{{ route('admin.citizens.index') }}" class="flex items-center justify-between px-4 py-3 rounded-xl transition {{ request()->routeIs('admin.citizens.*') ? 'bg-[#0b7c89] text-white shadow-sm' : 'text-teal-100 hover:bg-teal-800/50' }}">
+                <div class="flex items-center gap-3.5">
+                    <i class="fa-solid fa-user-check w-5 text-center text-amber-300 text-lg"></i>
+                    <span>Verifikasi Warga</span>
+                </div>
+                @php
+                    $pendingWargaCount = \App\Models\User::where('role', 'warga')->where('status', 'pending')->count();
+                @endphp
+                @if($pendingWargaCount > 0)
+                    <span class="bg-amber-400 text-slate-950 font-bold text-xs px-2 py-0.5 rounded-full shadow-xs">
+                        {{ $pendingWargaCount }}
+                    </span>
+                @endif
+            </a>
+
+            <div class="pt-5 pb-2 px-4 text-xs uppercase font-bold tracking-wider text-teal-300">
                 Akses Publik
             </div>
 

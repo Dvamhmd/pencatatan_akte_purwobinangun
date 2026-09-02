@@ -4,13 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class DeathCertificate extends Model
 {
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'registration_no',
+        'family_card_no',
         'deceased_nik',
         'deceased_name',
         'gender',
@@ -43,6 +46,11 @@ class DeathCertificate extends Model
         'birth_date' => 'date',
         'death_date' => 'date',
     ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
     public static function generateRegistrationNo(): string
     {

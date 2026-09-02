@@ -139,17 +139,17 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">NIK Pelapor (16 Digit) <span class="text-rose-500">*</span></label>
-                        <input type="text" maxlength="16" name="applicant_nik" value="{{ old('applicant_nik') }}" required placeholder="NIK Pelapor" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-rose-600">
+                        <input type="text" maxlength="16" name="applicant_nik" value="{{ old('applicant_nik', $user->nik ?? '') }}" required placeholder="NIK Pelapor" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-rose-600 font-mono">
                     </div>
 
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap Pelapor <span class="text-rose-500">*</span></label>
-                        <input type="text" name="applicant_name" value="{{ old('applicant_name') }}" required placeholder="Nama lengkap pelapor" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-rose-600">
+                        <input type="text" name="applicant_name" value="{{ old('applicant_name', $user->name ?? '') }}" required placeholder="Nama lengkap pelapor" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-rose-600">
                     </div>
 
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Nomor WhatsApp / HP Pelapor <span class="text-rose-500">*</span></label>
-                        <input type="text" name="applicant_phone" value="{{ old('applicant_phone') }}" required placeholder="Contoh: 081234567890" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-rose-600">
+                        <input type="text" name="applicant_phone" value="{{ old('applicant_phone', $user->phone ?? '') }}" required placeholder="Contoh: 081234567890" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-rose-600">
                     </div>
 
                     <div>

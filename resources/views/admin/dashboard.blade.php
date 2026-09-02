@@ -14,14 +14,42 @@
             <p class="text-base text-teal-100 mt-1.5 leading-relaxed">Kelola verifikasi berkas permohonan Akte Kelahiran dan Kematian warga Kalurahan Purwobinangun secara real-time.</p>
         </div>
         <div class="flex items-center gap-2 shrink-0">
-            <a href="{{ route('admin.birth.index', ['status' => 'pending']) }}" class="bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold text-base px-5 py-3 rounded-xl shadow-sm transition inline-flex items-center gap-2">
-                <i class="fa-solid fa-bell text-lg"></i> {{ $birthStats['pending'] + $deathStats['pending'] }} Menunggu Verifikasi
+            <a href="{{ route('admin.citizens.index', ['status' => 'pending']) }}" class="bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold text-base px-5 py-3 rounded-xl shadow-sm transition inline-flex items-center gap-2">
+                <i class="fa-solid fa-user-clock text-lg"></i> {{ $citizenStats['pending'] }} Warga Perlu Verifikasi
             </a>
         </div>
     </div>
 
-    <!-- Statistik Permohonan Kelahiran & Kematian -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Statistik Ringkas: Warga & Pelayanan -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Box Statistik Akun Warga -->
+        <div class="bg-white rounded-xl shadow-xs border border-slate-200 p-6">
+            <div class="flex items-center justify-between pb-3.5 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <h3 class="font-bold text-base uppercase tracking-wider text-slate-800">Akun Warga</h3>
+                </div>
+                <a href="{{ route('admin.citizens.index') }}" class="text-base font-bold text-[#0b7c89] hover:underline">Kelola &rarr;</a>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2 mt-5 text-center">
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/60">
+                    <p class="text-2xl font-black text-slate-800">{{ $citizenStats['total'] }}</p>
+                    <p class="text-xs text-slate-600 font-semibold mt-1">Total</p>
+                </div>
+                <div class="p-3 bg-amber-50 rounded-xl border border-amber-200/60">
+                    <p class="text-2xl font-black text-amber-700">{{ $citizenStats['pending'] }}</p>
+                    <p class="text-xs text-amber-700 font-bold mt-1">Menunggu</p>
+                </div>
+                <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200/60">
+                    <p class="text-2xl font-black text-emerald-700">{{ $citizenStats['active'] }}</p>
+                    <p class="text-xs text-emerald-700 font-bold mt-1">Aktif</p>
+                </div>
+            </div>
+        </div>
         
         <!-- Box Statistik Akte Kelahiran -->
         <div class="bg-white rounded-xl shadow-xs border border-slate-200 p-6">
