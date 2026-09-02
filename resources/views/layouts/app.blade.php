@@ -25,9 +25,6 @@
     <header class="bg-[#095b8c] text-white text-xs font-medium border-b border-[#074a73] shadow-xs">
         <div class="max-w-7xl mx-auto px-4 py-2 flex flex-wrap items-center justify-between gap-2">
             <div class="flex items-center space-x-3">
-                <a href="https://www.purwobinangun.desa.id/" target="_blank" class="inline-flex items-center gap-1.5 bg-[#059cb8] hover:bg-[#04869e] px-2.5 py-1 rounded text-white font-bold transition shadow-xs">
-                    <i class="fa-solid fa-arrow-left text-[10px]"></i> Website Utama Kalurahan
-                </a>
                 <span class="inline-flex items-center gap-1.5 bg-black/20 px-2.5 py-1 rounded text-teal-100">
                     <i class="fa-regular fa-calendar-days text-[#b8ede6]"></i>
                     <span id="live-date">Selasa, 1 September 2026</span>
@@ -38,10 +35,6 @@
                 </span>
             </div>
             <div class="flex items-center space-x-3 text-[11px]">
-                <a href="https://www.purwobinangun.desa.id/layanan-mandiri/masuk" target="_blank" class="hover:text-[#b8ede6] transition hidden sm:inline-flex items-center gap-1">
-                    <i class="fa-solid fa-user-check"></i> E-Mandiri
-                </a>
-                <span class="text-teal-400/60 hidden sm:inline">|</span>
                 <a href="https://www.purwobinangun.desa.id/pengaduan" target="_blank" class="hover:text-[#b8ede6] transition inline-flex items-center gap-1">
                     <i class="fa-solid fa-bullhorn"></i> Pengaduan
                 </a>
@@ -78,13 +71,6 @@
                         <i class="fa-solid fa-location-dot text-amber-300"></i> Kapanewon Pakem, Kabupaten Sleman, D.I. Yogyakarta 55582
                     </p>
                 </div>
-            </div>
-
-            <!-- Quick Action Button -->
-            <div class="flex flex-col sm:flex-row items-center gap-2.5 w-full md:w-auto">
-                <a href="{{ route('tracking.index') }}" class="w-full sm:w-auto bg-amber-400 hover:bg-amber-500 text-slate-950 font-extrabold text-xs md:text-sm px-4 py-2.5 rounded-xl shadow-md transition flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-qrcode text-base"></i> Lacak Berkas Permohonan
-                </a>
             </div>
 
         </div>
@@ -242,12 +228,6 @@
                         Menu Terkait
                     </h3>
                     <ul class="text-xs space-y-1.5">
-                        <li>
-                            <a href="https://www.purwobinangun.desa.id/layanan-mandiri/masuk" target="_blank" class="flex items-center justify-between text-slate-600 hover:text-[#095b8c] py-1 border-b border-slate-100">
-                                <span>Layanan E-Mandiri</span>
-                                <i class="fa-solid fa-chevron-right text-[10px]"></i>
-                            </a>
-                        </li>
                         <li>
                             <a href="https://www.purwobinangun.desa.id/data-wilayah" target="_blank" class="flex items-center justify-between text-slate-600 hover:text-[#095b8c] py-1 border-b border-slate-100">
                                 <span>Wilayah Administratif</span>

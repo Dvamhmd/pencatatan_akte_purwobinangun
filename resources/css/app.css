@@ -22,6 +22,7 @@
         /* =================================================================
            DEFAULT ZOOM APLIKASI (150%)
            Ubah nilai di bawah (misal: 100%, 110%, 120%, 125%) untuk menyesuaikan
+           setelah ubah jalankan npm run build pada terminal
            ================================================================= */
         zoom: 150%;
     }
