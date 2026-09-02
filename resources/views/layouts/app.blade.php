@@ -104,11 +104,11 @@
                     <a href="{{ route('birth.create') }}" class="px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 {{ request()->routeIs('birth.create') ? 'text-[#095b8c] bg-teal-50 border border-teal-200 font-bold' : 'hover:text-[#095b8c] hover:bg-slate-50' }}">
                         <i class="fa-solid fa-baby text-[#059cb8]"></i> Akte Kelahiran
                     </a>
-                    <a href="{{ route('birth.list') }}" class="px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 {{ request()->routeIs('birth.list') || request()->routeIs('submissions.index') ? 'text-[#095b8c] bg-teal-50 border border-teal-200 font-bold' : 'hover:text-[#095b8c] hover:bg-slate-50' }}">
-                        <i class="fa-solid fa-list-check text-[#059cb8]"></i> Daftar Pengajuan
-                    </a>
                     <a href="{{ route('death.create') }}" class="px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 {{ request()->routeIs('death.*') ? 'text-rose-700 bg-rose-50 border border-rose-200 font-bold' : 'hover:text-rose-700 hover:bg-slate-50' }}">
                         <i class="fa-solid fa-book-skull text-rose-600"></i> Akte Kematian
+                    </a>
+                    <a href="{{ route('birth.list') }}" class="px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 {{ request()->routeIs('birth.list') || request()->routeIs('submissions.index') ? 'text-[#095b8c] bg-teal-50 border border-teal-200 font-bold' : 'hover:text-[#095b8c] hover:bg-slate-50' }}">
+                        <i class="fa-solid fa-list-check text-[#059cb8]"></i> Daftar Pengajuan
                     </a>
                     <a href="{{ route('tracking.index') }}" class="px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 {{ request()->routeIs('tracking.*') ? 'text-amber-800 bg-amber-50 border border-amber-200 font-bold' : 'hover:text-amber-700 hover:bg-slate-50' }}">
                         <i class="fa-solid fa-magnifying-glass text-amber-600"></i> Cek Status
@@ -116,10 +116,6 @@
                     <a href="{{ route('guidelines') }}" class="px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 {{ request()->routeIs('guidelines') ? 'text-[#095b8c] bg-teal-50 border border-teal-200 font-bold' : 'hover:text-[#095b8c] hover:bg-slate-50' }}">
                         <i class="fa-solid fa-file-circle-check text-[#059cb8]"></i> Syarat Berkas
                     </a>
-                </div>
-                <div class="hidden lg:flex items-center text-xs text-slate-500 gap-2">
-                    <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span class="font-medium text-emerald-700">Pelayanan Online Aktif</span>
                 </div>
             </div>
         </div>
