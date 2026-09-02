@@ -103,8 +103,8 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Waktu / Pukul Meninggal</label>
-                        <input type="text" name="death_time" value="{{ old('death_time') }}" placeholder="Contoh: 05:30 WIB" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-rose-600">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Waktu / Pukul Meninggal (Format 24 Jam)</label>
+                        <input type="time" name="death_time" value="{{ old('death_time') }}" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-rose-600 bg-white cursor-pointer">
                     </div>
 
                     <div>

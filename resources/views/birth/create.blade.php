@@ -450,9 +450,9 @@
                         <!-- Jam Kelahiran -->
                         <div>
                             <label for="birth_time" class="block text-xs font-semibold text-slate-700 mb-1">
-                                Jam Kelahiran (Pukul / Waktu Lahir)
+                                Jam Kelahiran (Format 24 Jam)
                             </label>
-                            <input type="text" id="birth_time" name="birth_time" value="{{ old('birth_time') }}" placeholder="Contoh: 08:30 WIB" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition">
+                            <input type="time" id="birth_time" name="birth_time" value="{{ old('birth_time') }}" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white cursor-pointer">
                         </div>
 
                         <!-- Anak ke- -->
