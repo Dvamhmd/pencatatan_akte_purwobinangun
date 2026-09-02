@@ -66,6 +66,16 @@
     .custom-modal-scroll::-webkit-scrollbar-thumb:hover {
         background: #94a3b8;
     }
+    /* Hilangkan panah spinner bawaan browser pada input number */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none !important;
+        margin: 0 !important;
+    }
+    input[type=number] {
+        -moz-appearance: textfield !important;
+        appearance: textfield !important;
+    }
 </style>
 
 <div class="space-y-6">
@@ -499,7 +509,7 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
                                     <div class="relative">
-                                        <input type="number" step="0.01" min="0.5" max="10" id="weight_kg" name="weight_kg" value="{{ old('weight_kg') }}" placeholder="Masukkan Berat Badan Bayi" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c]">
+                                        <input type="number" step="0.01" min="0.5" max="10" id="weight_kg" name="weight_kg" value="{{ old('weight_kg') }}" placeholder="Masukkan Berat Badan Bayi" class="w-full text-xs px-3.5 pr-10 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c]" style="-moz-appearance: textfield; appearance: textfield;">
                                         <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-semibold">kg</span>
                                     </div>
                                     <span class="text-[10px] text-slate-500 mt-0.5 block">Berat badan saat lahir</span>
@@ -507,7 +517,7 @@
 
                                 <div>
                                     <div class="relative">
-                                        <input type="number" step="0.1" min="20" max="100" id="length_cm" name="length_cm" value="{{ old('length_cm') }}" placeholder="Masukkan Panjang Badan Bayi" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c]">
+                                        <input type="number" step="0.1" min="20" max="100" id="length_cm" name="length_cm" value="{{ old('length_cm') }}" placeholder="Masukkan Panjang Badan Bayi" class="w-full text-xs px-3.5 pr-10 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c]" style="-moz-appearance: textfield; appearance: textfield;">
                                         <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-semibold">cm</span>
                                     </div>
                                     <span class="text-[10px] text-slate-500 mt-0.5 block">Panjang badan saat lahir</span>
