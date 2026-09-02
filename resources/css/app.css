@@ -1,11 +1,16 @@
 @import 'tailwindcss';
 
 :root {
-    --clr1: #059cb8;      /* Toska Utama Kalurahan Purwobinangun */
-    --clr2: #095b8c;      /* Navy Biru Kalurahan Purwobinangun */
-    --clr3: #3887c2;      /* Aksen Biru */
-    --clrsoft1: #75b4c4;  /* Soft Teal */
-    --clrsoft2: #b8ede6;  /* Soft Mint */
+    --clr1: #059cb8;
+    /* Toska Utama Kalurahan Purwobinangun */
+    --clr2: #095b8c;
+    /* Navy Biru Kalurahan Purwobinangun */
+    --clr3: #3887c2;
+    /* Aksen Biru */
+    --clrsoft1: #75b4c4;
+    /* Soft Teal */
+    --clrsoft2: #b8ede6;
+    /* Soft Mint */
 }
 
 @layer base {
@@ -13,6 +18,12 @@
         font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
         background-color: #f0f4f8;
         color: #1e293b;
+
+        /* =================================================================
+           DEFAULT ZOOM APLIKASI (150%)
+           Ubah nilai di bawah (misal: 100%, 110%, 120%, 125%) untuk menyesuaikan
+           ================================================================= */
+        zoom: 150%;
     }
 }
 
@@ -48,8 +59,8 @@
 /* Header Gradient Purwobinangun Theme */
 .hero-purwobinangun {
     background: linear-gradient(135deg, #095b8c 0%, #059cb8 60%, #3887c2 100%),
-                radial-gradient(circle at top right, rgba(184, 237, 230, 0.25), transparent 50%),
-                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23044b75' fill-opacity='0.4' d='M0,224L48,208C96,192,192,160,288,165.3C384,171,480,213,576,218.7C672,224,768,192,864,165.3C960,139,1056,117,1152,122.7C1248,128,1344,160,1392,176L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+        radial-gradient(circle at top right, rgba(184, 237, 230, 0.25), transparent 50%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23044b75' fill-opacity='0.4' d='M0,224L48,208C96,192,192,160,288,165.3C384,171,480,213,576,218.7C672,224,768,192,864,165.3C960,139,1056,117,1152,122.7C1248,128,1344,160,1392,176L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
     background-size: cover;
     background-position: center;
 }
@@ -58,6 +69,7 @@
 .civic-card {
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 .civic-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 12px 24px -6px rgba(5, 156, 184, 0.2), 0 8px 12px -6px rgba(9, 91, 140, 0.15);
@@ -74,14 +86,18 @@
     .no-print {
         display: none !important;
     }
+
     body {
         background: white !important;
         color: black !important;
         font-size: 12pt;
+        zoom: 1 !important;
     }
+
     .print-only {
         display: block !important;
     }
+
     .print-container {
         padding: 0 !important;
         margin: 0 !important;
@@ -96,6 +112,7 @@ input[type=number]::-webkit-outer-spin-button {
     -webkit-appearance: none !important;
     margin: 0 !important;
 }
+
 input[type=number] {
     -moz-appearance: textfield !important;
     appearance: textfield !important;
@@ -110,7 +127,7 @@ input[type=number] {
     opacity: 0;
     transform: translateY(20px);
     transition: opacity 1.15s cubic-bezier(0.16, 1, 0.3, 1),
-                transform 1.15s cubic-bezier(0.16, 1, 0.3, 1);
+        transform 1.15s cubic-bezier(0.16, 1, 0.3, 1);
     will-change: opacity, transform;
 }
 
@@ -131,7 +148,7 @@ input[type=number] {
     opacity: 0;
     transform: translateY(12px);
     transition: opacity 1.0s cubic-bezier(0.16, 1, 0.3, 1),
-                transform 1.0s cubic-bezier(0.16, 1, 0.3, 1);
+        transform 1.0s cubic-bezier(0.16, 1, 0.3, 1);
     transition-delay: var(--dissolve-delay, 0ms);
     will-change: opacity, transform;
 }
@@ -143,13 +160,15 @@ input[type=number] {
     transform: translateY(0);
 }
 
-/* Exclude Topbar Header, Hero Banner, Navigation, Modals, and Popups from Dissolve */
+/* Exclude Topbar Header, Hero Banner, Navigation, Footer, Modals, and Popups from Dissolve */
 header,
 header *,
 .hero-purwobinangun,
 .hero-purwobinangun *,
 nav,
 nav *,
+footer,
+footer *,
 .modal-overlay,
 .modal-overlay *,
 .modal-dialog-box,
@@ -170,6 +189,7 @@ nav *,
 
 /* Print Styles Override: ensure everything is visible in prints */
 @media print {
+
     .dissolve-card,
     .dissolve-child,
     .dissolve-card.is-visible,
@@ -182,6 +202,7 @@ nav *,
 
 /* Accessibility: respect prefers-reduced-motion */
 @media (prefers-reduced-motion: reduce) {
+
     .dissolve-card,
     .dissolve-child {
         transition-duration: 0.01ms !important;
@@ -189,5 +210,3 @@ nav *,
         opacity: 1 !important;
     }
 }
-
-

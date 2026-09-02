@@ -34,7 +34,7 @@ export function initDissolveEffects() {
     });
 
     const isExcluded = (el) => {
-        return el.closest('header, .hero-purwobinangun, nav, .modal-overlay, #preview-modal, #camera-modal, .swal2-container, .modal-dialog-box, #live-clock, #live-date') !== null;
+        return el.closest('header, .hero-purwobinangun, nav, footer, .modal-overlay, #preview-modal, #camera-modal, .swal2-container, .modal-dialog-box, #live-clock, #live-date') !== null;
     };
 
     function attachDissolve(card) {
@@ -47,7 +47,7 @@ export function initDissolveEffects() {
     }
 
     function scanElements() {
-        // Select all cards on Web Warga (excluding headbar and nav)
+        // Select all cards on Web Warga (excluding headbar, nav, and footer)
         const selectors = [
             'main .space-y-6 > div',
             'main .civic-card',
@@ -57,7 +57,6 @@ export function initDissolveEffects() {
             'main .border.rounded-xl',
             'main .border-2.rounded-xl',
             'aside > div',
-            'footer > div > div',
             '.dissolve-card'
         ];
 
