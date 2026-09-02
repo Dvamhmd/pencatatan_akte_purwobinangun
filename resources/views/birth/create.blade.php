@@ -529,11 +529,11 @@
 
                 <!-- Tombol Aksi Step 2 -->
                 <div class="pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <button type="button" id="btn-back-to-step1" class="w-full sm:w-auto bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs sm:text-sm px-6 py-3.5 rounded-xl transition flex items-center justify-center gap-2 cursor-pointer border border-slate-300 shadow-2xs">
+                    <button type="button" id="btn-back-to-step1" class="w-full sm:w-auto bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs sm:text-sm rounded-xl transition flex items-center justify-center gap-2 cursor-pointer border border-slate-300 shadow-2xs" style="min-height: 46px; padding: 12px 24px; box-sizing: border-box;">
                         <i class="fa-solid fa-arrow-left"></i> Kembali ke Data Pemohon
                     </button>
 
-                    <button type="button" id="btn-submit-final" class="w-full sm:w-auto bg-[#095b8c] hover:bg-[#07476e] active:scale-[0.99] text-white font-extrabold text-xs sm:text-sm px-8 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center cursor-pointer border border-[#07476e]">
+                    <button type="button" id="btn-submit-final" class="w-full sm:w-auto bg-[#095b8c] hover:bg-[#07476e] active:scale-[0.99] text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center cursor-pointer border border-[#07476e]" style="min-height: 46px; padding: 12px 32px; box-sizing: border-box;">
                         <span id="btn-submit-text">Kirim Pengajuan Akte Kelahiran</span>
                     </button>
                 </div>
