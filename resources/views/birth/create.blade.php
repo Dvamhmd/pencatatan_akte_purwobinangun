@@ -450,7 +450,7 @@
                         <!-- Jam Kelahiran -->
                         <div>
                             <label for="birth_time" class="block text-xs font-semibold text-slate-700 mb-1">
-                                Jam Kelahiran (Format 24 Jam)
+                                Waktu Kelahiran<span class="text-rose-500">*</span>
                             </label>
                             <input type="time" id="birth_time" name="birth_time" value="{{ old('birth_time') }}" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white cursor-pointer">
                         </div>
@@ -805,6 +805,11 @@
 document.addEventListener('DOMContentLoaded', function () {
     let currentStep = 1;
 
+    // Storage Keys
+    const DRAFT_KEY = 'purwobinangun_birth_form_draft';
+    const DB_NAME = 'PurwobinangunBirthDB';
+    const STORE_NAME = 'birthDraftFiles';
+
     // Elements
     const form = document.getElementById('birth-application-form');
     const step1 = document.getElementById('step-content-1');
@@ -857,6 +862,78 @@ document.addEventListener('DOMContentLoaded', function () {
         document.body.appendChild(successModal);
     }
 
+    // ==========================================
+    // IndexedDB Helper untuk Penyimpanan Berkas
+    // ==========================================
+    function openDraftDB() {
+        return new Promise((resolve, reject) => {
+            if (!window.indexedDB) {
+                return reject(new Error('IndexedDB not supported'));
+            }
+            const request = indexedDB.open(DB_NAME, 1);
+            request.onupgradeneeded = function (e) {
+                const db = e.target.result;
+                if (!db.objectStoreNames.contains(STORE_NAME)) {
+                    db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+                }
+            };
+            request.onsuccess = function (e) {
+                resolve(e.target.result);
+            };
+            request.onerror = function (e) {
+                reject(e.target.error);
+            };
+        });
+    }
+
+    async function saveFileToDB(id, file) {
+        try {
+            const db = await openDraftDB();
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            const store = tx.objectStore(STORE_NAME);
+            store.put({
+                id: id,
+                file: file,
+                name: file.name,
+                type: file.type,
+                size: file.size,
+                lastModified: file.lastModified
+            });
+            return new Promise((resolve, reject) => {
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => reject(tx.error);
+            });
+        } catch (err) {
+            console.warn('Gagal menyimpan file ke draft DB:', err);
+        }
+    }
+
+    async function getFileFromDB(id) {
+        try {
+            const db = await openDraftDB();
+            const tx = db.transaction(STORE_NAME, 'readonly');
+            const store = tx.objectStore(STORE_NAME);
+            const req = store.get(id);
+            return new Promise((resolve) => {
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => resolve(null);
+            });
+        } catch (err) {
+            console.warn('Gagal membaca file dari draft DB:', err);
+            return null;
+        }
+    }
+
+    async function clearDraftFilesFromDB() {
+        try {
+            const db = await openDraftDB();
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            tx.objectStore(STORE_NAME).clear();
+        } catch (err) {
+            console.warn('Gagal membersihkan draft DB:', err);
+        }
+    }
+
     // Open & Hide Modal Helpers with Smooth Animations
     function showModal(modalEl) {
         if (!modalEl) return;
@@ -870,42 +947,50 @@ document.addEventListener('DOMContentLoaded', function () {
         document.body.style.overflow = '';
     }
 
+    // Update File Preview Visual Card
+    function updateFilePreview(input, file) {
+        if (!input || !file) return;
+        const cardKey = input.getAttribute('data-card');
+        const placeholder = document.getElementById(`placeholder-${cardKey}`);
+        const previewBox = document.getElementById(`preview-box-${cardKey}`);
+        const imgWrap = document.getElementById(`img-preview-wrap-${cardKey}`);
+        const imgEl = document.getElementById(`img-preview-${cardKey}`);
+        const pdfWrap = document.getElementById(`pdf-preview-wrap-${cardKey}`);
+        const fileNameEl = document.getElementById(`file-name-${cardKey}`);
+        const fileSizeEl = document.getElementById(`file-size-${cardKey}`);
+
+        if (fileNameEl) fileNameEl.textContent = file.name;
+        if (fileSizeEl) fileSizeEl.textContent = (file.size / 1024).toFixed(1) + ' KB';
+
+        if (file.type && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                if (imgEl) imgEl.src = e.target.result;
+                if (imgWrap) imgWrap.classList.remove('hidden');
+                if (pdfWrap) pdfWrap.classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        } else {
+            if (imgWrap) imgWrap.classList.add('hidden');
+            if (pdfWrap) pdfWrap.classList.remove('hidden');
+        }
+
+        if (placeholder) placeholder.classList.add('hidden');
+        if (previewBox) previewBox.classList.remove('hidden');
+
+        // Hide error message if any
+        const errEl = document.getElementById('error-' + input.id);
+        if (errEl) errEl.classList.add('hidden');
+    }
+
     // File Input Label & Image/PDF Thumbnail Preview Handler
     document.querySelectorAll('.file-input').forEach(input => {
-        input.addEventListener('change', function () {
-            const cardKey = this.getAttribute('data-card');
-            const placeholder = document.getElementById(`placeholder-${cardKey}`);
-            const previewBox = document.getElementById(`preview-box-${cardKey}`);
-            const imgWrap = document.getElementById(`img-preview-wrap-${cardKey}`);
-            const imgEl = document.getElementById(`img-preview-${cardKey}`);
-            const pdfWrap = document.getElementById(`pdf-preview-wrap-${cardKey}`);
-            const fileNameEl = document.getElementById(`file-name-${cardKey}`);
-            const fileSizeEl = document.getElementById(`file-size-${cardKey}`);
-
+        input.addEventListener('change', async function () {
             if (this.files && this.files.length > 0) {
                 const file = this.files[0];
-                fileNameEl.textContent = file.name;
-                fileSizeEl.textContent = (file.size / 1024).toFixed(1) + ' KB';
-
-                if (file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        imgEl.src = e.target.result;
-                        imgWrap.classList.remove('hidden');
-                        pdfWrap.classList.add('hidden');
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    imgWrap.classList.add('hidden');
-                    pdfWrap.classList.remove('hidden');
-                }
-
-                placeholder.classList.add('hidden');
-                previewBox.classList.remove('hidden');
-
-                // Hide error message if any
-                const errEl = document.getElementById('error-' + this.id);
-                if (errEl) errEl.classList.add('hidden');
+                updateFilePreview(this, file);
+                await saveFileToDB(this.id, file);
+                saveFormDraft();
             }
         });
     });
@@ -919,6 +1004,7 @@ document.addEventListener('DOMContentLoaded', function () {
             customBirthTypeBox.classList.add('hidden');
             birthTypeCustom.required = false;
         }
+        saveFormDraft();
     });
 
     birthPlaceType.addEventListener('change', function () {
@@ -929,10 +1015,11 @@ document.addEventListener('DOMContentLoaded', function () {
             customBirthPlaceBox.classList.add('hidden');
             birthPlaceOther.required = false;
         }
+        saveFormDraft();
     });
 
     // Helper: Switch steps
-    function setStep(step) {
+    function setStep(step, smoothScroll = true) {
         currentStep = step;
         
         if (step === 1) {
@@ -946,8 +1033,145 @@ document.addEventListener('DOMContentLoaded', function () {
             step2.classList.add('hidden');
         }
 
-        window.scrollTo({ top: 180, behavior: 'smooth' });
+        if (smoothScroll) {
+            window.scrollTo({ top: 180, behavior: 'smooth' });
+        }
+
+        saveFormDraft();
     }
+
+    // ==========================================
+    // LocalStorage Draft Form Management
+    // ==========================================
+    function saveFormDraft() {
+        try {
+            const draft = {
+                currentStep: currentStep,
+                applicant_name: applicantName ? applicantName.value : '',
+                applicant_nik: applicantNik ? applicantNik.value : '',
+                applicant_relation: applicantRelation ? applicantRelation.value : '',
+                applicant_phone: applicantPhone ? applicantPhone.value : '',
+                padukuhan: padukuhan ? padukuhan.value : '',
+                rt: rt ? rt.value : '',
+                rw: rw ? rw.value : '',
+                address: address ? address.value : '',
+                child_name: childName ? childName.value : '',
+                gender: form.querySelector('input[name="gender"]:checked')?.value || 'L',
+                birth_place: birthPlace ? birthPlace.value : '',
+                birth_date: birthDate ? birthDate.value : '',
+                birth_time: birthTime ? birthTime.value : '',
+                birth_order: birthOrder ? birthOrder.value : '',
+                birth_type: birthType ? birthType.value : 'Tunggal',
+                birth_type_custom: birthTypeCustom ? birthTypeCustom.value : '',
+                birth_place_type: birthPlaceType ? birthPlaceType.value : 'Rumah Sakit',
+                birth_place_other: birthPlaceOther ? birthPlaceOther.value : '',
+                weight_kg: weightKg ? weightKg.value : '',
+                length_cm: lengthCm ? lengthCm.value : '',
+                declaration_check: declarationCheck ? declarationCheck.checked : false
+            };
+            localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+        } catch (e) {
+            console.warn('Gagal menyimpan draft ke localStorage:', e);
+        }
+    }
+
+    function restoreFormDraft() {
+        try {
+            const rawDraft = localStorage.getItem(DRAFT_KEY);
+            if (!rawDraft) return;
+            const draft = JSON.parse(rawDraft);
+            if (!draft) return;
+
+            if (applicantName && draft.applicant_name !== undefined) applicantName.value = draft.applicant_name;
+            if (applicantNik && draft.applicant_nik !== undefined) applicantNik.value = draft.applicant_nik;
+            if (applicantRelation && draft.applicant_relation !== undefined) applicantRelation.value = draft.applicant_relation;
+            if (applicantPhone && draft.applicant_phone !== undefined) applicantPhone.value = draft.applicant_phone;
+            if (padukuhan && draft.padukuhan !== undefined) padukuhan.value = draft.padukuhan;
+            if (rt && draft.rt !== undefined) rt.value = draft.rt;
+            if (rw && draft.rw !== undefined) rw.value = draft.rw;
+            if (address && draft.address !== undefined) address.value = draft.address;
+
+            if (childName && draft.child_name !== undefined) childName.value = draft.child_name;
+            if (draft.gender) {
+                const genderRadio = form.querySelector(`input[name="gender"][value="${draft.gender}"]`);
+                if (genderRadio) genderRadio.checked = true;
+            }
+            if (birthPlace && draft.birth_place !== undefined) birthPlace.value = draft.birth_place;
+            if (birthDate && draft.birth_date !== undefined) birthDate.value = draft.birth_date;
+            if (birthTime && draft.birth_time !== undefined) birthTime.value = draft.birth_time;
+            if (birthOrder && draft.birth_order !== undefined) birthOrder.value = draft.birth_order;
+
+            if (birthType && draft.birth_type !== undefined) {
+                birthType.value = draft.birth_type;
+                if (birthType.value === 'Input Jumlah') {
+                    customBirthTypeBox.classList.remove('hidden');
+                    birthTypeCustom.required = true;
+                    if (birthTypeCustom && draft.birth_type_custom !== undefined) {
+                        birthTypeCustom.value = draft.birth_type_custom;
+                    }
+                } else {
+                    customBirthTypeBox.classList.add('hidden');
+                    birthTypeCustom.required = false;
+                }
+            }
+
+            if (birthPlaceType && draft.birth_place_type !== undefined) {
+                birthPlaceType.value = draft.birth_place_type;
+                if (birthPlaceType.value === 'Lainnya') {
+                    customBirthPlaceBox.classList.remove('hidden');
+                    birthPlaceOther.required = true;
+                    if (birthPlaceOther && draft.birth_place_other !== undefined) {
+                        birthPlaceOther.value = draft.birth_place_other;
+                    }
+                } else {
+                    customBirthPlaceBox.classList.add('hidden');
+                    birthPlaceOther.required = false;
+                }
+            }
+
+            if (weightKg && draft.weight_kg !== undefined) weightKg.value = draft.weight_kg;
+            if (lengthCm && draft.length_cm !== undefined) lengthCm.value = draft.length_cm;
+            if (declarationCheck && draft.declaration_check !== undefined) declarationCheck.checked = draft.declaration_check;
+
+            // Restore active step if saved
+            if (draft.currentStep === 2) {
+                setStep(2, false);
+            }
+        } catch (e) {
+            console.warn('Gagal memulihkan draft dari localStorage:', e);
+        }
+    }
+
+    async function restoreDraftFiles() {
+        const fileInputIds = ['doc_parents_ktp', 'doc_family_card', 'doc_birth_cert'];
+        for (const inputId of fileInputIds) {
+            const input = document.getElementById(inputId);
+            if (!input) continue;
+            const record = await getFileFromDB(inputId);
+            if (record && record.file) {
+                try {
+                    const dt = new DataTransfer();
+                    const restoredFile = new File([record.file], record.name, {
+                        type: record.type,
+                        lastModified: record.lastModified || Date.now()
+                    });
+                    dt.items.add(restoredFile);
+                    input.files = dt.files;
+                    updateFilePreview(input, restoredFile);
+                } catch (e) {
+                    console.warn('Gagal memulihkan berkas input:', e);
+                }
+            }
+        }
+    }
+
+    // Auto-save listeners on all form inputs
+    form.addEventListener('input', saveFormDraft);
+    form.addEventListener('change', saveFormDraft);
+
+    // Initial draft restoration
+    restoreFormDraft();
+    restoreDraftFiles();
 
     // Open Preview Modal Function (Populates data & shows centered modal)
     function openPreviewModal() {
@@ -1151,7 +1375,15 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(data => {
             if (data.success) {
-                // Save to localStorage for citizen convenience
+                // Clear temporary draft from localStorage and IndexedDB upon successful submission
+                try {
+                    localStorage.removeItem(DRAFT_KEY);
+                    clearDraftFilesFromDB();
+                } catch (e) {
+                    console.warn('Gagal menghapus draft setelah submit:', e);
+                }
+
+                // Save to localStorage submissions history for citizen convenience
                 try {
                     const existing = JSON.parse(localStorage.getItem('purwobinangun_birth_submissions') || '[]');
                     existing.unshift({
