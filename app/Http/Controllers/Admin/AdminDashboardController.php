@@ -27,8 +27,8 @@ class AdminDashboardController extends Controller
             'rejected' => DeathCertificate::where('status', 'rejected')->count(),
         ];
 
-        $latestBirths = BirthCertificate::latest()->take(5)->get();
-        $latestDeaths = DeathCertificate::latest()->take(5)->get();
+        $latestBirths = BirthCertificate::latest()->take(4)->get();
+        $latestDeaths = DeathCertificate::latest()->take(4)->get();
 
         return view('admin.dashboard', compact('birthStats', 'deathStats', 'latestBirths', 'latestDeaths'));
     }

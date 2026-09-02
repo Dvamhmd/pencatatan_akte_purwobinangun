@@ -21,69 +21,69 @@
 <body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex">
 
     <!-- Admin Sidebar -->
-    <aside class="w-64 bg-[#065b65] text-white flex-shrink-0 flex flex-col min-h-screen border-r border-[#054850]">
+    <aside class="w-72 bg-[#065b65] text-white flex-shrink-0 flex flex-col min-h-screen border-r border-[#054850]">
         <!-- Brand Header -->
-        <div class="p-4 border-b border-teal-800/60 flex items-center gap-3">
-            <div class="w-10 h-12 bg-white/10 rounded-lg p-1 flex items-center justify-center border border-teal-400/30 shrink-0">
+        <div class="p-5 border-b border-teal-800/60 flex items-center gap-3.5">
+            <div class="w-12 h-14 bg-white/10 rounded-xl p-1.5 flex items-center justify-center border border-teal-400/30 shrink-0">
                 <img src="{{ asset('images/logo-sleman.png') }}" alt="Logo Sleman" class="max-h-full max-w-full object-contain">
             </div>
             <div>
-                <h2 class="font-bold text-sm leading-tight text-white">ADMIN KALURAHAN</h2>
-                <p class="text-[11px] text-teal-200">Purwobinangun, Sleman</p>
+                <h2 class="font-extrabold text-base leading-snug text-white tracking-wide">ADMIN KALURAHAN</h2>
+                <p class="text-xs text-teal-200 font-medium">Purwobinangun, Sleman</p>
             </div>
         </div>
 
         <!-- Navigation Links -->
-        <nav class="flex-1 p-3 space-y-1 text-xs font-semibold">
-            <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition {{ request()->routeIs('admin.dashboard') ? 'bg-[#0b7c89] text-white shadow-sm' : 'text-teal-100 hover:bg-teal-800/50' }}">
-                <i class="fa-solid fa-gauge-high w-4"></i>
+        <nav class="flex-1 p-4 space-y-1.5 text-base font-semibold">
+            <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3.5 px-4 py-3 rounded-xl transition {{ request()->routeIs('admin.dashboard') ? 'bg-[#0b7c89] text-white shadow-sm' : 'text-teal-100 hover:bg-teal-800/50' }}">
+                <i class="fa-solid fa-gauge-high w-5 text-center text-lg"></i>
                 <span>Dashboard</span>
             </a>
 
-            <div class="pt-3 pb-1 px-3 text-[10px] uppercase font-bold tracking-wider text-teal-300">
+            <div class="pt-5 pb-2 px-4 text-xs uppercase font-bold tracking-wider text-teal-300">
                 Layanan Kependudukan
             </div>
 
-            <a href="{{ route('admin.birth.index') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg transition {{ request()->routeIs('admin.birth.*') ? 'bg-[#0b7c89] text-white shadow-sm' : 'text-teal-100 hover:bg-teal-800/50' }}">
-                <div class="flex items-center gap-3">
-                    <i class="fa-solid fa-baby w-4 text-teal-300"></i>
+            <a href="{{ route('admin.birth.index') }}" class="flex items-center justify-between px-4 py-3 rounded-xl transition {{ request()->routeIs('admin.birth.*') ? 'bg-[#0b7c89] text-white shadow-sm' : 'text-teal-100 hover:bg-teal-800/50' }}">
+                <div class="flex items-center gap-3.5">
+                    <i class="fa-solid fa-baby w-5 text-center text-teal-300 text-lg"></i>
                     <span>Akte Kelahiran</span>
                 </div>
             </a>
 
-            <a href="{{ route('admin.death.index') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg transition {{ request()->routeIs('admin.death.*') ? 'bg-[#0b7c89] text-white shadow-sm' : 'text-teal-100 hover:bg-teal-800/50' }}">
-                <div class="flex items-center gap-3">
-                    <i class="fa-solid fa-book-skull w-4 text-rose-300"></i>
+            <a href="{{ route('admin.death.index') }}" class="flex items-center justify-between px-4 py-3 rounded-xl transition {{ request()->routeIs('admin.death.*') ? 'bg-[#0b7c89] text-white shadow-sm' : 'text-teal-100 hover:bg-teal-800/50' }}">
+                <div class="flex items-center gap-3.5">
+                    <i class="fa-solid fa-book-skull w-5 text-center text-rose-300 text-lg"></i>
                     <span>Akte Kematian</span>
                 </div>
             </a>
 
-            <div class="pt-3 pb-1 px-3 text-[10px] uppercase font-bold tracking-wider text-teal-300">
+            <div class="pt-5 pb-2 px-4 text-xs uppercase font-bold tracking-wider text-teal-300">
                 Akses Publik
             </div>
 
-            <a href="{{ route('home') }}" target="_blank" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-teal-100 hover:bg-teal-800/50 transition">
-                <i class="fa-solid fa-arrow-up-right-from-square w-4"></i>
+            <a href="{{ route('home') }}" target="_blank" class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-teal-100 hover:bg-teal-800/50 transition">
+                <i class="fa-solid fa-arrow-up-right-from-square w-5 text-center text-lg"></i>
                 <span>Buka Website Warga</span>
             </a>
         </nav>
 
         <!-- User Info & Logout Footer -->
-        <div class="p-3 border-t border-teal-800/60 bg-[#054b53]">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2 overflow-hidden">
-                    <div class="w-8 h-8 rounded-full bg-amber-400 text-slate-900 font-bold text-xs flex items-center justify-center">
+        <div class="p-4 border-t border-teal-800/60 bg-[#054b53]">
+            <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-3 overflow-hidden">
+                    <div class="w-11 h-11 rounded-full bg-amber-400 text-slate-900 font-bold text-base flex items-center justify-center shrink-0">
                         <i class="fa-solid fa-user-tie"></i>
                     </div>
-                    <div class="truncate text-xs">
-                        <p class="font-bold text-white truncate">{{ Auth::user()->name ?? 'Petugas' }}</p>
-                        <p class="text-[10px] text-teal-300 truncate">Administrator</p>
+                    <div class="truncate">
+                        <p class="font-bold text-white text-base truncate">{{ Auth::user()->name ?? 'Petugas' }}</p>
+                        <p class="text-xs text-teal-300 font-medium truncate">Administrator</p>
                     </div>
                 </div>
-                <form action="{{ route('admin.logout') }}" method="POST">
+                <form action="{{ route('admin.logout') }}" method="POST" class="shrink-0">
                     @csrf
-                    <button type="submit" title="Keluar" class="w-8 h-8 rounded-lg bg-teal-800/80 hover:bg-rose-600 text-white flex items-center justify-center transition">
-                        <i class="fa-solid fa-right-from-bracket text-xs"></i>
+                    <button type="submit" title="Keluar" class="w-10 h-10 rounded-xl bg-teal-800/80 hover:bg-rose-600 text-white flex items-center justify-center transition">
+                        <i class="fa-solid fa-right-from-bracket text-base"></i>
                     </button>
                 </form>
             </div>
@@ -96,15 +96,15 @@
         <!-- Admin Topbar -->
         <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-6">
             <div>
-                <h1 class="text-base font-bold text-slate-800">@yield('page_title', 'Dashboard')</h1>
+                <h1 class="text-lg font-bold text-slate-800">@yield('page_title', 'Dashboard')</h1>
                 <p class="text-xs text-slate-500">Sistem Pelayanan Administrasi Kependudukan Kalurahan Purwobinangun</p>
             </div>
             <div class="flex items-center gap-4">
-                <span class="text-xs text-slate-500 hidden sm:inline">
+                <span class="text-sm text-slate-500 hidden sm:inline">
                     <i class="fa-regular fa-calendar-days text-[#0b7c89] mr-1"></i>
                     {{ date('d F Y') }}
                 </span>
-                <a href="{{ route('home') }}" target="_blank" class="text-xs font-semibold text-[#0b7c89] bg-teal-50 border border-teal-200 px-3 py-1.5 rounded-lg hover:bg-teal-100 transition flex items-center gap-1.5">
+                <a href="{{ route('home') }}" target="_blank" class="text-sm font-semibold text-[#0b7c89] bg-teal-50 border border-teal-200 px-3 py-1.5 rounded-lg hover:bg-teal-100 transition flex items-center gap-1.5">
                     <i class="fa-solid fa-globe"></i> Lihat Web
                 </a>
             </div>
