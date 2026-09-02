@@ -7,12 +7,16 @@
     /* Pop-up Modal Top Layer & Smooth Transitions */
     .modal-overlay {
         position: fixed !important;
+        inset: 0 !important;
         top: 0 !important;
         left: 0 !important;
         right: 0 !important;
         bottom: 0 !important;
-        width: 100vw !important;
-        height: 100vh !important;
+        width: 100% !important;
+        height: 100% !important;
+        max-width: 100% !important;
+        max-height: 100% !important;
+        margin: 0 !important;
         z-index: 999999 !important;
         display: none;
         align-items: center;
@@ -26,7 +30,8 @@
         transition: opacity 0.28s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.28s;
         padding: 1rem;
         box-sizing: border-box;
-        overflow-y: auto;
+        overflow-y: auto !important;
+        overscroll-behavior: contain;
     }
     .modal-overlay.active {
         display: flex !important;
@@ -38,18 +43,19 @@
         opacity: 0;
         transform: scale(0.92) translateY(15px);
         transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1);
-        width: 100%;
-        max-width: 38rem;
-        max-height: 90vh;
-        display: flex;
-        flex-direction: column;
+        width: 100% !important;
+        max-width: 38rem !important;
+        max-height: calc(100% - 1.5rem) !important;
+        display: flex !important;
+        flex-direction: column !important;
         z-index: 1000000 !important;
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4) !important;
-        margin: auto;
+        margin: auto !important;
+        overflow: hidden;
     }
     .modal-overlay.active .modal-dialog-box {
-        opacity: 1;
-        transform: scale(1) translateY(0);
+        opacity: 1 !important;
+        transform: scale(1) translateY(0) !important;
     }
     /* Scrollbar halus modal */
     .custom-modal-scroll::-webkit-scrollbar {
@@ -560,7 +566,7 @@
 <!-- POP-UP MODAL CARD: PRATINJAU DATA PENGAJUAN (DI TENGAH LAYAR DENGAN ANIMASI) -->
 <!-- ========================================================================= -->
 <div id="preview-modal" class="modal-overlay fixed inset-0 z-50 bg-slate-950/65 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 md:p-6 overflow-y-auto">
-    <div id="preview-modal-dialog" class="modal-dialog-box bg-white rounded-2xl shadow-2xl border border-slate-200/80 max-w-xl w-full overflow-hidden my-auto max-h-[90vh] flex flex-col">
+    <div id="preview-modal-dialog" class="modal-dialog-box bg-white rounded-2xl shadow-2xl border border-slate-200/80 max-w-xl w-full overflow-hidden my-auto flex flex-col">
         
         <!-- Header Pop-up Modal Preview (Warna Solid #095b8c) -->
         <div class="bg-[#095b8c] text-white px-5 sm:px-6 py-4 flex items-center justify-between shrink-0 shadow-xs">
@@ -579,7 +585,7 @@
         </div>
 
         <!-- Body Pop-up Modal Preview (Scrollable) -->
-        <div class="p-5 sm:p-6 space-y-4 sm:space-y-5 overflow-y-auto custom-modal-scroll max-h-[75vh]">
+        <div class="p-5 sm:p-6 space-y-4 sm:space-y-5 overflow-y-auto custom-modal-scroll flex-1 min-h-0">
             
             <!-- Info Banner Notifikasi -->
             <div class="p-3 bg-teal-50/80 rounded-xl border border-teal-200/80 flex items-start gap-2.5 text-xs text-teal-900">
@@ -719,7 +725,7 @@
 <!-- ========================================================================= -->
 <div id="success-modal" class="modal-overlay fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 md:p-6 overflow-y-auto">
     
-    <div id="success-modal-dialog" class="modal-dialog-box bg-white rounded-2xl shadow-2xl border border-teal-100 max-w-lg w-full overflow-hidden my-auto">
+    <div id="success-modal-dialog" class="modal-dialog-box bg-white rounded-2xl shadow-2xl border border-teal-100 max-w-lg w-full overflow-hidden my-auto flex flex-col">
         
         <!-- Modal Top Decoration -->
         <div class="bg-gradient-to-r from-[#095b8c] via-[#059cb8] to-teal-600 p-6 text-center text-white relative shadow-xs">
@@ -738,7 +744,7 @@
         </div>
 
         <!-- Modal Body Content -->
-        <div class="p-5 md:p-6 space-y-4">
+        <div class="p-5 md:p-6 space-y-4 overflow-y-auto custom-modal-scroll flex-1 min-h-0">
             
             <!-- Registration Number Highlight Box -->
             <div class="p-4 bg-teal-50/80 border-2 border-dashed border-[#059cb8] rounded-xl text-center">

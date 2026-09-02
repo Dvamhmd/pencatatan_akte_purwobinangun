@@ -161,7 +161,7 @@ input[type=number] {
     transform: translateY(0);
 }
 
-/* Exclude Topbar Header, Hero Banner, Navigation, Footer, Modals, and Popups from Dissolve */
+/* Exclude Topbar Header, Hero Banner, Navigation, Footer, Alerts, and Popups from Dissolve */
 header,
 header *,
 .hero-purwobinangun,
@@ -170,16 +170,10 @@ nav,
 nav *,
 footer,
 footer *,
-.modal-overlay,
-.modal-overlay *,
-.modal-dialog-box,
-.modal-dialog-box *,
 .swal2-container,
 .swal2-container *,
 .camera-modal,
 .camera-modal *,
-#preview-modal,
-#preview-modal *,
 #camera-modal,
 #camera-modal * {
     opacity: 1 !important;
