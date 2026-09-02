@@ -10,9 +10,6 @@ class AuthController extends Controller
 {
     public function showLoginForm()
     {
-        if (Auth::check() && Auth::user()->isAdmin()) {
-            return redirect()->route('admin.dashboard');
-        }
         return view('admin.login');
     }
 
@@ -24,6 +21,16 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
+            if (!Auth::user()->isAdmin()) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                return back()->withErrors([
+                    'email' => 'Akses ditolak. Akun ini tidak memiliki hak akses sebagai Petugas/Admin.',
+                ])->onlyInput('email');
+            }
+
             $request->session()->regenerate();
             return redirect()->intended(route('admin.dashboard'))
                 ->with('success', 'Selamat datang di Panel Pelayanan Kalurahan Purwobinangun.');

@@ -88,7 +88,7 @@
             @endif
 
             <!-- Form Login -->
-            <form action="{{ route('warga.login.submit') }}" method="POST" class="space-y-4">
+            <form action="{{ route('warga.login.submit') }}" method="POST" class="space-y-4" autocomplete="off">
                 @csrf
 
                 <!-- Input NIK -->
@@ -97,7 +97,7 @@
                         Nomor Induk Kependudukan (NIK) <span class="text-rose-600">*</span>
                     </label>
                     <div class="relative" style="position: relative;">
-                        <input type="text" name="nik" id="nik" value="{{ old('nik') }}" maxlength="16" required autofocus placeholder="Masukkan 16 digit NIK Anda" class="w-full text-sm rounded-lg border {{ $errors->has('nik') ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300 focus:border-[#095b8c]' }} focus:outline-none focus:ring-2 focus:ring-[#095b8c]/20 text-slate-800 placeholder:text-slate-400 placeholder:text-xs bg-white transition" style="padding-left: 1rem; padding-right: 2.75rem; padding-top: 0.65rem; padding-bottom: 0.65rem;">
+                        <input type="text" name="nik" id="nik" value="{{ old('nik') }}" maxlength="16" required autofocus autocomplete="off" placeholder="Masukkan 16 digit NIK Anda" class="w-full text-sm rounded-lg border {{ $errors->has('nik') ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300 focus:border-[#095b8c]' }} focus:outline-none focus:ring-2 focus:ring-[#095b8c]/20 text-slate-800 placeholder:text-slate-400 placeholder:text-xs bg-white transition" style="padding-left: 1rem; padding-right: 2.75rem; padding-top: 0.65rem; padding-bottom: 0.65rem;">
                         <span class="text-slate-400 pointer-events-none flex items-center justify-center" style="position: absolute; right: 0.85rem; top: 50%; transform: translateY(-50%);">
                             <i class="fa-solid fa-id-card text-sm"></i>
                         </span>
@@ -115,7 +115,7 @@
                         Kata Sandi <span class="text-rose-600">*</span>
                     </label>
                     <div class="relative" style="position: relative;">
-                        <input type="password" name="password" id="password" required placeholder="Masukkan kata sandi akun warga" class="w-full text-sm rounded-lg border {{ $errors->has('password') ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300 focus:border-[#095b8c]' }} focus:outline-none focus:ring-2 focus:ring-[#095b8c]/20 text-slate-800 placeholder:text-slate-400 placeholder:text-xs bg-white transition" style="padding-left: 1rem; padding-right: 2.75rem; padding-top: 0.65rem; padding-bottom: 0.65rem;">
+                        <input type="password" name="password" id="password" required autocomplete="new-password" placeholder="Masukkan kata sandi akun warga" class="w-full text-sm rounded-lg border {{ $errors->has('password') ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300 focus:border-[#095b8c]' }} focus:outline-none focus:ring-2 focus:ring-[#095b8c]/20 text-slate-800 placeholder:text-slate-400 placeholder:text-xs bg-white transition" style="padding-left: 1rem; padding-right: 2.75rem; padding-top: 0.65rem; padding-bottom: 0.65rem;">
                         <button type="button" onclick="togglePasswordVisibility()" title="Tampilkan / Sembunyikan Kata Sandi" class="flex items-center justify-center text-slate-400 hover:text-slate-700 transition cursor-pointer z-10 focus:outline-none rounded-md" style="position: absolute; right: 0.65rem; top: 50%; transform: translateY(-50%); width: 2rem; height: 2rem;">
                             <i id="password-toggle-icon" class="fa-solid fa-eye text-sm"></i>
                         </button>

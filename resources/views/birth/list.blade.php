@@ -104,19 +104,6 @@
 
         <!-- Submission List Table / Cards -->
         <div class="p-5 md:p-6">
-            
-            <!-- Permohonan Lokal / Tersimpan di Browser Pengguna -->
-            <div id="local-submissions-box" class="hidden mb-6 p-4 bg-teal-50/80 border border-teal-200 rounded-xl">
-                <div class="flex items-center justify-between mb-2 pb-2 border-b border-teal-200/60">
-                    <h3 class="text-xs font-bold text-[#095b8c] flex items-center gap-1.5">
-                        <i class="fa-solid fa-clock-rotate-left text-amber-500"></i> Pengajuan Terakhir dari Perangkat Anda
-                    </h3>
-                    <span class="text-[10px] text-teal-800 bg-teal-200/70 px-2 py-0.5 rounded font-semibold">Tersimpan Otomatis</span>
-                </div>
-                <div id="local-submissions-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
-                    <!-- Populated via Javascript from localStorage -->
-                </div>
-            </div>
 
             @if($submissions->count() > 0)
                 <div class="overflow-x-auto rounded-xl border border-slate-200">
@@ -210,40 +197,4 @@
     </div>
 
 </div>
-
-<!-- Script Pembaca Local Storage Permohonan Pengguna -->
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    try {
-        const stored = JSON.parse(localStorage.getItem('purwobinangun_birth_submissions') || '[]');
-        if (stored && stored.length > 0) {
-            const box = document.getElementById('local-submissions-box');
-            const list = document.getElementById('local-submissions-list');
-            if (box && list) {
-                box.classList.remove('hidden');
-                
-                stored.slice(0, 6).forEach(item => {
-                    const card = document.createElement('div');
-                    card.className = 'bg-white p-3 rounded-lg border border-teal-200/80 shadow-2xs flex items-center justify-between gap-2';
-                    card.innerHTML = `
-                        <div>
-                            <span class="text-[9px] font-bold text-[#095b8c] bg-teal-50 px-1.5 py-0.5 rounded border border-teal-100">${item.registration_no}</span>
-                            <p class="text-xs font-bold text-slate-800 mt-1">${item.child_name || 'Akte Kelahiran'}</p>
-                            <p class="text-[10px] text-slate-500">${item.created_at || 'Baru saja diajukan'}</p>
-                        </div>
-                        <div class="flex items-center gap-1 shrink-0">
-                            <a href="/lacak/birth/${item.registration_no}" class="p-1.5 bg-[#095b8c] hover:bg-[#059cb8] text-white rounded-md text-[11px]" title="Cek Status">
-                                <i class="fa-solid fa-arrow-right"></i>
-                            </a>
-                        </div>
-                    `;
-                    list.appendChild(card);
-                });
-            }
-        }
-    } catch (e) {
-        console.error("Local storage error:", e);
-    }
-});
-</script>
 @endsection

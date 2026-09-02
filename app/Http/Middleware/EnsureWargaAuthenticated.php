@@ -16,7 +16,7 @@ class EnsureWargaAuthenticated
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!Auth::check()) {
+        if (!Auth::check() || !Auth::user()->isWarga()) {
             if ($request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => false,
@@ -30,11 +30,6 @@ class EnsureWargaAuthenticated
         }
 
         $user = Auth::user();
-
-        // Jika login sebagai Admin, berikan akses atau biarkan admin melanjutkan
-        if ($user->isAdmin()) {
-            return $next($request);
-        }
 
         // Jika akun warga masih berstatus 'pending'
         if ($user->isPending()) {

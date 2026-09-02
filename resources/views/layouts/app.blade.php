@@ -61,7 +61,7 @@
                 @endif
 
                 <span class="text-teal-400/60">|</span>
-                <a href="{{ Auth::check() && Auth::user()->isAdmin() ? route('admin.dashboard') : route('admin.login') }}" class="bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold px-2.5 py-1 rounded transition inline-flex items-center gap-1 shadow-xs">
+                <a href="{{ route('admin.login') }}" class="bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold px-2.5 py-1 rounded transition inline-flex items-center gap-1 shadow-xs">
                     <i class="fa-solid fa-user-shield"></i> Portal Petugas
                 </a>
             </div>

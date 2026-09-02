@@ -11,21 +11,21 @@
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
+<body class="bg-slate-100 min-h-screen flex flex-col items-center justify-start px-4 overflow-y-auto" style="padding-top: 100px; padding-bottom: 30px;">
 
-    <div class="max-w-md w-full">
+    <div class="max-w-md w-full mx-auto">
         
         <!-- Logo & Header -->
-        <div class="text-center mb-6">
-            <div class="w-20 h-24 bg-white rounded-2xl p-2 flex items-center justify-center mx-auto shadow-md mb-3 border border-slate-200">
+        <div class="text-center mb-4">
+            <div class="w-16 h-20 sm:w-20 sm:h-24 bg-white rounded-2xl p-2 flex items-center justify-center mx-auto shadow-md mb-2.5 border border-slate-200">
                 <img src="{{ asset('images/logo-sleman.png') }}" alt="Logo Kabupaten Sleman" class="max-h-full max-w-full object-contain">
             </div>
-            <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">PANEL PETUGAS PELAYANAN</h1>
+            <h1 class="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight">PANEL PETUGAS PELAYANAN</h1>
             <p class="text-xs text-slate-600">Pemerintah Kalurahan Purwobinangun, Pakem, Sleman</p>
         </div>
 
         <!-- Login Card -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-7">
             <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
                 <i class="fa-solid fa-shield-halved text-[#0b7c89]"></i> Masuk ke Sistem
             </h2>
@@ -42,7 +42,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('admin.login.submit') }}" method="POST" class="space-y-4">
+            <form action="{{ route('admin.login.submit') }}" method="POST" class="space-y-4" autocomplete="off">
                 @csrf
 
                 <div>
@@ -51,7 +51,7 @@
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 text-xs">
                             <i class="fa-solid fa-envelope"></i>
                         </span>
-                        <input type="email" name="email" value="{{ old('email', 'admin@purwobinangun.desa.id') }}" required class="w-full text-xs pl-9 pr-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0b7c89]">
+                        <input type="email" name="email" value="{{ old('email') }}" required autocomplete="off" placeholder="Masukkan email petugas" class="w-full text-xs pl-9 pr-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0b7c89]">
                     </div>
                 </div>
 
@@ -61,7 +61,7 @@
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 text-xs">
                             <i class="fa-solid fa-lock"></i>
                         </span>
-                        <input type="password" name="password" value="admin123" required class="w-full text-xs pl-9 pr-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0b7c89]">
+                        <input type="password" name="password" required autocomplete="new-password" placeholder="Masukkan kata sandi" class="w-full text-xs pl-9 pr-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0b7c89]">
                     </div>
                 </div>
 
@@ -84,7 +84,7 @@
             </div>
         </div>
 
-        <p class="text-center text-[11px] text-slate-400 mt-6">
+        <p class="text-center text-[11px] text-slate-400 mt-4 mb-2">
             &copy; 2026 Pemerintah Kalurahan Purwobinangun, Sleman
         </p>
 

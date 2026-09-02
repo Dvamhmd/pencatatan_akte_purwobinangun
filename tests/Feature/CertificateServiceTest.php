@@ -34,7 +34,16 @@ class CertificateServiceTest extends TestCase
     {
         Storage::fake('public');
 
-        $response = $this->post('/akte-kelahiran/buat', [
+        $warga = User::create([
+            'name' => 'Bapak Joko',
+            'nik' => '3404051205900001',
+            'family_card_no' => '3404050101900001',
+            'role' => 'warga',
+            'status' => 'active',
+            'password' => bcrypt('password123'),
+        ]);
+
+        $response = $this->actingAs($warga)->post('/akte-kelahiran/buat', [
             'child_name' => 'Bayi Baru Lahir',
             'gender' => 'L',
             'birth_place' => 'Sleman',
@@ -64,7 +73,16 @@ class CertificateServiceTest extends TestCase
 
     public function test_birth_submissions_list_page_can_be_accessed(): void
     {
-        $response = $this->get('/akte-kelahiran/daftar-pengajuan');
+        $warga = User::create([
+            'name' => 'Warga Test',
+            'nik' => '3404051205900002',
+            'family_card_no' => '3404050101900002',
+            'role' => 'warga',
+            'status' => 'active',
+            'password' => bcrypt('password123'),
+        ]);
+
+        $response = $this->actingAs($warga)->get('/akte-kelahiran/daftar-pengajuan');
         $response->assertStatus(200);
         $response->assertSee('DAFTAR PENGAJUAN PERMOHONAN AKTA');
     }
@@ -73,7 +91,16 @@ class CertificateServiceTest extends TestCase
     {
         Storage::fake('public');
 
-        $response = $this->post('/akte-kematian/buat', [
+        $warga = User::create([
+            'name' => 'Anak Kandung',
+            'nik' => '3404051109720002',
+            'family_card_no' => '3404050101900003',
+            'role' => 'warga',
+            'status' => 'active',
+            'password' => bcrypt('password123'),
+        ]);
+
+        $response = $this->actingAs($warga)->post('/akte-kematian/buat', [
             'deceased_nik' => '3404050101450001',
             'deceased_name' => 'Almarhum Budi',
             'gender' => 'L',
@@ -137,6 +164,7 @@ class CertificateServiceTest extends TestCase
         $admin = User::create([
             'name' => 'Petugas Kalurahan',
             'email' => 'admin@purwobinangun.desa.id',
+            'role' => 'admin',
             'password' => bcrypt('admin123'),
         ]);
 

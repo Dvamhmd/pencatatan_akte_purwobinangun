@@ -16,18 +16,15 @@ class EnsureAdminAuthenticated
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!Auth::check()) {
+        if (!Auth::check() || !Auth::user()->isAdmin()) {
+            if (Auth::check()) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+            }
+
             return redirect()->guest(route('admin.login'))
                 ->with('error', 'Silakan masuk ke panel admin petugas terlebih dahulu.');
-        }
-
-        if (!Auth::user()->isAdmin()) {
-            Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-
-            return redirect()->route('admin.login')
-                ->with('error', 'Akses ditolak. Halaman ini hanya diperuntukkan bagi Petugas / Admin Kalurahan.');
         }
 
         return $next($request);

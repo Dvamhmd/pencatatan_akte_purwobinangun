@@ -172,6 +172,13 @@ class WargaAuthController extends Controller
             ]);
         }
 
+        // Pastikan sesi aktif lama (jika ada) dikeluarkan agar berstatus belum login (guest)
+        if (Auth::check()) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
+
         return redirect()->route('warga.login')->with('registration_success', [
             'name' => $validated['name'],
             'nik' => $validated['nik'],
