@@ -1,0 +1,91 @@
+@import 'tailwindcss';
+
+:root {
+    --clr1: #059cb8;      /* Toska Utama Kalurahan Purwobinangun */
+    --clr2: #095b8c;      /* Navy Biru Kalurahan Purwobinangun */
+    --clr3: #3887c2;      /* Aksen Biru */
+    --clrsoft1: #75b4c4;  /* Soft Teal */
+    --clrsoft2: #b8ede6;  /* Soft Mint */
+}
+
+@layer base {
+    body {
+        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        background-color: #f0f4f8;
+        color: #1e293b;
+    }
+}
+
+/* Custom Kalurahan Official Colors */
+.bg-kalurahan-primary {
+    background-color: var(--clr1);
+}
+
+.bg-kalurahan-navy {
+    background-color: var(--clr2);
+}
+
+.bg-kalurahan-accent {
+    background-color: var(--clr3);
+}
+
+.text-kalurahan-primary {
+    color: var(--clr1);
+}
+
+.text-kalurahan-navy {
+    color: var(--clr2);
+}
+
+.border-kalurahan-primary {
+    border-color: var(--clr1);
+}
+
+.border-kalurahan-navy {
+    border-color: var(--clr2);
+}
+
+/* Header Gradient Purwobinangun Theme */
+.hero-purwobinangun {
+    background: linear-gradient(135deg, #095b8c 0%, #059cb8 60%, #3887c2 100%),
+                radial-gradient(circle at top right, rgba(184, 237, 230, 0.25), transparent 50%),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23044b75' fill-opacity='0.4' d='M0,224L48,208C96,192,192,160,288,165.3C384,171,480,213,576,218.7C672,224,768,192,864,165.3C960,139,1056,117,1152,122.7C1248,128,1344,160,1392,176L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+    background-size: cover;
+    background-position: center;
+}
+
+/* Card hover animation */
+.civic-card {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.civic-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px -6px rgba(5, 156, 184, 0.2), 0 8px 12px -6px rgba(9, 91, 140, 0.15);
+}
+
+/* Sub-Module Highlight Badge */
+.module-badge {
+    background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%);
+    box-shadow: 0 2px 10px rgba(245, 158, 11, 0.35);
+}
+
+/* Print Styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    body {
+        background: white !important;
+        color: black !important;
+        font-size: 12pt;
+    }
+    .print-only {
+        display: block !important;
+    }
+    .print-container {
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+}
