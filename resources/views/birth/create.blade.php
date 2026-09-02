@@ -528,14 +528,13 @@
                 </div>
 
                 <!-- Tombol Aksi Step 2 -->
-                <div class="pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
-                    <button type="button" id="btn-back-to-step1" class="w-full sm:w-auto bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs px-5 py-2.5 rounded-lg transition flex items-center justify-center gap-2 cursor-pointer border border-slate-300">
+                <div class="pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <button type="button" id="btn-back-to-step1" class="w-full sm:w-auto bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs sm:text-sm px-6 py-3.5 rounded-xl transition flex items-center justify-center gap-2 cursor-pointer border border-slate-300 shadow-2xs">
                         <i class="fa-solid fa-arrow-left"></i> Kembali ke Data Pemohon
                     </button>
 
-                    <button type="button" id="btn-submit-final" class="w-full sm:w-auto bg-[#095b8c] hover:bg-[#059cb8] text-white font-extrabold text-xs md:text-sm px-8 py-3 rounded-lg shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
+                    <button type="button" id="btn-submit-final" class="w-full sm:w-auto bg-[#095b8c] hover:bg-[#07476e] active:scale-[0.99] text-white font-extrabold text-xs sm:text-sm px-8 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center cursor-pointer border border-[#07476e]">
                         <span id="btn-submit-text">Kirim Pengajuan Akte Kelahiran</span>
-                        <i id="btn-submit-spinner" class="fa-solid fa-circle-notch fa-spin hidden text-base"></i>
                     </button>
                 </div>
 
@@ -1115,14 +1114,12 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // Disable button & show spinner
+        // Disable button saat proses pengiriman
         const submitBtn = document.getElementById('btn-submit-final');
         const submitText = document.getElementById('btn-submit-text');
-        const submitSpinner = document.getElementById('btn-submit-spinner');
         
         submitBtn.disabled = true;
-        submitText.classList.add('opacity-50');
-        submitSpinner.classList.remove('hidden');
+        submitText.classList.add('opacity-75');
 
         // Build FormData
         const formData = new FormData(form);
@@ -1177,8 +1174,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .catch(error => {
             console.error("Submission error:", error);
             submitBtn.disabled = false;
-            submitText.classList.remove('opacity-50');
-            submitSpinner.classList.add('hidden');
+            submitText.classList.remove('opacity-75');
 
             if (error.errors) {
                 const firstKey = Object.keys(error.errors)[0];
