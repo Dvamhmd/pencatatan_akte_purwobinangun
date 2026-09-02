@@ -13,11 +13,8 @@ class WargaAuthController extends Controller
 {
     public function showLoginForm()
     {
-        if (Auth::check()) {
-            if (Auth::user()->isWarga()) {
-                return redirect()->route('birth.list');
-            }
-            return redirect()->route('admin.dashboard');
+        if (Auth::check() && Auth::user()->isWarga()) {
+            return redirect()->route('birth.list');
         }
 
         return view('warga.auth.login');

@@ -226,8 +226,8 @@
 
                 <!-- Submit Button -->
                 <div class="pt-4">
-                    <button type="submit" class="w-full bg-[#095b8c] hover:bg-[#074a73] text-white font-extrabold text-sm py-3 px-4 rounded-xl shadow-md hover:shadow-lg transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-paper-plane"></i> Kirim Pendaftaran Akun Warga
+                    <button type="submit" class="w-full bg-[#095b8c] hover:bg-[#074a73] text-white font-extrabold text-sm py-3 px-4 rounded-xl shadow-md hover:shadow-lg transition flex items-center justify-center">
+                        Kirim Pendaftaran Akun Warga
                     </button>
                 </div>
 
