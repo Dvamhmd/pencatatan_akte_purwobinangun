@@ -4,7 +4,7 @@
 @section('page_title', 'Dashboard Pelayanan Kependudukan')
 
 @section('content')
-<div class="space-y-6">
+<div class="space-y-6 pb-24">
 
     <!-- Welcome Banner -->
     <div class="bg-gradient-to-r from-[#0b7c89] to-[#065b65] text-white rounded-xl p-6 md:p-7 shadow-xs flex flex-col md:flex-row items-center justify-between gap-5">
@@ -302,6 +302,9 @@
             </table>
         </div>
     </div>
+
+    <!-- Bottom Spacer agar tidak terpotong taskbar -->
+    <div class="h-20 w-full shrink-0" aria-hidden="true"></div>
 
 </div>
 @endsection

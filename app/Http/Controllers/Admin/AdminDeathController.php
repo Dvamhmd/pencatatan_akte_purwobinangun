@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\SubmissionStatusNotification;
 use App\Models\DeathCertificate;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class AdminDeathController extends Controller
 {
@@ -66,6 +70,33 @@ class AdminDeathController extends Controller
         $message = $death->isPickedUp()
             ? 'Status permohonan Akte Kematian berhasil diperbarui menjadi Sudah Diambil dan telah otomatis masuk ke arsip.'
             : 'Status permohonan Akte Kematian berhasil diperbarui menjadi ' . $death->status_label . '.';
+
+        // Cari email warga yang terkait dengan pengajuan
+        $recipientEmail = $death->user?->email;
+        if (!$recipientEmail && $death->applicant_nik) {
+            $recipientEmail = User::where('nik', $death->applicant_nik)->value('email');
+        }
+        if (!$recipientEmail && $death->family_card_no) {
+            $recipientEmail = User::where('family_card_no', $death->family_card_no)->whereNotNull('email')->value('email');
+        }
+
+        // Kirim email notifikasi otomatis jika status adalah siap diambil, revisi, atau dibatalkan
+        if ($recipientEmail && in_array($validated['status'], ['ready_for_pickup', 'completed', 'revision', 'rejected'])) {
+            try {
+                Mail::to($recipientEmail)->send(new SubmissionStatusNotification(
+                    submission: $death,
+                    type: 'death',
+                    status: $validated['status'],
+                    note: $validated['rejection_note'],
+                    processedBy: Auth::user()->name,
+                    adminEmail: Auth::user()->email
+                ));
+                $message .= ' Notifikasi telah otomatis dikirimkan ke email warga (' . $recipientEmail . ').';
+            } catch (\Throwable $e) {
+                Log::error('Gagal mengirim email notifikasi Akte Kematian: ' . $e->getMessage());
+                $message .= ' (Status tersimpan, namun notifikasi email gagal dikirim. Silakan periksa konfigurasi SMTP).';
+            }
+        }
 
         return redirect()->route('admin.death.show', $death)
             ->with('success', $message);

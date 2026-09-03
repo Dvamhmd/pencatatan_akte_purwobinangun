@@ -115,7 +115,7 @@ class WargaAuthController extends Controller
             'rw' => 'required|string|max:5',
             'phone' => 'required|string|max:20',
             'email' => [
-                'nullable',
+                'required',
                 'email',
                 'max:255',
                 $existingRejected ? Rule::unique('users', 'email')->ignore($existingRejected->id) : 'unique:users,email',
@@ -129,6 +129,9 @@ class WargaAuthController extends Controller
             'unique' => ':attribute sudah terdaftar dalam sistem.',
             'min' => ':attribute minimal berisi :min karakter.',
             'confirmed' => 'Konfirmasi kata sandi tidak cocok dengan kata sandi baru.',
+            'email.required' => 'Alamat email wajib diisi untuk menerima notifikasi status permohonan.',
+            'email.email' => 'Format alamat email tidak valid.',
+            'email.unique' => 'Alamat email sudah terdaftar dalam sistem.',
             'email' => 'Format email tidak valid.',
             'in' => 'Pilihan :attribute tidak valid.',
         ], [

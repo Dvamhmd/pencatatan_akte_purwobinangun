@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AdminCitizenController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminDeathController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
+use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\Auth\WargaAuthController;
 use App\Http\Controllers\BirthCertificateController;
 use App\Http\Controllers\DeathCertificateController;
@@ -112,6 +113,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('/akte-kelahiran/{birth}/restore', [AdminArchiveController::class, 'restoreBirth'])->name('birth.restore');
             Route::post('/akte-kematian/{death}/archive', [AdminArchiveController::class, 'archiveDeath'])->name('death.archive');
             Route::post('/akte-kematian/{death}/restore', [AdminArchiveController::class, 'restoreDeath'])->name('death.restore');
+        });
+
+        // Pengaturan Profil Admin & Email Notifikasi
+        Route::prefix('profil')->name('profile.')->group(function () {
+            Route::get('/', [AdminProfileController::class, 'index'])->name('index');
+            Route::put('/', [AdminProfileController::class, 'updateProfile'])->name('update');
+            Route::put('/password', [AdminProfileController::class, 'updatePassword'])->name('password');
         });
     });
 });

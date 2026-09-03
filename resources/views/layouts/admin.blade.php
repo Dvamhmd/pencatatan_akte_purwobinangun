@@ -103,25 +103,15 @@
             </a>
 
             <div class="pt-4 pb-1.5 px-3 text-[11px] uppercase font-bold tracking-wider text-teal-300/80">
-                Akses Publik
+                Pengaturan
             </div>
 
-            <a href="{{ route('home') }}" target="_blank" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-teal-100 hover:bg-teal-800/50 hover:text-white transition">
-                <i class="fa-solid fa-arrow-up-right-from-square w-5 text-center text-base text-teal-300"></i>
-                <span>Buka Website Warga</span>
+            <a href="{{ route('admin.profile.index') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition {{ request()->routeIs('admin.profile.*') ? 'bg-[#0b7c89] text-white shadow-sm font-bold' : 'text-teal-100 hover:bg-teal-800/50 hover:text-white' }}">
+                <i class="fa-solid fa-user-gear w-5 text-center text-teal-300 text-base"></i>
+                <span>Profil & Email Notifikasi</span>
             </a>
-        </nav>
 
-        <!-- User Info & Logout Footer (Sticky at the bottom) -->
-        <div class="p-3.5 border-t border-teal-800/60 bg-[#054b53] shrink-0 mt-auto z-20">
-            <form action="{{ route('admin.logout') }}" method="POST" class="w-full m-0">
-                @csrf
-                <button type="submit" class="w-full flex items-center justify-center gap-2 bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-bold text-sm py-2.5 px-4 rounded-xl shadow-xs transition cursor-pointer">
-                    <i class="fa-solid fa-right-from-bracket text-base"></i>
-                    <span>Keluar</span>
-                </button>
-            </form>
-        </div>
+        </nav>
     </aside>
 
     <!-- Main Content Wrapper -->
@@ -133,19 +123,25 @@
                 <h1 class="text-lg font-bold text-slate-800">@yield('page_title', 'Dashboard')</h1>
                 <p class="text-xs text-slate-500">Sistem Pelayanan Administrasi Kependudukan Kalurahan Purwobinangun</p>
             </div>
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3 sm:gap-4">
                 <span class="text-sm text-slate-500 hidden sm:inline">
                     <i class="fa-regular fa-calendar-days text-[#0b7c89] mr-1"></i>
                     {{ date('d F Y') }}
                 </span>
                 <a href="{{ route('home') }}" target="_blank" class="text-sm font-semibold text-[#0b7c89] bg-teal-50 border border-teal-200 px-3 py-1.5 rounded-lg hover:bg-teal-100 transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-globe"></i> Lihat Web
+                    <i class="fa-solid fa-globe"></i> <span class="hidden md:inline">Lihat Web</span>
                 </a>
+                <form action="{{ route('admin.logout') }}" method="POST" class="inline m-0">
+                    @csrf
+                    <button type="submit" class="text-sm font-semibold text-rose-600 bg-rose-50 border border-rose-200 px-3 py-1.5 rounded-lg hover:bg-rose-100 hover:text-rose-700 transition flex items-center gap-1.5 cursor-pointer" title="Keluar dari Panel Admin">
+                        <i class="fa-solid fa-right-from-bracket"></i> <span>Keluar</span>
+                    </button>
+                </form>
             </div>
         </header>
 
         <!-- Main Body -->
-        <main class="flex-1 min-h-0 p-6 overflow-y-auto">
+        <main class="flex-1 min-h-0 p-6 pb-28 overflow-y-auto">
             
             <!-- Flash Message -->
             @if(session('success'))

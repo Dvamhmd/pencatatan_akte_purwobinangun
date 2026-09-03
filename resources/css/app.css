@@ -161,6 +161,14 @@ input[type=number] {
     appearance: textfield !important;
 }
 
+/* Hilangkan icon reveal password dan clear bawaan Microsoft Edge / Internet Explorer */
+input::-ms-reveal,
+input::-ms-clear {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
 /* ==========================================================================
    Smooth Dissolve Effect for Web Warga (Cards & Inner Elements)
    ========================================================================== */

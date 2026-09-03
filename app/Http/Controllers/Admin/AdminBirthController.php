@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\SubmissionStatusNotification;
 use App\Models\BirthCertificate;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class AdminBirthController extends Controller
 {
@@ -66,6 +70,33 @@ class AdminBirthController extends Controller
         $message = $birth->isPickedUp()
             ? 'Status permohonan Akte Kelahiran berhasil diperbarui menjadi Sudah diambil dan telah otomatis masuk ke arsip.'
             : 'Status permohonan Akte Kelahiran berhasil diperbarui menjadi ' . $birth->status_label . '.';
+
+        // Cari email warga yang terkait dengan pengajuan
+        $recipientEmail = $birth->user?->email;
+        if (!$recipientEmail && $birth->applicant_nik) {
+            $recipientEmail = User::where('nik', $birth->applicant_nik)->value('email');
+        }
+        if (!$recipientEmail && $birth->family_card_no) {
+            $recipientEmail = User::where('family_card_no', $birth->family_card_no)->whereNotNull('email')->value('email');
+        }
+
+        // Kirim email notifikasi otomatis jika status adalah siap diambil, revisi, atau dibatalkan
+        if ($recipientEmail && in_array($validated['status'], ['ready_for_pickup', 'completed', 'revision', 'rejected'])) {
+            try {
+                Mail::to($recipientEmail)->send(new SubmissionStatusNotification(
+                    submission: $birth,
+                    type: 'birth',
+                    status: $validated['status'],
+                    note: $validated['rejection_note'],
+                    processedBy: Auth::user()->name,
+                    adminEmail: Auth::user()->email
+                ));
+                $message .= ' Notifikasi telah otomatis dikirimkan ke email warga (' . $recipientEmail . ').';
+            } catch (\Throwable $e) {
+                Log::error('Gagal mengirim email notifikasi Akte Kelahiran: ' . $e->getMessage());
+                $message .= ' (Status tersimpan, namun notifikasi email gagal dikirim. Silakan periksa konfigurasi SMTP).';
+            }
+        }
 
         return redirect()->route('admin.birth.show', $birth)
             ->with('success', $message);

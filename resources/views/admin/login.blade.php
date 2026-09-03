@@ -62,21 +62,18 @@
 
                 <div>
                     <label for="admin_email" class="block text-xs font-semibold text-slate-700 mb-1">Email Petugas</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 text-xs">
+                    <div class="relative" style="position: relative;">
+                        <input type="email" name="email" id="admin_email" value="{{ $errors->any() ? old('email') : '' }}" required autocomplete="off" placeholder="Masukkan email petugas" class="w-full text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0b7c89]" style="padding-left: 1rem; padding-right: 2.5rem; padding-top: 0.65rem; padding-bottom: 0.65rem;">
+                        <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 text-xs pointer-events-none" style="position: absolute; right: 0.85rem; top: 50%; transform: translateY(-50%);">
                             <i class="fa-solid fa-envelope"></i>
                         </span>
-                        <input type="email" name="email" id="admin_email" value="{{ $errors->any() ? old('email') : '' }}" required autocomplete="off" placeholder="Masukkan email petugas" class="w-full text-xs pl-9 pr-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0b7c89]">
                     </div>
                 </div>
 
                 <div>
                     <label for="password" class="block text-xs font-semibold text-slate-700 mb-1">Kata Sandi</label>
                     <div class="relative" style="position: relative;">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 text-xs pointer-events-none">
-                            <i class="fa-solid fa-lock"></i>
-                        </span>
-                        <input type="password" name="password" id="password" required autocomplete="new-password" placeholder="Masukkan kata sandi" class="w-full text-xs pl-9 pr-10 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0b7c89]">
+                        <input type="password" name="password" id="password" required autocomplete="new-password" placeholder="Masukkan kata sandi" class="w-full text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0b7c89]" style="padding-left: 1rem; padding-right: 2.75rem; padding-top: 0.65rem; padding-bottom: 0.65rem;">
                         <button type="button" onclick="toggleAdminPasswordVisibility()" title="Tampilkan / Sembunyikan Kata Sandi" class="flex items-center justify-center text-slate-400 hover:text-slate-700 transition cursor-pointer z-10 focus:outline-none rounded-md" style="position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); width: 2rem; height: 2rem;">
                             <i id="admin-password-toggle-icon" class="fa-solid fa-eye text-xs"></i>
                         </button>
