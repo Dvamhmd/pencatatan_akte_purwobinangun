@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\SubmissionStatusNotification;
 use App\Models\DeathCertificate;
 use App\Models\User;
+use App\Services\WhatsAppNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -95,6 +96,21 @@ class AdminDeathController extends Controller
             } catch (\Throwable $e) {
                 Log::error('Gagal mengirim email notifikasi Akte Kematian: ' . $e->getMessage());
                 $message .= ' (Status tersimpan, namun notifikasi email gagal dikirim. Silakan periksa konfigurasi SMTP).';
+            }
+        }
+
+        // Kirim WhatsApp notifikasi otomatis jika status adalah siap diambil, revisi, atau dibatalkan
+        if (in_array($validated['status'], ['ready_for_pickup', 'completed', 'revision', 'rejected'])) {
+            $waSent = WhatsAppNotificationService::sendSubmissionStatusNotification(
+                submission: $death,
+                type: 'death',
+                status: $validated['status'],
+                note: $validated['rejection_note']
+            );
+
+            $recipientPhone = $death->applicant_phone ?? $death->user?->phone;
+            if ($waSent && $recipientPhone) {
+                $message .= ' Notifikasi WhatsApp berhasil dikirim ke ' . $recipientPhone . '.';
             }
         }
 
