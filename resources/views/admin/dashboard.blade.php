@@ -145,7 +145,7 @@
                             <td class="py-4 px-4 font-bold text-base text-slate-900">{{ $b->child_name }} <span class="text-sm font-semibold text-slate-500">({{ $b->gender }})</span></td>
                             <td class="py-4 px-4 text-base">{{ $b->father_name }} & {{ $b->mother_name }}</td>
                             <td class="py-4 px-4 text-base">Padukuhan {{ $b->padukuhan }}</td>
-                            <td class="py-4 px-4 text-base text-slate-500">{{ $b->created_at->translatedFormat('d M Y, H:i') }}</td>
+                            <td class="py-4 px-4 text-base text-slate-500">{{ $b->created_at->translatedFormat('d M Y') }}</td>
                             <td class="py-4 px-4">
                                 <span class="px-3 py-1 rounded-full text-xs font-bold border {{ $b->status_badge_class }}">
                                     {{ $b->status_label }}

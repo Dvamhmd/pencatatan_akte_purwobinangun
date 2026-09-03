@@ -41,13 +41,23 @@
 
                 @php
                     $steps = [
-                        'pending' => ['title' => 'Permohonan Terdaftar', 'desc' => 'Dokumen berhasil dikirim dan masuk antrean sistem.'],
-                        'verified' => ['title' => 'Verifikasi Berkas', 'desc' => 'Petugas memeriksa keaslian dan kelengkapan dokumen.'],
-                        'in_process' => ['title' => 'Diproses Kalurahan', 'desc' => 'Surat pengantar sedang dicetak dan ditandatangani.'],
-                        'completed' => ['title' => 'Selesai / Siap Diambil', 'desc' => 'Surat pengantar siap diambil di Kantor Kalurahan.'],
+                        'pending' => ['title' => 'Menunggu Verifikasi', 'desc' => 'Dokumen berhasil dikirim dan masuk antrean verifikasi.'],
+                        'in_process' => ['title' => 'Sedang Diproses', 'desc' => 'Petugas Kalurahan sedang memproses dan menyiapkan dokumen.'],
+                        'ready_for_pickup' => ['title' => 'Siap Diambil', 'desc' => 'Akte / Surat pengantar siap diambil di Kantor Kalurahan.'],
+                        'picked_up' => ['title' => 'Sudah Diambil', 'desc' => 'Dokumen telah selesai dan diserahkan kepada pemohon.'],
                     ];
 
-                    $statusOrder = ['pending' => 1, 'verified' => 2, 'in_process' => 3, 'completed' => 4, 'rejected' => 0];
+                    $statusOrder = [
+                        'pending' => 1,
+                        'verified' => 2,
+                        'in_process' => 2,
+                        'ready_for_pickup' => 3,
+                        'completed' => 3,
+                        'picked_up' => 4,
+                        'archived' => 4,
+                        'revision' => 0,
+                        'rejected' => 0
+                    ];
                     $currentOrder = $statusOrder[$data->status] ?? 1;
                 @endphp
 
@@ -55,8 +65,16 @@
                     <div class="p-4 bg-rose-50 border border-rose-200 rounded-xl mb-4 text-xs text-rose-800 flex items-start gap-3">
                         <i class="fa-solid fa-circle-xmark text-rose-600 text-xl mt-0.5"></i>
                         <div>
-                            <h5 class="font-bold text-sm text-rose-900">Permohonan Ditolak / Perlu Perbaikan Berkas</h5>
+                            <h5 class="font-bold text-sm text-rose-900">Permohonan {{ $data->status_label }}</h5>
                             <p class="mt-1 text-rose-700">{{ $data->rejection_note ?? 'Silakan lengkapi kembali dokumen persyaratan Anda dan ajukan ulang.' }}</p>
+                        </div>
+                    </div>
+                @elseif($data->status === 'revision')
+                    <div class="p-4 bg-orange-50 border border-orange-200 rounded-xl mb-4 text-xs text-orange-800 flex items-start gap-3">
+                        <i class="fa-solid fa-triangle-exclamation text-orange-600 text-xl mt-0.5"></i>
+                        <div>
+                            <h5 class="font-bold text-sm text-orange-900">Permohonan Perlu Revisi Berkas</h5>
+                            <p class="mt-1 text-orange-700">{{ $data->rejection_note ?? 'Terdapat berkas yang perlu diperbaiki atau dilengkapi sesuai catatan petugas.' }}</p>
                         </div>
                     </div>
                 @endif
@@ -65,8 +83,8 @@
                     @foreach($steps as $key => $step)
                         @php
                             $stepNum = $statusOrder[$key];
-                            $isPassed = $currentOrder >= $stepNum && $data->status !== 'rejected';
-                            $isCurrent = $currentOrder === $stepNum && $data->status !== 'rejected';
+                            $isPassed = $currentOrder >= $stepNum && !in_array($data->status, ['rejected', 'revision']);
+                            $isCurrent = $currentOrder === $stepNum && !in_array($data->status, ['rejected', 'revision']);
                         @endphp
                         <div class="p-3 rounded-lg border {{ $isPassed ? 'bg-teal-50/70 border-[#0b7c89]' : 'bg-slate-50 border-slate-200 opacity-60' }} relative">
                             <div class="flex items-center gap-2 mb-1.5">

@@ -49,6 +49,14 @@
                     <i class="fa-solid fa-baby w-5 text-center text-teal-300 text-lg"></i>
                     <span>Akte Kelahiran</span>
                 </div>
+                @php
+                    $pendingBirthCount = \App\Models\BirthCertificate::where('status', 'pending')->count();
+                @endphp
+                @if($pendingBirthCount > 0)
+                    <span class="bg-amber-400 text-slate-950 font-bold text-xs px-2 py-0.5 rounded-full shadow-xs">
+                        {{ $pendingBirthCount }}
+                    </span>
+                @endif
             </a>
 
             <a href="{{ route('admin.death.index') }}" class="flex items-center justify-between px-4 py-3 rounded-xl transition {{ request()->routeIs('admin.death.*') ? 'bg-[#0b7c89] text-white shadow-sm' : 'text-teal-100 hover:bg-teal-800/50' }}">
@@ -56,6 +64,14 @@
                     <i class="fa-solid fa-book-skull w-5 text-center text-rose-300 text-lg"></i>
                     <span>Akte Kematian</span>
                 </div>
+                @php
+                    $pendingDeathCount = \App\Models\DeathCertificate::where('status', 'pending')->count();
+                @endphp
+                @if($pendingDeathCount > 0)
+                    <span class="bg-amber-400 text-slate-950 font-bold text-xs px-2 py-0.5 rounded-full shadow-xs">
+                        {{ $pendingDeathCount }}
+                    </span>
+                @endif
             </a>
 
             <div class="pt-5 pb-2 px-4 text-xs uppercase font-bold tracking-wider text-teal-300">
@@ -81,21 +97,9 @@
                 Arsip & Penonaktifan
             </div>
 
-            <a href="{{ route('admin.archive.index') }}" class="flex items-center justify-between px-4 py-3 rounded-xl transition {{ request()->routeIs('admin.archive.*') ? 'bg-[#0b7c89] text-white shadow-sm' : 'text-teal-100 hover:bg-teal-800/50' }}">
-                <div class="flex items-center gap-3.5">
-                    <i class="fa-solid fa-box-archive w-5 text-center text-amber-200 text-lg"></i>
-                    <span>Arsip Pengajuan</span>
-                </div>
-                @php
-                    $totalArchivedOrRejected = \App\Models\User::where('role', 'warga')->whereIn('status', ['rejected', 'archived'])->count()
-                        + \App\Models\BirthCertificate::whereIn('status', ['rejected', 'archived'])->count()
-                        + \App\Models\DeathCertificate::whereIn('status', ['rejected', 'archived'])->count();
-                @endphp
-                @if($totalArchivedOrRejected > 0)
-                    <span class="bg-slate-700 text-slate-200 font-bold text-xs px-2 py-0.5 rounded-full shadow-xs">
-                        {{ $totalArchivedOrRejected }}
-                    </span>
-                @endif
+            <a href="{{ route('admin.archive.index') }}" class="flex items-center gap-3.5 px-4 py-3 rounded-xl transition {{ request()->routeIs('admin.archive.*') ? 'bg-[#0b7c89] text-white shadow-sm' : 'text-teal-100 hover:bg-teal-800/50' }}">
+                <i class="fa-solid fa-box-archive w-5 text-center text-amber-200 text-lg"></i>
+                <span>Arsip Pengajuan</span>
             </a>
 
             <div class="pt-5 pb-2 px-4 text-xs uppercase font-bold tracking-wider text-teal-300">
@@ -155,7 +159,7 @@
             
             <!-- Flash Message -->
             @if(session('success'))
-                <div class="mb-5 bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-lg shadow-sm flex items-start justify-between">
+                <div class="popup-notification mb-5 bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-lg shadow-sm flex items-start justify-between">
                     <div class="flex items-center">
                         <i class="fa-solid fa-circle-check text-emerald-600 text-lg mr-3"></i>
                         <div>
@@ -163,14 +167,14 @@
                             <p class="text-xs text-emerald-700">{{ session('success') }}</p>
                         </div>
                     </div>
-                    <button onclick="this.parentElement.remove()" class="text-emerald-500 hover:text-emerald-700">
+                    <button type="button" data-dismiss="notification" class="close-notification-btn text-emerald-500 hover:text-emerald-700 transition cursor-pointer">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
             @endif
 
             @if(session('error'))
-                <div class="mb-5 bg-rose-50 border-l-4 border-rose-500 p-4 rounded-r-lg shadow-sm flex items-start justify-between">
+                <div class="popup-notification mb-5 bg-rose-50 border-l-4 border-rose-500 p-4 rounded-r-lg shadow-sm flex items-start justify-between">
                     <div class="flex items-center">
                         <i class="fa-solid fa-triangle-exclamation text-rose-600 text-lg mr-3"></i>
                         <div>
@@ -178,7 +182,22 @@
                             <p class="text-xs text-rose-700">{{ session('error') }}</p>
                         </div>
                     </div>
-                    <button onclick="this.parentElement.remove()" class="text-rose-500 hover:text-rose-700">
+                    <button type="button" data-dismiss="notification" class="close-notification-btn text-rose-500 hover:text-rose-700 transition cursor-pointer">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            @endif
+
+            @if(session('info'))
+                <div class="popup-notification mb-5 bg-sky-50 border-l-4 border-sky-500 p-4 rounded-r-lg shadow-sm flex items-start justify-between">
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-circle-info text-sky-600 text-lg mr-3"></i>
+                        <div>
+                            <p class="font-bold text-sm text-sky-900">Informasi</p>
+                            <p class="text-xs text-sky-700">{{ session('info') }}</p>
+                        </div>
+                    </div>
+                    <button type="button" data-dismiss="notification" class="close-notification-btn text-sky-500 hover:text-sky-700 transition cursor-pointer">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>

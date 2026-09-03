@@ -19,7 +19,7 @@ class AdminArchiveController extends Controller
         // Statistik Total Arsip / Ditolak
         $counts = [
             'citizens' => User::where('role', 'warga')->whereIn('status', ['rejected', 'archived'])->count(),
-            'birth' => BirthCertificate::whereIn('status', ['rejected', 'archived'])->count(),
+            'birth' => BirthCertificate::whereIn('status', ['rejected', 'archived', 'picked_up'])->count(),
             'death' => DeathCertificate::whereIn('status', ['rejected', 'archived'])->count(),
         ];
         $counts['total'] = $counts['citizens'] + $counts['birth'] + $counts['death'];
@@ -44,7 +44,7 @@ class AdminArchiveController extends Controller
 
             $citizens = $query->latest('updated_at')->paginate(10)->withQueryString();
         } elseif ($tab === 'birth') {
-            $query = BirthCertificate::whereIn('status', ['rejected', 'archived']);
+            $query = BirthCertificate::whereIn('status', ['rejected', 'archived', 'picked_up']);
 
             if ($search) {
                 $query->where(function ($q) use ($search) {

@@ -180,4 +180,98 @@ class CertificateServiceTest extends TestCase
         $dashResponse->assertStatus(200);
         $dashResponse->assertSee('Dashboard Pelayanan Kependudukan');
     }
+
+    public function test_admin_can_update_birth_certificate_through_all_six_statuses(): void
+    {
+        $admin = User::create([
+            'name' => 'Petugas Kalurahan',
+            'email' => 'admin@purwobinangun.desa.id',
+            'role' => 'admin',
+            'password' => bcrypt('admin123'),
+        ]);
+
+        $birth = BirthCertificate::create([
+            'registration_no' => 'AKL-20260903-0001',
+            'child_name' => 'Bayi Sukses',
+            'gender' => 'L',
+            'birth_place' => 'Sleman',
+            'birth_date' => '2026-08-01',
+            'applicant_nik' => '3404051205900001',
+            'applicant_name' => 'Ayah Test',
+            'applicant_phone' => '08123456789',
+            'padukuhan' => 'Kadilobo',
+            'status' => 'pending',
+        ]);
+
+        // Validasi gagal jika catatan verifikator kosong
+        $responseFailed = $this->actingAs($admin)->put('/admin/akte-kelahiran/' . $birth->id . '/status', [
+            'status' => 'in_process',
+            'rejection_note' => '',
+        ]);
+        $responseFailed->assertSessionHasErrors('rejection_note');
+
+        // 1. Ubah ke Sedang Diproses
+        $this->actingAs($admin)->put('/admin/akte-kelahiran/' . $birth->id . '/status', [
+            'status' => 'in_process',
+            'rejection_note' => 'Berkas terverifikasi lengkap dan sedang diproses.',
+        ])->assertRedirect(route('admin.birth.show', $birth));
+        $this->assertEquals('Sedang Diproses', $birth->fresh()->status_label);
+
+        // 2. Ubah ke Revisi Berkas
+        $this->actingAs($admin)->put('/admin/akte-kelahiran/' . $birth->id . '/status', [
+            'status' => 'revision',
+            'rejection_note' => 'Mohon unggah ulang foto KTP saksi yang lebih jelas.',
+        ]);
+        $this->assertEquals('Revisi Berkas', $birth->fresh()->status_label);
+
+        // 3. Ubah ke Dibatalkan (rejected)
+        $this->actingAs($admin)->put('/admin/akte-kelahiran/' . $birth->id . '/status', [
+            'status' => 'rejected',
+            'rejection_note' => 'Data tidak sesuai database kependudukan.',
+        ]);
+        $this->assertEquals('Dibatalkan', $birth->fresh()->status_label);
+
+        // Halaman detail menampilkan tombol "Arsipkan Pengajuan" saat status Dibatalkan
+        $responseShowRejected = $this->actingAs($admin)->get('/admin/akte-kelahiran/' . $birth->id);
+        $responseShowRejected->assertStatus(200);
+        $responseShowRejected->assertSee('Arsipkan Pengajuan');
+
+        // 4. Ubah ke Siap diambil
+        $this->actingAs($admin)->put('/admin/akte-kelahiran/' . $birth->id . '/status', [
+            'status' => 'ready_for_pickup',
+            'rejection_note' => 'Akte kelahiran telah selesai dicetak dan siap diambil.',
+        ]);
+        $this->assertEquals('Siap diambil', $birth->fresh()->status_label);
+
+        // 5. Ubah ke Sudah diambil (otomatis masuk ke arsip)
+        $responsePickedUp = $this->actingAs($admin)->put('/admin/akte-kelahiran/' . $birth->id . '/status', [
+            'status' => 'picked_up',
+            'rejection_note' => 'Dokumen telah diserahkan dan diambil oleh pemohon.',
+        ]);
+        $responsePickedUp->assertSessionHas('success');
+        $this->assertEquals('Sudah diambil', $birth->fresh()->status_label);
+
+        // Halaman detail menampilkan tombol "Arsipkan Pengajuan" saat status Sudah diambil
+        $responseShowPickedUp = $this->actingAs($admin)->get('/admin/akte-kelahiran/' . $birth->id);
+        $responseShowPickedUp->assertStatus(200);
+        $responseShowPickedUp->assertSee('Arsipkan Pengajuan');
+
+        // Manual archive test
+        $responseArchiveManual = $this->actingAs($admin)->post('/admin/arsip/akte-kelahiran/' . $birth->id . '/archive');
+        $responseArchiveManual->assertSessionHas('success');
+        $this->assertEquals('archived', $birth->fresh()->status);
+
+        // Verifikasi TIDAK muncul di daftar utama /admin/akte-kelahiran
+        $this->flushSession();
+        $responseIndex = $this->actingAs($admin)->get('/admin/akte-kelahiran');
+        $responseIndex->assertStatus(200);
+        $responseIndex->assertDontSee('AKL-20260903-0001');
+        $responseIndex->assertDontSee('Bayi Sukses');
+
+        // Verifikasi HANYA muncul di menu Arsip tab birth
+        $responseArchive = $this->actingAs($admin)->get('/admin/arsip?tab=birth');
+        $responseArchive->assertStatus(200);
+        $responseArchive->assertSee('AKL-20260903-0001');
+        $responseArchive->assertSee('Bayi Sukses');
+    }
 }

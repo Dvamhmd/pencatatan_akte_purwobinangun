@@ -134,7 +134,7 @@
         
         <!-- Flash Message -->
         @if(session('success'))
-            <div class="mb-5 bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-xl shadow-sm flex items-start justify-between">
+            <div class="popup-notification mb-5 bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-xl shadow-sm flex items-start justify-between">
                 <div class="flex items-center">
                     <i class="fa-solid fa-circle-check text-emerald-600 text-lg mr-3"></i>
                     <div>
@@ -142,14 +142,14 @@
                         <p class="text-xs text-emerald-700">{{ session('success') }}</p>
                     </div>
                 </div>
-                <button onclick="this.parentElement.remove()" class="text-emerald-500 hover:text-emerald-700">
+                <button type="button" data-dismiss="notification" class="close-notification-btn text-emerald-500 hover:text-emerald-700 transition cursor-pointer">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
         @endif
 
         @if(session('error'))
-            <div class="mb-5 bg-rose-50 border-l-4 border-rose-500 p-4 rounded-r-xl shadow-sm flex items-start justify-between">
+            <div class="popup-notification mb-5 bg-rose-50 border-l-4 border-rose-500 p-4 rounded-r-xl shadow-sm flex items-start justify-between">
                 <div class="flex items-center">
                     <i class="fa-solid fa-triangle-exclamation text-rose-600 text-lg mr-3"></i>
                     <div>
@@ -157,7 +157,22 @@
                         <p class="text-xs text-rose-700">{{ session('error') }}</p>
                     </div>
                 </div>
-                <button onclick="this.parentElement.remove()" class="text-rose-500 hover:text-rose-700">
+                <button type="button" data-dismiss="notification" class="close-notification-btn text-rose-500 hover:text-rose-700 transition cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        @endif
+
+        @if(session('info'))
+            <div class="popup-notification mb-5 bg-sky-50 border-l-4 border-sky-500 p-4 rounded-r-xl shadow-sm flex items-start justify-between">
+                <div class="flex items-center">
+                    <i class="fa-solid fa-circle-info text-sky-600 text-lg mr-3"></i>
+                    <div>
+                        <p class="font-bold text-sm text-sky-900">Informasi</p>
+                        <p class="text-xs text-sky-700">{{ session('info') }}</p>
+                    </div>
+                </div>
+                <button type="button" data-dismiss="notification" class="close-notification-btn text-sky-500 hover:text-sky-700 transition cursor-pointer">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>

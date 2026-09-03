@@ -34,7 +34,7 @@ export function initDissolveEffects() {
     });
 
     const isExcluded = (el) => {
-        return el.closest('header, .hero-purwobinangun, nav, footer, .modal-overlay, #preview-modal, #camera-modal, .swal2-container, .modal-dialog-box, #live-clock, #live-date') !== null;
+        return el.closest('header, .hero-purwobinangun, nav, footer, .modal-overlay, #preview-modal, #camera-modal, .swal2-container, .modal-dialog-box, #live-clock, #live-date, .popup-notification') !== null;
     };
 
     function attachDissolve(card) {

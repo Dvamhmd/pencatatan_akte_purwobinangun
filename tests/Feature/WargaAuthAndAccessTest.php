@@ -210,6 +210,12 @@ class WargaAuthAndAccessTest extends TestCase
             'id' => $pendingCitizen->id,
             'status' => 'archived',
         ]);
+
+        // Verifikasi akun warga berstatus 'archived' TIDAK muncul di daftar utama /admin/warga
+        $this->flushSession();
+        $responseCitizenIndex = $this->actingAs($admin)->get('/admin/warga');
+        $responseCitizenIndex->assertStatus(200);
+        $responseCitizenIndex->assertDontSee($pendingCitizen->name);
     }
 
     public function test_admin_can_access_archive_menu_and_restore_items()

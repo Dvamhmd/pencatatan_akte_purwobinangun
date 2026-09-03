@@ -14,10 +14,17 @@ class AdminBirthController extends Controller
         $status = $request->input('status');
         $search = $request->input('search');
 
-        $query = BirthCertificate::query();
+        // Pengajuan yang sudah diambil / diarsipkan hanya muncul di menu Arsip
+        $query = BirthCertificate::whereNotIn('status', ['picked_up', 'archived']);
 
-        if ($status) {
-            $query->where('status', $status);
+        if ($status && !in_array($status, ['picked_up', 'archived'])) {
+            if ($status === 'in_process') {
+                $query->whereIn('status', ['in_process', 'verified']);
+            } elseif ($status === 'ready_for_pickup') {
+                $query->whereIn('status', ['ready_for_pickup', 'completed']);
+            } else {
+                $query->where('status', $status);
+            }
         }
 
         if ($search) {
@@ -43,17 +50,24 @@ class AdminBirthController extends Controller
     public function updateStatus(Request $request, BirthCertificate $birth)
     {
         $validated = $request->validate([
-            'status' => 'required|in:pending,verified,in_process,completed,rejected,archived',
-            'rejection_note' => 'nullable|string',
+            'status' => 'required|in:pending,in_process,revision,rejected,ready_for_pickup,picked_up,verified,completed,archived',
+            'rejection_note' => 'required|string|min:3',
+        ], [
+            'rejection_note.required' => 'Catatan verifikator / alasan perubahan status wajib diisi.',
+            'rejection_note.min' => 'Catatan verifikator minimal berisi 3 karakter.',
         ]);
 
         $birth->status = $validated['status'];
-        $birth->rejection_note = $validated['rejection_note'] ?? null;
+        $birth->rejection_note = $validated['rejection_note'];
         $birth->processed_by = Auth::user()->name;
         $birth->save();
 
+        $message = $birth->isPickedUp()
+            ? 'Status permohonan Akte Kelahiran berhasil diperbarui menjadi Sudah diambil dan telah otomatis masuk ke arsip.'
+            : 'Status permohonan Akte Kelahiran berhasil diperbarui menjadi ' . $birth->status_label . '.';
+
         return redirect()->route('admin.birth.show', $birth)
-            ->with('success', 'Status permohonan Akte Kelahiran berhasil diperbarui.');
+            ->with('success', $message);
     }
 
     public function printLetter(BirthCertificate $birth)

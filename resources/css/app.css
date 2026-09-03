@@ -247,3 +247,42 @@ footer *,
         opacity: 1 !important;
     }
 }
+
+/* =================================================================
+   POPUP NOTIFICATION ANIMATIONS (SMOOTH ENTRY & AUTO-DISMISS)
+   ================================================================= */
+@keyframes popupFadeSlideIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-12px) scale(0.98);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.popup-notification {
+    animation: popupFadeSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                margin 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                padding 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height: 250px;
+    overflow: hidden;
+    will-change: transform, opacity, max-height;
+}
+
+.popup-notification.dismissing {
+    opacity: 0 !important;
+    transform: translateY(-10px) scale(0.97) !important;
+    max-height: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    border-top-width: 0 !important;
+    border-bottom-width: 0 !important;
+    pointer-events: none !important;
+}

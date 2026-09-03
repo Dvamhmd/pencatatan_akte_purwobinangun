@@ -83,10 +83,11 @@ class BirthCertificate extends Model
     {
         return match ($this->status) {
             'pending' => 'Menunggu Verifikasi',
-            'verified' => 'Berkas Terverifikasi',
-            'in_process' => 'Sedang Diproses Kelurahan',
-            'completed' => 'Selesai / Siap Diambil',
-            'rejected' => 'Ditolak / Perlu Perbaikan',
+            'in_process', 'verified' => 'Sedang Diproses',
+            'revision' => 'Revisi Berkas',
+            'rejected' => 'Dibatalkan',
+            'ready_for_pickup', 'completed' => 'Siap diambil',
+            'picked_up' => 'Sudah diambil',
             'archived' => 'Diarsipkan',
             default => 'Diajukan',
         };
@@ -96,12 +97,47 @@ class BirthCertificate extends Model
     {
         return match ($this->status) {
             'pending' => 'bg-amber-100 text-amber-800 border-amber-300',
-            'verified' => 'bg-blue-100 text-blue-800 border-blue-300',
-            'in_process' => 'bg-indigo-100 text-indigo-800 border-indigo-300',
-            'completed' => 'bg-emerald-100 text-emerald-800 border-emerald-300',
+            'in_process', 'verified' => 'bg-blue-100 text-blue-800 border-blue-300',
+            'revision' => 'bg-orange-100 text-orange-800 border-orange-300',
             'rejected' => 'bg-rose-100 text-rose-800 border-rose-300',
-            'archived' => 'bg-slate-200 text-slate-800 border-slate-400',
+            'ready_for_pickup', 'completed' => 'bg-emerald-100 text-emerald-800 border-emerald-300',
+            'picked_up', 'archived' => 'bg-slate-100 text-slate-800 border-slate-300',
             default => 'bg-gray-100 text-gray-800 border-gray-300',
         };
+    }
+
+    public function isPending(): bool
+    {
+        return $this->status === 'pending';
+    }
+
+    public function isInProcess(): bool
+    {
+        return in_array($this->status, ['in_process', 'verified']);
+    }
+
+    public function isRevision(): bool
+    {
+        return $this->status === 'revision';
+    }
+
+    public function isRejected(): bool
+    {
+        return $this->status === 'rejected';
+    }
+
+    public function isReadyForPickup(): bool
+    {
+        return in_array($this->status, ['ready_for_pickup', 'completed']);
+    }
+
+    public function isPickedUp(): bool
+    {
+        return in_array($this->status, ['picked_up', 'archived']);
+    }
+
+    public function isArchived(): bool
+    {
+        return in_array($this->status, ['picked_up', 'archived']);
     }
 }

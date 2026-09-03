@@ -124,8 +124,13 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Catatan Verifikator / Alasan Penolakan</label>
-                        <textarea name="rejection_note" rows="3" placeholder="Tuliskan catatan verifikasi atau berkas yang kurang jelas..." class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-rose-600">{{ old('rejection_note', $death->rejection_note) }}</textarea>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">
+                            Catatan Verifikator / Alasan <span class="text-rose-600 font-bold">* (Wajib diisi)</span>
+                        </label>
+                        <textarea name="rejection_note" rows="3" required placeholder="Tuliskan catatan verifikasi, instruksi pengambilan berkas, atau alasan perubahan status..." class="w-full text-xs px-3 py-2 rounded-lg border @error('rejection_note') border-rose-500 @else border-slate-300 @enderror focus:outline-none focus:ring-2 focus:ring-rose-600">{{ old('rejection_note', $death->rejection_note) }}</textarea>
+                        @error('rejection_note')
+                            <p class="text-rose-600 text-[11px] mt-1 font-medium">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div class="text-[11px] text-slate-500">

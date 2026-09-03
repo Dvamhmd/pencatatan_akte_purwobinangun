@@ -16,9 +16,9 @@ class AdminCitizenController extends Controller
         $status = $request->input('status');
         $search = $request->input('search');
 
-        $query = User::where('role', 'warga');
+        $query = User::where('role', 'warga')->where('status', '!=', 'archived');
 
-        if ($status && in_array($status, ['pending', 'active', 'rejected', 'archived'])) {
+        if ($status && in_array($status, ['pending', 'active', 'rejected'])) {
             $query->where('status', $status);
         }
 
@@ -35,7 +35,7 @@ class AdminCitizenController extends Controller
         $citizens = $query->latest()->paginate(10)->withQueryString();
 
         $stats = [
-            'total' => User::where('role', 'warga')->count(),
+            'total' => User::where('role', 'warga')->where('status', '!=', 'archived')->count(),
             'pending' => User::where('role', 'warga')->where('status', 'pending')->count(),
             'active' => User::where('role', 'warga')->where('status', 'active')->count(),
             'rejected' => User::where('role', 'warga')->where('status', 'rejected')->count(),

@@ -41,13 +41,13 @@
             <p class="text-2xl font-black text-rose-700">{{ $stats['rejected'] }}</p>
         </div>
 
-        <div class="bg-white p-4 rounded-xl border border-slate-300 shadow-2xs">
+        <a href="{{ route('admin.archive.index', ['tab' => 'citizens']) }}" class="bg-white p-4 rounded-xl border border-slate-300 shadow-2xs hover:border-[#0b7c89] transition block" title="Buka Arsip Akun Warga">
             <div class="flex items-center justify-between text-slate-600 mb-1">
                 <span class="text-xs font-semibold">Diarsipkan</span>
                 <i class="fa-solid fa-box-archive text-slate-500"></i>
             </div>
             <p class="text-2xl font-black text-slate-700">{{ $stats['archived'] ?? 0 }}</p>
-        </div>
+        </a>
 
     </div>
 
@@ -71,7 +71,6 @@
                     <option value="pending" {{ $status === 'pending' ? 'selected' : '' }}>Menunggu Verifikasi</option>
                     <option value="active" {{ $status === 'active' ? 'selected' : '' }}>Aktif / Terverifikasi</option>
                     <option value="rejected" {{ $status === 'rejected' ? 'selected' : '' }}>Ditolak</option>
-                    <option value="archived" {{ $status === 'archived' ? 'selected' : '' }}>Diarsipkan</option>
                 </select>
 
                 <button type="submit" class="bg-[#0b7c89] hover:bg-[#065b65] text-white text-xs font-bold px-4 py-2 rounded-lg transition shadow-2xs">
@@ -126,7 +125,6 @@
                                 </td>
                                 <td class="px-4 py-3.5">
                                     <p class="text-slate-700 font-medium">{{ $citizen->created_at->translatedFormat('d M Y') }}</p>
-                                    <p class="text-[10px] text-slate-400">{{ $citizen->created_at->format('H:i') }} WIB</p>
                                 </td>
                                 <td class="px-4 py-3.5 text-center">
                                     <span class="inline-block text-[10px] font-bold px-2.5 py-1 rounded-full border {{ $citizen->status_badge_class }}">

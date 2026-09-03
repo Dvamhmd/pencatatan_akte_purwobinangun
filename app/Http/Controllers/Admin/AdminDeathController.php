@@ -44,11 +44,14 @@ class AdminDeathController extends Controller
     {
         $validated = $request->validate([
             'status' => 'required|in:pending,verified,in_process,completed,rejected,archived',
-            'rejection_note' => 'nullable|string',
+            'rejection_note' => 'required|string|min:3',
+        ], [
+            'rejection_note.required' => 'Catatan verifikator / alasan perubahan status wajib diisi.',
+            'rejection_note.min' => 'Catatan verifikator minimal berisi 3 karakter.',
         ]);
 
         $death->status = $validated['status'];
-        $death->rejection_note = $validated['rejection_note'] ?? null;
+        $death->rejection_note = $validated['rejection_note'];
         $death->processed_by = Auth::user()->name;
         $death->save();
 

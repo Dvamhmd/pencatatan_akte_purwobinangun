@@ -248,7 +248,7 @@
                                                 <i class="fa-solid fa-eye"></i> Berkas
                                             </a>
 
-                                            @if($birth->status === 'rejected')
+                                            @if($birth->status === 'rejected' || $birth->status === 'revision')
                                                 <!-- Tombol Arsipkan -->
                                                 <form action="{{ route('admin.archive.birth.archive', $birth) }}" method="POST" class="inline">
                                                     @csrf
@@ -276,8 +276,8 @@
                         <div class="w-12 h-12 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-2">
                             <i class="fa-solid fa-baby text-xl"></i>
                         </div>
-                        <p class="font-bold text-sm text-slate-700">Tidak ada pengajuan akte kelahiran yang ditolak atau diarsipkan.</p>
-                        <p class="text-xs text-slate-500 mt-1">Semua berkas akte kelahiran berjalan dengan lancar.</p>
+                        <p class="font-bold text-sm text-slate-700">Tidak ada pengajuan akte kelahiran yang diarsipkan atau ditolak.</p>
+                        <p class="text-xs text-slate-500 mt-1">Data akte kelahiran yang sudah diambil atau ditolak akan tersimpan di sini.</p>
                     </div>
                 @endif
 

@@ -130,17 +130,22 @@
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Ubah Status Permohonan</label>
                         <select name="status" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0b7c89] font-medium">
                             <option value="pending" {{ $birth->status === 'pending' ? 'selected' : '' }}>1. Menunggu Verifikasi</option>
-                            <option value="verified" {{ $birth->status === 'verified' ? 'selected' : '' }}>2. Berkas Terverifikasi Lengkap</option>
-                            <option value="in_process" {{ $birth->status === 'in_process' ? 'selected' : '' }}>3. Sedang Diproses Kalurahan</option>
-                            <option value="completed" {{ $birth->status === 'completed' ? 'selected' : '' }}>4. Selesai / Siap Diambil</option>
-                            <option value="rejected" {{ $birth->status === 'rejected' ? 'selected' : '' }}>5. Tolak / Minta Perbaikan Berkas</option>
-                            <option value="archived" {{ $birth->status === 'archived' ? 'selected' : '' }}>6. Diarsipkan (Nonaktif)</option>
+                            <option value="in_process" {{ ($birth->status === 'in_process' || $birth->status === 'verified') ? 'selected' : '' }}>2. Sedang Diproses</option>
+                            <option value="revision" {{ $birth->status === 'revision' ? 'selected' : '' }}>3. Revisi Berkas</option>
+                            <option value="rejected" {{ $birth->status === 'rejected' ? 'selected' : '' }}>4. Dibatalkan</option>
+                            <option value="ready_for_pickup" {{ ($birth->status === 'ready_for_pickup' || $birth->status === 'completed') ? 'selected' : '' }}>5. Siap diambil</option>
+                            <option value="picked_up" {{ ($birth->status === 'picked_up' || $birth->status === 'archived') ? 'selected' : '' }}>6. Sudah diambil (Masuk Arsip)</option>
                         </select>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Catatan Verifikator / Alasan Penolakan</label>
-                        <textarea name="rejection_note" rows="3" placeholder="Tuliskan catatan verifikasi atau berkas yang kurang jelas..." class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0b7c89]">{{ old('rejection_note', $birth->rejection_note) }}</textarea>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">
+                            Catatan Verifikator / Alasan <span class="text-rose-600 font-bold">* (Wajib diisi)</span>
+                        </label>
+                        <textarea name="rejection_note" rows="3" required placeholder="Tuliskan catatan verifikasi, instruksi pengambilan berkas, atau alasan perubahan status..." class="w-full text-xs px-3 py-2 rounded-lg border @error('rejection_note') border-rose-500 @else border-slate-300 @enderror focus:outline-none focus:ring-2 focus:ring-[#0b7c89]">{{ old('rejection_note', $birth->rejection_note) }}</textarea>
+                        @error('rejection_note')
+                            <p class="text-rose-600 text-[11px] mt-1 font-medium">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div class="text-[11px] text-slate-500">
@@ -151,6 +156,15 @@
                         <i class="fa-solid fa-floppy-disk"></i> Simpan Perubahan Status
                     </button>
                 </form>
+
+                @if($birth->status === 'rejected' || $birth->status === 'picked_up' || $birth->status === 'archived')
+                    <form action="{{ route('admin.archive.birth.archive', $birth) }}" method="POST" class="mt-3">
+                        @csrf
+                        <button type="submit" onclick="return confirm('Apakah Anda yakin ingin MENGARSIPKAN pengajuan akte kelahiran ini secara manual?');" class="btn-archive w-full bg-slate-700 hover:bg-slate-800 text-white font-bold text-xs py-2.5 rounded-lg shadow-xs transition flex items-center justify-center gap-1.5" style="background-color: #334155; color: #ffffff;">
+                            <i class="fa-solid fa-box-archive text-amber-300"></i> Arsipkan Pengajuan
+                        </button>
+                    </form>
+                @endif
             </div>
 
             <!-- Ringkasan Pemohon -->

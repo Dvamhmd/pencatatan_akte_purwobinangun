@@ -51,18 +51,18 @@
 
                 <div class="bg-white p-3.5 rounded-xl border border-blue-200 shadow-2xs">
                     <div class="flex items-center justify-between text-blue-600 mb-1">
-                        <span class="text-[11px] font-semibold">Terverifikasi</span>
-                        <i class="fa-solid fa-file-circle-check"></i>
+                        <span class="text-[11px] font-semibold">Sedang Diproses</span>
+                        <i class="fa-solid fa-spinner"></i>
                     </div>
-                    <p class="text-xl font-extrabold text-blue-700">{{ $verifiedCount }}</p>
+                    <p class="text-xl font-extrabold text-blue-700">{{ $inProcessCount }}</p>
                 </div>
 
                 <div class="bg-white p-3.5 rounded-xl border border-emerald-200 shadow-2xs">
                     <div class="flex items-center justify-between text-emerald-600 mb-1">
-                        <span class="text-[11px] font-semibold">Selesai / Terbit</span>
+                        <span class="text-[11px] font-semibold">Siap / Selesai</span>
                         <i class="fa-solid fa-circle-check"></i>
                     </div>
-                    <p class="text-xl font-extrabold text-emerald-700">{{ $completedCount }}</p>
+                    <p class="text-xl font-extrabold text-emerald-700">{{ $readyCount + $pickedUpCount }}</p>
                 </div>
             </div>
         </div>
@@ -78,14 +78,15 @@
                 </div>
 
                 <!-- Status Filter -->
-                <div class="w-full md:w-48">
+                <div class="w-full md:w-52">
                     <select name="status" class="w-full text-xs px-3 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] bg-white">
                         <option value="">Semua Status</option>
-                        <option value="pending" {{ $status === 'pending' ? 'selected' : '' }}>Menunggu Verifikasi</option>
-                        <option value="verified" {{ $status === 'verified' ? 'selected' : '' }}>Terverifikasi</option>
-                        <option value="in_process" {{ $status === 'in_process' ? 'selected' : '' }}>Sedang Diproses</option>
-                        <option value="completed" {{ $status === 'completed' ? 'selected' : '' }}>Selesai / Siap Ambil</option>
-                        <option value="rejected" {{ $status === 'rejected' ? 'selected' : '' }}>Ditolak / Revisi</option>
+                        <option value="pending" {{ $status === 'pending' ? 'selected' : '' }}>1. Menunggu Verifikasi</option>
+                        <option value="in_process" {{ $status === 'in_process' ? 'selected' : '' }}>2. Sedang Diproses</option>
+                        <option value="revision" {{ $status === 'revision' ? 'selected' : '' }}>3. Revisi Berkas</option>
+                        <option value="rejected" {{ $status === 'rejected' ? 'selected' : '' }}>4. Dibatalkan</option>
+                        <option value="ready_for_pickup" {{ $status === 'ready_for_pickup' ? 'selected' : '' }}>5. Siap diambil</option>
+                        <option value="picked_up" {{ $status === 'picked_up' ? 'selected' : '' }}>6. Sudah diambil</option>
                     </select>
                 </div>
 
@@ -147,7 +148,6 @@
                                     </td>
                                     <td class="px-4 py-3.5">
                                         <p class="text-slate-700 font-medium">{{ $sub->created_at->translatedFormat('d M Y') }}</p>
-                                        <p class="text-[10px] text-slate-400">{{ $sub->created_at->format('H:i') }} WIB</p>
                                     </td>
                                     <td class="px-4 py-3.5 text-center">
                                         <span class="inline-block text-[10px] font-bold px-2.5 py-1 rounded-full border {{ $sub->status_badge_class }}">

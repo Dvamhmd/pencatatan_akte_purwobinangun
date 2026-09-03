@@ -167,10 +167,6 @@ class BirthCertificateController extends Controller
             $query->where('family_card_no', $user->family_card_no);
         }
 
-        if ($status && in_array($status, ['pending', 'verified', 'in_process', 'completed', 'rejected'])) {
-            $query->where('status', $status);
-        }
-
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('registration_no', 'like', "%{$search}%")
@@ -179,6 +175,18 @@ class BirthCertificateController extends Controller
                   ->orWhere('child_name', 'like', "%{$search}%")
                   ->orWhere('applicant_phone', 'like', "%{$search}%");
             });
+        }
+
+        if ($status && in_array($status, ['pending', 'in_process', 'revision', 'rejected', 'ready_for_pickup', 'picked_up', 'verified', 'completed', 'archived'])) {
+            if ($status === 'in_process') {
+                $query->whereIn('status', ['in_process', 'verified']);
+            } elseif ($status === 'ready_for_pickup') {
+                $query->whereIn('status', ['ready_for_pickup', 'completed']);
+            } elseif ($status === 'picked_up') {
+                $query->whereIn('status', ['picked_up', 'archived']);
+            } else {
+                $query->where('status', $status);
+            }
         }
 
         $submissions = $query->latest()->paginate(10)->withQueryString();
@@ -191,8 +199,9 @@ class BirthCertificateController extends Controller
 
         $totalCount = (clone $baseStatsQuery)->count();
         $pendingCount = (clone $baseStatsQuery)->where('status', 'pending')->count();
-        $verifiedCount = (clone $baseStatsQuery)->where('status', 'verified')->count();
-        $completedCount = (clone $baseStatsQuery)->where('status', 'completed')->count();
+        $inProcessCount = (clone $baseStatsQuery)->whereIn('status', ['in_process', 'verified'])->count();
+        $readyCount = (clone $baseStatsQuery)->whereIn('status', ['ready_for_pickup', 'completed'])->count();
+        $pickedUpCount = (clone $baseStatsQuery)->whereIn('status', ['picked_up', 'archived'])->count();
 
         return view('birth.list', compact(
             'submissions',
@@ -200,8 +209,9 @@ class BirthCertificateController extends Controller
             'search',
             'totalCount',
             'pendingCount',
-            'verifiedCount',
-            'completedCount',
+            'inProcessCount',
+            'readyCount',
+            'pickedUpCount',
             'user'
         ));
     }

@@ -13,13 +13,16 @@
             <div class="flex items-center gap-2.5 w-full sm:w-auto">
                 <label class="text-sm font-bold text-slate-700">Status:</label>
                 <select name="status" onchange="this.form.submit()" class="text-sm px-3.5 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0b7c89]">
-                    <option value="">Semua Status</option>
-                    <option value="pending" {{ $status === 'pending' ? 'selected' : '' }}>Menunggu Verifikasi</option>
-                    <option value="verified" {{ $status === 'verified' ? 'selected' : '' }}>Berkas Terverifikasi</option>
-                    <option value="in_process" {{ $status === 'in_process' ? 'selected' : '' }}>Sedang Diproses</option>
-                    <option value="completed" {{ $status === 'completed' ? 'selected' : '' }}>Selesai</option>
-                    <option value="rejected" {{ $status === 'rejected' ? 'selected' : '' }}>Ditolak</option>
+                    <option value="">Semua Status Aktif</option>
+                    <option value="pending" {{ $status === 'pending' ? 'selected' : '' }}>1. Menunggu Verifikasi</option>
+                    <option value="in_process" {{ $status === 'in_process' ? 'selected' : '' }}>2. Sedang Diproses</option>
+                    <option value="revision" {{ $status === 'revision' ? 'selected' : '' }}>3. Revisi Berkas</option>
+                    <option value="rejected" {{ $status === 'rejected' ? 'selected' : '' }}>4. Dibatalkan</option>
+                    <option value="ready_for_pickup" {{ $status === 'ready_for_pickup' ? 'selected' : '' }}>5. Siap diambil</option>
                 </select>
+                <a href="{{ route('admin.archive.index', ['tab' => 'birth']) }}" class="hidden lg:inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-[#0b7c89] font-bold px-2.5 py-2 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 transition" title="Lihat berkas yang sudah diambil / diarsipkan">
+                    <i class="fa-solid fa-box-archive text-amber-500"></i> Arsip (Sudah diambil)
+                </a>
             </div>
 
             <div class="flex items-center gap-2 w-full sm:w-auto">
@@ -56,7 +59,7 @@
                             <td class="py-4 px-4 text-base">{{ $b->birth_place }}, {{ $b->birth_date->translatedFormat('d M Y') }}</td>
                             <td class="py-4 px-4 text-base">{{ $b->father_name }} / {{ $b->mother_name }}</td>
                             <td class="py-4 px-4 text-base">Padukuhan {{ $b->padukuhan }}</td>
-                            <td class="py-4 px-4 text-base text-slate-500">{{ $b->created_at->translatedFormat('d/m/Y H:i') }}</td>
+                            <td class="py-4 px-4 text-base text-slate-500">{{ $b->created_at->translatedFormat('d M Y') }}</td>
                             <td class="py-4 px-4">
                                 <span class="px-3 py-1 rounded-full text-xs font-bold border {{ $b->status_badge_class }}">
                                     {{ $b->status_label }}
@@ -66,7 +69,7 @@
                                 <a href="{{ route('admin.birth.show', $b) }}" class="bg-teal-50 hover:bg-teal-100 text-[#0b7c89] font-bold text-sm px-3.5 py-1.5 rounded-lg border border-teal-200 transition inline-block">
                                     <i class="fa-solid fa-eye mr-1"></i> Detail & Verifikasi
                                 </a>
-                                @if($b->status === 'completed' || $b->status === 'in_process')
+                                @if($b->isReadyForPickup() || $b->isInProcess() || $b->isPickedUp())
                                     <a href="{{ route('admin.birth.print_letter', $b) }}" target="_blank" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm px-3.5 py-1.5 rounded-lg border border-slate-300 transition inline-block">
                                         <i class="fa-solid fa-print"></i> Surat
                                     </a>

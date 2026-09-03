@@ -31,14 +31,29 @@
             </h2>
 
             @if(session('info'))
-                <div class="mb-4 bg-blue-50 border-l-4 border-blue-500 p-3 rounded-r text-xs text-blue-800">
-                    {{ session('info') }}
+                <div class="popup-notification mb-4 bg-blue-50 border-l-4 border-blue-500 p-3 rounded-r text-xs text-blue-800 flex items-start justify-between">
+                    <span>{{ session('info') }}</span>
+                    <button type="button" data-dismiss="notification" class="close-notification-btn text-blue-500 hover:text-blue-700 ml-2 cursor-pointer">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            @endif
+
+            @if(session('success'))
+                <div class="popup-notification mb-4 bg-emerald-50 border-l-4 border-emerald-500 p-3 rounded-r text-xs text-emerald-800 flex items-start justify-between">
+                    <span>{{ session('success') }}</span>
+                    <button type="button" data-dismiss="notification" class="close-notification-btn text-emerald-500 hover:text-emerald-700 ml-2 cursor-pointer">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
                 </div>
             @endif
 
             @if($errors->any())
-                <div class="mb-4 bg-rose-50 border-l-4 border-rose-500 p-3 rounded-r text-xs text-rose-800">
-                    {{ $errors->first() }}
+                <div class="popup-notification mb-4 bg-rose-50 border-l-4 border-rose-500 p-3 rounded-r text-xs text-rose-800 flex items-start justify-between">
+                    <span>{{ $errors->first() }}</span>
+                    <button type="button" data-dismiss="notification" class="close-notification-btn text-rose-500 hover:text-rose-700 ml-2 cursor-pointer">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
                 </div>
             @endif
 
