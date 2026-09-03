@@ -152,4 +152,20 @@ class DeathCertificate extends Model
 
         return null;
     }
+
+    public function getApplicantPhoneAttribute(): ?string
+    {
+        if ($this->user?->phone) {
+            return $this->user->phone;
+        }
+
+        if ($this->applicant_nik) {
+            $phone = User::where('nik', $this->applicant_nik)->value('phone');
+            if ($phone) {
+                return $phone;
+            }
+        }
+
+        return $this->attributes['applicant_phone'] ?? null;
+    }
 }

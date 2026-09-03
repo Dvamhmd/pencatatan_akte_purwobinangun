@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Warga;
 
 use App\Http\Controllers\Controller;
+use App\Models\BirthCertificate;
+use App\Models\DeathCertificate;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -75,6 +77,23 @@ class WargaProfileController extends Controller
             'address' => $validated['address'],
             'rt' => $validated['rt'],
             'rw' => $validated['rw'],
+        ]);
+
+        // Sinkronisasi nomor WhatsApp dan nama pemohon pada data pengajuan akte milik warga
+        BirthCertificate::where(function ($q) use ($warga) {
+            $q->where('user_id', $warga->id)
+              ->orWhere('applicant_nik', $warga->nik);
+        })->update([
+            'applicant_phone' => $validated['phone'],
+            'applicant_name' => $validated['name'],
+        ]);
+
+        DeathCertificate::where(function ($q) use ($warga) {
+            $q->where('user_id', $warga->id)
+              ->orWhere('applicant_nik', $warga->nik);
+        })->update([
+            'applicant_phone' => $validated['phone'],
+            'applicant_name' => $validated['name'],
         ]);
 
         return redirect()->route('profile.index')
