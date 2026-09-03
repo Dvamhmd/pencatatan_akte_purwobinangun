@@ -20,11 +20,41 @@
         color: #1e293b;
 
         /* =================================================================
-           DEFAULT ZOOM APLIKASI (150%)
-           Ubah nilai di bawah (misal: 100%, 110%, 120%, 125%) untuk menyesuaikan
-           setelah ubah jalankan npm run build pada terminal
+           RESPONSIVE AUTO-ZOOM APLIKASI
+           Menyesuaikan otomatis saat jendela di-resize / split screen (Win + <-)
            ================================================================= */
-        zoom: 150%;
+        zoom: 100%;
+        min-height: 100vh;
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+    /* Layar Ultra-Wide / Monitor Sangat Besar (>= 1920px) */
+    @media (min-width: 1920px) {
+        body {
+            zoom: 110%;
+        }
+    }
+
+    /* Layar Desktop Standar Penuh (1440px - 1919px) */
+    @media (min-width: 1440px) and (max-width: 1919px) {
+        body {
+            zoom: 105%;
+        }
+    }
+
+    /* Jendela Setengah Layar (Win + <-), Laptop Standar & Tablet (<= 1439px) */
+    @media (max-width: 1439px) {
+        body {
+            zoom: 100%;
+        }
+    }
+
+    /* Layar Mobile & Jendela Sangat Kecil (<= 640px) */
+    @media (max-width: 640px) {
+        body {
+            zoom: 100%;
+        }
     }
 }
 

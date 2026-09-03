@@ -167,6 +167,7 @@
 function togglePasswordVisibility() {
     const input = document.getElementById('password');
     const icon = document.getElementById('password-toggle-icon');
+    if (!input || !icon) return;
     if (input.type === 'password') {
         input.type = 'text';
         icon.classList.remove('fa-eye');
@@ -177,5 +178,12 @@ function togglePasswordVisibility() {
         icon.classList.add('fa-eye');
     }
 }
+
+// Bersihkan draft formulir pendaftaran jika pendaftaran baru saja berhasil dikirim
+@if(session('registration_success'))
+    try {
+        localStorage.removeItem('purwobinangun_warga_register_draft');
+    } catch(e) {}
+@endif
 </script>
 @endsection

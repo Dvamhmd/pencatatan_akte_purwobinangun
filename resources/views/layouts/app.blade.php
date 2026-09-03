@@ -48,7 +48,7 @@
                             KK: {{ Auth::user()->family_card_no }}
                         </span>
                     </span>
-                    <form action="{{ route('warga.logout') }}" method="POST" class="inline">
+                    <form action="{{ route('warga.logout') }}" method="POST" class="inline" onsubmit="try { localStorage.removeItem('purwobinangun_birth_form_draft'); localStorage.removeItem('purwobinangun_birth_form_draft_{{ Auth::id() }}'); localStorage.removeItem('purwobinangun_warga_register_draft'); if(window.indexedDB){ indexedDB.deleteDatabase('PurwobinangunBirthDB'); indexedDB.deleteDatabase('PurwobinangunBirthDB_{{ Auth::id() }}'); } } catch(e){}">
                         @csrf
                         <button type="submit" class="bg-rose-600/80 hover:bg-rose-700 text-white px-2 py-1 rounded transition inline-flex items-center gap-1" title="Keluar dari Akun Warga">
                             <i class="fa-solid fa-right-from-bracket"></i> <span class="hidden sm:inline">Keluar</span>

@@ -811,10 +811,17 @@
 document.addEventListener('DOMContentLoaded', function () {
     let currentStep = 1;
 
-    // Storage Keys
-    const DRAFT_KEY = 'purwobinangun_birth_form_draft';
-    const DB_NAME = 'PurwobinangunBirthDB';
+    // Storage Keys (Scoped per User to prevent cross-account draft leaks)
+    const CURRENT_USER_ID = '{{ Auth::id() ?? "guest" }}';
+    const CURRENT_USER_NIK = '{{ Auth::user()->nik ?? "" }}';
+    const DRAFT_KEY = 'purwobinangun_birth_form_draft_' + CURRENT_USER_ID;
+    const DB_NAME = 'PurwobinangunBirthDB_' + CURRENT_USER_ID;
     const STORE_NAME = 'birthDraftFiles';
+
+    // Clear legacy unscoped drafts to avoid cross-user data leakage
+    try {
+        localStorage.removeItem('purwobinangun_birth_form_draft');
+    } catch (e) {}
 
     // Elements
     const form = document.getElementById('birth-application-form');
@@ -932,6 +939,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function clearDraftFilesFromDB() {
         try {
+            if (!window.indexedDB) return;
             const db = await openDraftDB();
             const tx = db.transaction(STORE_NAME, 'readwrite');
             tx.objectStore(STORE_NAME).clear();
@@ -1052,6 +1060,8 @@ document.addEventListener('DOMContentLoaded', function () {
     function saveFormDraft() {
         try {
             const draft = {
+                user_id: CURRENT_USER_ID,
+                user_nik: CURRENT_USER_NIK,
                 currentStep: currentStep,
                 applicant_name: applicantName ? applicantName.value : '',
                 applicant_nik: applicantNik ? applicantNik.value : '',
@@ -1087,6 +1097,18 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!rawDraft) return;
             const draft = JSON.parse(rawDraft);
             if (!draft) return;
+
+            // Validasi kepemilikan akun: jika draft milik akun lain, hapus dan jangan pulihkan
+            if (draft.user_id && draft.user_id !== CURRENT_USER_ID) {
+                localStorage.removeItem(DRAFT_KEY);
+                clearDraftFilesFromDB();
+                return;
+            }
+            if (CURRENT_USER_NIK && draft.user_nik && draft.user_nik !== CURRENT_USER_NIK) {
+                localStorage.removeItem(DRAFT_KEY);
+                clearDraftFilesFromDB();
+                return;
+            }
 
             if (applicantName && draft.applicant_name !== undefined) applicantName.value = draft.applicant_name;
             if (applicantNik && draft.applicant_nik !== undefined) applicantNik.value = draft.applicant_nik;
@@ -1384,7 +1406,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Clear temporary draft from localStorage and IndexedDB upon successful submission
                 try {
                     localStorage.removeItem(DRAFT_KEY);
+                    localStorage.removeItem('purwobinangun_birth_form_draft');
                     clearDraftFilesFromDB();
+
+                    // Reset File Preview cards to initial empty state
+                    ['ktp', 'kk', 'lahir'].forEach(key => {
+                        const ph = document.getElementById(`placeholder-${key}`);
+                        const pb = document.getElementById(`preview-box-${key}`);
+                        if (ph) ph.classList.remove('hidden');
+                        if (pb) pb.classList.add('hidden');
+                    });
                 } catch (e) {
                     console.warn('Gagal menghapus draft setelah submit:', e);
                 }

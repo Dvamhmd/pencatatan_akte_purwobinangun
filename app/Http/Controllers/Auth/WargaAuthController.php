@@ -105,7 +105,12 @@ class WargaAuthController extends Controller
             'rt' => 'required|string|max:5',
             'rw' => 'required|string|max:5',
             'phone' => 'required|string|max:20',
-            'email' => 'nullable|email|max:255',
+            'email' => [
+                'nullable',
+                'email',
+                'max:255',
+                $existingRejected ? Rule::unique('users', 'email')->ignore($existingRejected->id) : 'unique:users,email',
+            ],
             'password' => 'required|string|min:6|confirmed',
         ];
 
@@ -145,7 +150,7 @@ class WargaAuthController extends Controller
                 'rt' => $validated['rt'],
                 'rw' => $validated['rw'],
                 'phone' => $validated['phone'],
-                'email' => $validated['email'] ?? null,
+                'email' => !empty($validated['email']) ? $validated['email'] : null,
                 'password' => Hash::make($validated['password']),
                 'status' => 'pending',
                 'rejection_reason' => null,
@@ -166,7 +171,7 @@ class WargaAuthController extends Controller
                 'rt' => $validated['rt'],
                 'rw' => $validated['rw'],
                 'phone' => $validated['phone'],
-                'email' => $validated['email'] ?? null,
+                'email' => !empty($validated['email']) ? $validated['email'] : null,
                 'password' => Hash::make($validated['password']),
                 'status' => 'pending',
             ]);

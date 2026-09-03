@@ -47,7 +47,7 @@
             @endif
 
             <!-- Form Registrasi -->
-            <form action="{{ route('warga.register.submit') }}" method="POST" class="space-y-6">
+            <form action="{{ route('warga.register.submit') }}" method="POST" class="space-y-6" autocomplete="off">
                 @csrf
 
                 <!-- BAGIAN 1: IDENTITAS KEPENDUDUKAN -->
@@ -181,7 +181,7 @@
                         <label for="email" class="block text-xs font-bold text-slate-700 mb-1">
                             Email <span class="text-slate-400 font-normal">(Opsional)</span>
                         </label>
-                        <input type="email" name="email" id="email" value="{{ old('email', $prefill->email ?? '') }}" placeholder="email@contoh.com" class="w-full text-xs px-3.5 py-2.5 rounded-lg border {{ $errors->has('email') ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300' }} focus:outline-none focus:ring-2 focus:ring-[#095b8c]/20 placeholder:text-slate-400 placeholder:text-xs">
+                        <input type="email" name="email" id="email" value="{{ old('email', $prefill->email ?? '') }}" autocomplete="off" placeholder="email@contoh.com" class="w-full text-xs px-3.5 py-2.5 rounded-lg border {{ $errors->has('email') ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300' }} focus:outline-none focus:ring-2 focus:ring-[#095b8c]/20 placeholder:text-slate-400 placeholder:text-xs">
                         @error('email')
                             <p class="text-rose-600 text-[11px] mt-1 font-medium">{{ $message }}</p>
                         @enderror
@@ -200,7 +200,7 @@
                                 Kata Sandi <span class="text-rose-600">*</span>
                             </label>
                             <div class="relative" style="position: relative;">
-                                <input type="password" name="password" id="reg_password" required minlength="6" placeholder="Minimal 6 karakter" class="w-full text-xs rounded-lg border {{ $errors->has('password') ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300' }} focus:outline-none focus:ring-2 focus:ring-[#095b8c]/20 placeholder:text-slate-400 placeholder:text-xs" style="padding-left: 1rem; padding-right: 2.75rem; padding-top: 0.65rem; padding-bottom: 0.65rem;">
+                                <input type="password" name="password" id="reg_password" required minlength="6" autocomplete="new-password" placeholder="Minimal 6 karakter" class="w-full text-xs rounded-lg border {{ $errors->has('password') ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300' }} focus:outline-none focus:ring-2 focus:ring-[#095b8c]/20 placeholder:text-slate-400 placeholder:text-xs" style="padding-left: 1rem; padding-right: 2.75rem; padding-top: 0.65rem; padding-bottom: 0.65rem;">
                                 <button type="button" onclick="toggleRegPassword('reg_password', 'reg-pwd-icon-1')" class="flex items-center justify-center text-slate-400 hover:text-slate-700 cursor-pointer focus:outline-none" style="position: absolute; right: 0.65rem; top: 50%; transform: translateY(-50%); width: 2rem; height: 2rem;">
                                     <i id="reg-pwd-icon-1" class="fa-solid fa-eye text-xs"></i>
                                 </button>
@@ -215,7 +215,7 @@
                                 Konfirmasi Kata Sandi <span class="text-rose-600">*</span>
                             </label>
                             <div class="relative" style="position: relative;">
-                                <input type="password" name="password_confirmation" id="reg_password_confirmation" required minlength="6" placeholder="Ketik ulang kata sandi" class="w-full text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c]/20 placeholder:text-slate-400 placeholder:text-xs" style="padding-left: 1rem; padding-right: 2.75rem; padding-top: 0.65rem; padding-bottom: 0.65rem;">
+                                <input type="password" name="password_confirmation" id="reg_password_confirmation" required minlength="6" autocomplete="new-password" placeholder="Ketik ulang kata sandi" class="w-full text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c]/20 placeholder:text-slate-400 placeholder:text-xs" style="padding-left: 1rem; padding-right: 2.75rem; padding-top: 0.65rem; padding-bottom: 0.65rem;">
                                 <button type="button" onclick="toggleRegPassword('reg_password_confirmation', 'reg-pwd-icon-2')" class="flex items-center justify-center text-slate-400 hover:text-slate-700 cursor-pointer focus:outline-none" style="position: absolute; right: 0.65rem; top: 50%; transform: translateY(-50%); width: 2rem; height: 2rem;">
                                     <i id="reg-pwd-icon-2" class="fa-solid fa-eye text-xs"></i>
                                 </button>
@@ -264,5 +264,84 @@ function toggleRegPassword(inputId, iconId) {
         icon.classList.add('fa-eye');
     }
 }
+
+// LocalStorage Draft Management untuk Form Pendaftaran Warga
+document.addEventListener('DOMContentLoaded', function() {
+    const REGISTER_DRAFT_KEY = 'purwobinangun_warga_register_draft';
+    const draftFields = [
+        'nik',
+        'family_card_no',
+        'name',
+        'birth_place',
+        'birth_date',
+        'gender',
+        'address',
+        'rt',
+        'rw',
+        'phone',
+        'email'
+    ];
+
+    function loadRegisterDraft() {
+        try {
+            const rawDraft = localStorage.getItem(REGISTER_DRAFT_KEY);
+            if (!rawDraft) return;
+
+            const draft = JSON.parse(rawDraft);
+            if (!draft || typeof draft !== 'object') return;
+
+            draftFields.forEach(function(fieldId) {
+                const el = document.getElementById(fieldId);
+                if (el && (!el.value || el.value.trim() === '')) {
+                    if (draft[fieldId] !== undefined && draft[fieldId] !== null) {
+                        el.value = draft[fieldId];
+                    }
+                }
+            });
+        } catch (e) {
+            console.warn('Gagal memulihkan draft pendaftaran dari localStorage:', e);
+        }
+    }
+
+    function saveRegisterDraft() {
+        try {
+            const draft = {};
+            let hasContent = false;
+
+            draftFields.forEach(function(fieldId) {
+                const el = document.getElementById(fieldId);
+                if (el) {
+                    draft[fieldId] = el.value || '';
+                    if (el.value && el.value.trim() !== '') {
+                        hasContent = true;
+                    }
+                }
+            });
+
+            if (hasContent) {
+                localStorage.setItem(REGISTER_DRAFT_KEY, JSON.stringify(draft));
+            } else {
+                localStorage.removeItem(REGISTER_DRAFT_KEY);
+            }
+        } catch (e) {
+            console.warn('Gagal menyimpan draft pendaftaran ke localStorage:', e);
+        }
+    }
+
+    // Pasang event listener input & change pada semua input form pendaftaran
+    draftFields.forEach(function(fieldId) {
+        const el = document.getElementById(fieldId);
+        if (el) {
+            el.addEventListener('input', saveRegisterDraft);
+            el.addEventListener('change', saveRegisterDraft);
+        }
+    });
+
+    // Pulihkan data draft jika halaman direfresh
+    loadRegisterDraft();
+
+    // Pastikan penyimpanan lokal tetap tersinkronisasi dengan nilai yang ada
+    saveRegisterDraft();
+});
 </script>
 @endsection

@@ -58,6 +58,45 @@ class WargaAuthAndAccessTest extends TestCase
         ]);
     }
 
+    public function test_warga_registration_fails_if_email_already_exists()
+    {
+        // Buat user pertama dengan email tertentu
+        $this->post('/warga/daftar', [
+            'nik' => '3404051111111111',
+            'family_card_no' => '3404052222222222',
+            'name' => 'User Pertama',
+            'birth_place' => 'Sleman',
+            'birth_date' => '1995-01-01',
+            'gender' => 'L',
+            'address' => 'Pakem',
+            'rt' => '01',
+            'rw' => '01',
+            'phone' => '081234567800',
+            'email' => 'duplicate@example.com',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+        ]);
+
+        // Pendaftaran kedua dengan NIK berbeda tapi email sama
+        $response = $this->post('/warga/daftar', [
+            'nik' => '3404053333333333',
+            'family_card_no' => '3404054444444444',
+            'name' => 'User Kedua',
+            'birth_place' => 'Sleman',
+            'birth_date' => '1996-02-02',
+            'gender' => 'P',
+            'address' => 'Pakem',
+            'rt' => '02',
+            'rw' => '02',
+            'phone' => '081234567801',
+            'email' => 'duplicate@example.com',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+        ]);
+
+        $response->assertSessionHasErrors(['email']);
+    }
+
     public function test_pending_warga_cannot_login_and_gets_notice()
     {
         // KK C is pending in seeder (Fitri Anggraini, NIK 3404054807960006)
