@@ -14,8 +14,19 @@
             <p class="text-base text-teal-100 mt-1.5 leading-relaxed">Kelola verifikasi berkas permohonan Akte Kelahiran dan Kematian warga Kalurahan Purwobinangun secara real-time.</p>
         </div>
         <div class="flex items-center gap-2 shrink-0">
-            <a href="{{ route('admin.citizens.index', ['status' => 'pending']) }}" class="bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold text-base px-5 py-3 rounded-xl shadow-sm transition inline-flex items-center gap-2">
-                <i class="fa-solid fa-user-clock text-lg"></i> {{ $citizenStats['pending'] }} Warga Perlu Verifikasi
+            @php
+                if ($birthStats['pending'] > 0) {
+                    $pendingUrl = route('admin.birth.index', ['status' => 'pending']);
+                } elseif ($deathStats['pending'] > 0) {
+                    $pendingUrl = route('admin.death.index', ['status' => 'pending']);
+                } elseif ($citizenStats['pending'] > 0) {
+                    $pendingUrl = route('admin.citizens.index', ['status' => 'pending']);
+                } else {
+                    $pendingUrl = route('admin.birth.index', ['status' => 'pending']);
+                }
+            @endphp
+            <a href="{{ $pendingUrl }}" class="bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold text-base px-5 py-3 rounded-xl shadow-sm transition inline-flex items-center gap-2">
+                <i class="fa-solid fa-bell text-lg"></i> {{ $totalPending }} Pengajuan Perlu Verifikasi
             </a>
         </div>
     </div>
