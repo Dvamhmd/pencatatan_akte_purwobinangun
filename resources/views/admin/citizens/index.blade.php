@@ -7,7 +7,7 @@
 <div class="space-y-6">
 
     <!-- Statistik Akun Warga -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+    <div class="grid grid-cols-2 sm:grid-cols-5 gap-4">
         
         <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
             <div class="flex items-center justify-between text-slate-500 mb-1">
@@ -41,6 +41,14 @@
             <p class="text-2xl font-black text-rose-700">{{ $stats['rejected'] }}</p>
         </div>
 
+        <div class="bg-white p-4 rounded-xl border border-slate-300 shadow-2xs">
+            <div class="flex items-center justify-between text-slate-600 mb-1">
+                <span class="text-xs font-semibold">Diarsipkan</span>
+                <i class="fa-solid fa-box-archive text-slate-500"></i>
+            </div>
+            <p class="text-2xl font-black text-slate-700">{{ $stats['archived'] ?? 0 }}</p>
+        </div>
+
     </div>
 
     <!-- Filter & Search Table -->
@@ -63,6 +71,7 @@
                     <option value="pending" {{ $status === 'pending' ? 'selected' : '' }}>Menunggu Verifikasi</option>
                     <option value="active" {{ $status === 'active' ? 'selected' : '' }}>Aktif / Terverifikasi</option>
                     <option value="rejected" {{ $status === 'rejected' ? 'selected' : '' }}>Ditolak</option>
+                    <option value="archived" {{ $status === 'archived' ? 'selected' : '' }}>Diarsipkan</option>
                 </select>
 
                 <button type="submit" class="bg-[#0b7c89] hover:bg-[#065b65] text-white text-xs font-bold px-4 py-2 rounded-lg transition shadow-2xs">

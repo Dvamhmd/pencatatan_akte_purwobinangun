@@ -87,6 +87,18 @@
     border-color: var(--clr2);
 }
 
+/* Button & Badge Archive Helper */
+.btn-archive {
+    background-color: #334155 !important;
+    color: #ffffff !important;
+}
+
+.btn-archive:hover {
+    background-color: #1e293b !important;
+    color: #ffffff !important;
+}
+
+
 /* Header Gradient Purwobinangun Theme */
 .hero-purwobinangun {
     background: linear-gradient(135deg, #095b8c 0%, #059cb8 60%, #3887c2 100%),

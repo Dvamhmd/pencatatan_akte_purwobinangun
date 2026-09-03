@@ -50,6 +50,16 @@ class EnsureWargaAuthenticated
             return redirect()->route('warga.login')->with('error', 'Pendaftaran akun Anda ditolak oleh petugas kelurahan dengan alasan: "' . $reason . '". Silakan perbaiki data Anda atau lakukan pendaftaran kembali.');
         }
 
+        // Jika akun warga diarsipkan / dinonaktifkan
+        if ($user->isArchived()) {
+            $reason = $user->rejection_reason ?: 'Akun telah dinonaktifkan atau diarsipkan.';
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('warga.login')->with('error', 'Akun warga Anda berstatus diarsipkan / dinonaktifkan oleh petugas kelurahan: "' . $reason . '".');
+        }
+
         return $next($request);
     }
 }

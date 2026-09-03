@@ -87,6 +87,7 @@ class BirthCertificate extends Model
             'in_process' => 'Sedang Diproses Kelurahan',
             'completed' => 'Selesai / Siap Diambil',
             'rejected' => 'Ditolak / Perlu Perbaikan',
+            'archived' => 'Diarsipkan',
             default => 'Diajukan',
         };
     }
@@ -99,6 +100,7 @@ class BirthCertificate extends Model
             'in_process' => 'bg-indigo-100 text-indigo-800 border-indigo-300',
             'completed' => 'bg-emerald-100 text-emerald-800 border-emerald-300',
             'rejected' => 'bg-rose-100 text-rose-800 border-rose-300',
+            'archived' => 'bg-slate-200 text-slate-800 border-slate-400',
             default => 'bg-gray-100 text-gray-800 border-gray-300',
         };
     }

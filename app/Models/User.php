@@ -89,12 +89,18 @@ class User extends Authenticatable
         return $this->status === 'rejected';
     }
 
+    public function isArchived(): bool
+    {
+        return $this->status === 'archived';
+    }
+
     public function getStatusLabelAttribute(): string
     {
         return match ($this->status) {
             'active' => 'Aktif / Terverifikasi',
             'pending' => 'Menunggu Verifikasi',
             'rejected' => 'Ditolak',
+            'archived' => 'Diarsipkan',
             default => 'Belum Terverifikasi',
         };
     }
@@ -105,6 +111,7 @@ class User extends Authenticatable
             'active' => 'bg-emerald-100 text-emerald-800 border-emerald-300',
             'pending' => 'bg-amber-100 text-amber-800 border-amber-300',
             'rejected' => 'bg-rose-100 text-rose-800 border-rose-300',
+            'archived' => 'bg-slate-200 text-slate-800 border-slate-400',
             default => 'bg-gray-100 text-gray-800 border-gray-300',
         };
     }

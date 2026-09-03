@@ -43,7 +43,7 @@ class AdminDeathController extends Controller
     public function updateStatus(Request $request, DeathCertificate $death)
     {
         $validated = $request->validate([
-            'status' => 'required|in:pending,verified,in_process,completed,rejected',
+            'status' => 'required|in:pending,verified,in_process,completed,rejected,archived',
             'rejection_note' => 'nullable|string',
         ]);
 

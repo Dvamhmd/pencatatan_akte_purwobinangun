@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminArchiveController;
 use App\Http\Controllers\Admin\AdminBirthController;
 use App\Http\Controllers\Admin\AdminCitizenController;
 use App\Http\Controllers\Admin\AdminDashboardController;
@@ -100,6 +101,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('/', [AdminCitizenController::class, 'index'])->name('index');
             Route::get('/{citizen}', [AdminCitizenController::class, 'show'])->name('show');
             Route::post('/{citizen}/verify', [AdminCitizenController::class, 'verify'])->name('verify');
+        });
+
+        // Arsip Pengajuan & Akun Ditolak / Dinonaktifkan
+        Route::prefix('arsip')->name('archive.')->group(function () {
+            Route::get('/', [AdminArchiveController::class, 'index'])->name('index');
+            Route::post('/warga/{citizen}/archive', [AdminArchiveController::class, 'archiveCitizen'])->name('citizen.archive');
+            Route::post('/warga/{citizen}/restore', [AdminArchiveController::class, 'restoreCitizen'])->name('citizen.restore');
+            Route::post('/akte-kelahiran/{birth}/archive', [AdminArchiveController::class, 'archiveBirth'])->name('birth.archive');
+            Route::post('/akte-kelahiran/{birth}/restore', [AdminArchiveController::class, 'restoreBirth'])->name('birth.restore');
+            Route::post('/akte-kematian/{death}/archive', [AdminArchiveController::class, 'archiveDeath'])->name('death.archive');
+            Route::post('/akte-kematian/{death}/restore', [AdminArchiveController::class, 'restoreDeath'])->name('death.restore');
         });
     });
 });

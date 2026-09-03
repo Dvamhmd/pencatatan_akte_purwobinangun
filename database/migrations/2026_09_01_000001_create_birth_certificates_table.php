@@ -57,7 +57,7 @@ return new class extends Migration
             $table->string('doc_witness_ktp')->nullable(); // KTP Saksi
 
             // Status Pelayanan
-            $table->enum('status', ['pending', 'verified', 'in_process', 'completed', 'rejected'])->default('pending');
+            $table->enum('status', ['pending', 'verified', 'in_process', 'completed', 'rejected', 'archived'])->default('pending');
             $table->text('rejection_note')->nullable();
             $table->string('processed_by')->nullable();
 

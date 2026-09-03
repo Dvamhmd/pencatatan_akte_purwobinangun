@@ -184,9 +184,9 @@
                 <div class="p-5 space-y-5 text-xs">
                     
                     <!-- Informasi Status Terkini -->
-                    <div class="p-3.5 rounded-xl border {{ $citizen->isPending() ? 'bg-amber-50 border-amber-300 text-amber-900' : ($citizen->isActive() ? 'bg-emerald-50 border-emerald-300 text-emerald-900' : 'bg-rose-50 border-rose-300 text-rose-900') }}">
+                    <div class="p-3.5 rounded-xl border {{ $citizen->isPending() ? 'bg-amber-50 border-amber-300 text-amber-900' : ($citizen->isActive() ? 'bg-emerald-50 border-emerald-300 text-emerald-900' : ($citizen->isArchived() ? 'bg-slate-100 border-slate-300 text-slate-800' : 'bg-rose-50 border-rose-300 text-rose-900')) }}">
                         <div class="flex items-center gap-2">
-                            <i class="fa-solid {{ $citizen->isPending() ? 'fa-clock text-amber-600' : ($citizen->isActive() ? 'fa-circle-check text-emerald-600' : 'fa-circle-xmark text-rose-600') }} text-base"></i>
+                            <i class="fa-solid {{ $citizen->isPending() ? 'fa-clock text-amber-600' : ($citizen->isActive() ? 'fa-circle-check text-emerald-600' : ($citizen->isArchived() ? 'fa-box-archive text-slate-600' : 'fa-circle-xmark text-rose-600')) }} text-base"></i>
                             <span class="font-bold">Status: {{ $citizen->status_label }}</span>
                         </div>
                         @if($citizen->verified_at)
@@ -195,8 +195,8 @@
                             </p>
                         @endif
                         @if($citizen->rejection_reason)
-                            <div class="mt-2 p-2 bg-white/80 rounded border border-rose-200 text-rose-900 text-[11px]">
-                                <strong>Catatan Penolakan:</strong>
+                            <div class="mt-2 p-2 bg-white/80 rounded border {{ $citizen->isArchived() ? 'border-slate-300 text-slate-800' : 'border-rose-200 text-rose-900' }} text-[11px]">
+                                <strong>Catatan Penolakan / Arsip:</strong>
                                 <p class="italic mt-0.5">{{ $citizen->rejection_reason }}</p>
                             </div>
                         @endif
@@ -206,28 +206,46 @@
                     <form action="{{ route('admin.citizens.verify', $citizen) }}" method="POST" id="verify-form" class="space-y-4">
                         @csrf
 
-                        <div>
-                            <label for="rejection_reason" class="block font-bold text-slate-700 mb-1">
-                                Catatan / Alasan Penolakan <span class="text-slate-400 font-normal">(Wajib jika menolak)</span>:
-                            </label>
-                            <textarea name="rejection_reason" id="rejection_reason" rows="3" placeholder="Tuliskan catatan mengapa data pendaftaran warga belum dapat disetujui (misal: Nomor KK tidak ditemukan, NIK tidak sesuai KTP, dsb)..." class="w-full text-xs p-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0b7c89]">{{ old('rejection_reason', $citizen->rejection_reason) }}</textarea>
-                            @error('rejection_reason')
-                                <p class="text-rose-600 text-[11px] mt-1 font-medium">{{ $message }}</p>
-                            @enderror
-                        </div>
+                        @if(!$citizen->isArchived())
+                            <div>
+                                <label for="rejection_reason" class="block font-bold text-slate-700 mb-1">
+                                    Catatan / Alasan {{ $citizen->isActive() ? 'Penonaktifan' : 'Penolakan' }} <span class="text-slate-400 font-normal">(Wajib jika {{ $citizen->isActive() ? 'menonaktifkan' : 'menolak' }})</span>:
+                                </label>
+                                <textarea name="rejection_reason" id="rejection_reason" rows="3" placeholder="{{ $citizen->isActive() ? 'Tuliskan catatan mengapa akun warga ini dinonaktifkan...' : 'Tuliskan catatan mengapa data pendaftaran warga belum dapat disetujui (misal: Nomor KK tidak ditemukan, NIK tidak sesuai KTP, dsb)...' }}" class="w-full text-xs p-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0b7c89]">{{ old('rejection_reason', $citizen->rejection_reason) }}</textarea>
+                                @error('rejection_reason')
+                                    <p class="text-rose-600 text-[11px] mt-1 font-medium">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        @endif
 
                         <!-- Action Buttons -->
                         <div class="space-y-2 pt-2">
                             
-                            <!-- Tombol Setujui -->
-                            <button type="submit" name="action" value="approve" onclick="return confirm('Apakah Anda yakin ingin MENYETUJUI dan MENGAKTIFKAN akun warga ini?');" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl shadow-xs transition flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-check-circle"></i> Setujui & Aktifkan Akun Warga
+                            <!-- Tombol Setujui / Aktifkan -->
+                            <button type="submit" name="action" value="approve" onclick="return confirm('Apakah Anda yakin ingin {{ $citizen->isActive() ? 'MEMPERBARUI dan TETAP MENGAKTIFKAN' : ($citizen->isArchived() ? 'MEMULIHKAN dan MENGAKTIFKAN' : 'MENYETUJUI dan MENGAKTIFKAN') }} akun warga ini?');" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl shadow-xs transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-check-circle"></i> {{ $citizen->isArchived() ? 'Pulihkan & Aktifkan Akun Warga' : ($citizen->isActive() ? 'Simpan & Tetap Aktifkan Akun' : 'Setujui & Aktifkan Akun Warga') }}
                             </button>
 
-                            <!-- Tombol Tolak -->
-                            <button type="submit" name="action" value="reject" onclick="return validateRejection();" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 px-4 rounded-xl shadow-xs transition flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-xmark-circle"></i> Tolak Pendaftaran Akun
-                            </button>
+                            @if($citizen->isRejected())
+                                <!-- Saat status ditolak / dinonaktifkan: Tombol Tolak/Nonaktifkan hilang diganti dengan tombol Arsipkan -->
+                                <button type="submit" name="action" value="archive" onclick="return confirm('Apakah Anda yakin ingin MENGARSIPKAN data akun warga yang telah ditolak / dinonaktifkan ini?');" class="btn-archive w-full bg-slate-700 hover:bg-slate-800 text-white font-bold py-2.5 px-4 rounded-xl shadow-xs transition flex items-center justify-center gap-2" style="background-color: #334155; color: #ffffff;">
+                                    <i class="fa-solid fa-box-archive text-amber-300"></i> Arsipkan Akun Warga
+                                </button>
+                            @elseif($citizen->isArchived())
+                                <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center text-slate-500 text-[11px]">
+                                    <i class="fa-solid fa-circle-info text-[#0b7c89] mr-1"></i> Akun ini sudah berada di dalam daftar arsip.
+                                </div>
+                            @elseif($citizen->isActive())
+                                <!-- Tombol Nonaktifkan untuk akun yang sudah aktif -->
+                                <button type="submit" name="action" value="reject" onclick="return validateRejection('active');" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 px-4 rounded-xl shadow-xs transition flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-ban"></i> Nonaktifkan Akun
+                                </button>
+                            @else
+                                <!-- Tombol Tolak untuk status pendaftaran yang masih menunggu verifikasi (pending) -->
+                                <button type="submit" name="action" value="reject" onclick="return validateRejection('pending');" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 px-4 rounded-xl shadow-xs transition flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-xmark-circle"></i> Tolak Pendaftaran Akun
+                                </button>
+                            @endif
 
                         </div>
 
@@ -243,14 +261,23 @@
 </div>
 
 <script>
-function validateRejection() {
+function validateRejection(status) {
     const reason = document.getElementById('rejection_reason').value.trim();
-    if (!reason) {
-        alert('Harap isi kolom Catatan / Alasan Penolakan sebelum menolak pendaftaran akun.');
-        document.getElementById('rejection_reason').focus();
-        return false;
+    if (status === 'active') {
+        if (!reason) {
+            alert('Harap isi kolom Catatan / Alasan Penonaktifan sebelum menonaktifkan akun warga.');
+            document.getElementById('rejection_reason').focus();
+            return false;
+        }
+        return confirm('Apakah Anda yakin ingin MENONAKTIFKAN akun warga ini?');
+    } else {
+        if (!reason) {
+            alert('Harap isi kolom Catatan / Alasan Penolakan sebelum menolak pendaftaran akun.');
+            document.getElementById('rejection_reason').focus();
+            return false;
+        }
+        return confirm('Apakah Anda yakin ingin MENOLAK pendaftaran akun warga ini?');
     }
-    return confirm('Apakah Anda yakin ingin MENOLAK pendaftaran akun warga ini?');
 }
 </script>
 @endsection

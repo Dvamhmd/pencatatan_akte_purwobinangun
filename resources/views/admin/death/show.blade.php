@@ -119,6 +119,7 @@
                             <option value="in_process" {{ $death->status === 'in_process' ? 'selected' : '' }}>3. Sedang Diproses Kalurahan</option>
                             <option value="completed" {{ $death->status === 'completed' ? 'selected' : '' }}>4. Selesai / Siap Diambil</option>
                             <option value="rejected" {{ $death->status === 'rejected' ? 'selected' : '' }}>5. Tolak / Minta Perbaikan Berkas</option>
+                            <option value="archived" {{ $death->status === 'archived' ? 'selected' : '' }}>6. Diarsipkan (Nonaktif)</option>
                         </select>
                     </div>
 

@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('rw', 5)->nullable()->after('rt');
             $table->string('phone', 20)->nullable()->after('rw');
             $table->string('email')->nullable()->change();
-            $table->enum('status', ['pending', 'active', 'rejected'])->default('pending')->after('password');
+            $table->enum('status', ['pending', 'active', 'rejected', 'archived'])->default('pending')->after('password');
             $table->text('rejection_reason')->nullable()->after('status');
             $table->timestamp('verified_at')->nullable()->after('rejection_reason');
             $table->string('verified_by')->nullable()->after('verified_at');

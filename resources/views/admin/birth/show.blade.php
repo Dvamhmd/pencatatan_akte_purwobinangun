@@ -134,6 +134,7 @@
                             <option value="in_process" {{ $birth->status === 'in_process' ? 'selected' : '' }}>3. Sedang Diproses Kalurahan</option>
                             <option value="completed" {{ $birth->status === 'completed' ? 'selected' : '' }}>4. Selesai / Siap Diambil</option>
                             <option value="rejected" {{ $birth->status === 'rejected' ? 'selected' : '' }}>5. Tolak / Minta Perbaikan Berkas</option>
+                            <option value="archived" {{ $birth->status === 'archived' ? 'selected' : '' }}>6. Diarsipkan (Nonaktif)</option>
                         </select>
                     </div>
 

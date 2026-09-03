@@ -159,6 +159,12 @@ class WargaAuthAndAccessTest extends TestCase
         $admin = User::where('email', 'admin@purwobinangun.desa.id')->first();
         $pendingCitizen = User::where('status', 'pending')->first();
 
+        // Cek halaman pending menampilkan tombol "Tolak Pendaftaran Akun" dan TIDAK menampilkan "Nonaktifkan Akun"
+        $responseShowPending = $this->actingAs($admin)->get('/admin/warga/' . $pendingCitizen->id);
+        $responseShowPending->assertStatus(200);
+        $responseShowPending->assertSee('Tolak Pendaftaran Akun');
+        $responseShowPending->assertDontSee('Nonaktifkan Akun');
+
         // Admin approves citizen
         $responseApprove = $this->actingAs($admin)->post('/admin/warga/' . $pendingCitizen->id . '/verify', [
             'action' => 'approve',
@@ -171,7 +177,13 @@ class WargaAuthAndAccessTest extends TestCase
             'verified_by' => 'Petugas Pelayanan Kalurahan',
         ]);
 
-        // Admin rejects citizen with reason
+        // Cek halaman aktif menampilkan tombol "Nonaktifkan Akun" dan TIDAK menampilkan "Tolak Pendaftaran Akun"
+        $responseShowActive = $this->actingAs($admin)->get('/admin/warga/' . $pendingCitizen->id);
+        $responseShowActive->assertStatus(200);
+        $responseShowActive->assertSee('Nonaktifkan Akun');
+        $responseShowActive->assertDontSee('Tolak Pendaftaran Akun');
+
+        // Admin deactivates/rejects citizen with reason
         $responseReject = $this->actingAs($admin)->post('/admin/warga/' . $pendingCitizen->id . '/verify', [
             'action' => 'reject',
             'rejection_reason' => 'NIK tidak sesuai dengan database KTP Kalurahan.',
@@ -182,5 +194,49 @@ class WargaAuthAndAccessTest extends TestCase
             'status' => 'rejected',
             'rejection_reason' => 'NIK tidak sesuai dengan database KTP Kalurahan.',
         ]);
+
+        // Halaman detail akun yang ditolak menampilkan tombol "Arsipkan Akun Warga" dan TIDAK menampilkan tombol "Tolak Pendaftaran Akun" maupun "Nonaktifkan Akun"
+        $responseShowRejected = $this->actingAs($admin)->get('/admin/warga/' . $pendingCitizen->id);
+        $responseShowRejected->assertStatus(200);
+        $responseShowRejected->assertSee('Arsipkan Akun Warga');
+        $responseShowRejected->assertDontSee('Tolak Pendaftaran Akun');
+        $responseShowRejected->assertDontSee('Nonaktifkan Akun');
+
+        // Admin can archive the citizen
+        $responseArchive = $this->actingAs($admin)->post('/admin/warga/' . $pendingCitizen->id . '/verify', [
+            'action' => 'archive',
+        ]);
+        $this->assertDatabaseHas('users', [
+            'id' => $pendingCitizen->id,
+            'status' => 'archived',
+        ]);
+    }
+
+    public function test_admin_can_access_archive_menu_and_restore_items()
+    {
+        $admin = User::where('email', 'admin@purwobinangun.desa.id')->first();
+        $citizen = User::where('role', 'warga')->first();
+        $citizen->update(['status' => 'archived', 'rejection_reason' => 'Berkas belum lengkap']);
+
+        // Akses menu arsip tab akun warga
+        $responseArchive = $this->actingAs($admin)->get('/admin/arsip?tab=citizens');
+        $responseArchive->assertStatus(200);
+        $responseArchive->assertSee('Arsip Pengajuan &amp; Akun Nonaktif', false);
+        $responseArchive->assertSee($citizen->name);
+
+        // Pulihkan akun warga dari arsip
+        $responseRestore = $this->actingAs($admin)->post('/admin/arsip/warga/' . $citizen->id . '/restore');
+        $responseRestore->assertSessionHas('success');
+        $this->assertDatabaseHas('users', [
+            'id' => $citizen->id,
+            'status' => 'active',
+        ]);
+
+        // Akses menu arsip tab akte kelahiran & kematian
+        $responseBirthArchive = $this->actingAs($admin)->get('/admin/arsip?tab=birth');
+        $responseBirthArchive->assertStatus(200);
+
+        $responseDeathArchive = $this->actingAs($admin)->get('/admin/arsip?tab=death');
+        $responseDeathArchive->assertStatus(200);
     }
 }

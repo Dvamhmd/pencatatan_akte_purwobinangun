@@ -78,6 +78,27 @@
             </a>
 
             <div class="pt-5 pb-2 px-4 text-xs uppercase font-bold tracking-wider text-teal-300">
+                Arsip & Penonaktifan
+            </div>
+
+            <a href="{{ route('admin.archive.index') }}" class="flex items-center justify-between px-4 py-3 rounded-xl transition {{ request()->routeIs('admin.archive.*') ? 'bg-[#0b7c89] text-white shadow-sm' : 'text-teal-100 hover:bg-teal-800/50' }}">
+                <div class="flex items-center gap-3.5">
+                    <i class="fa-solid fa-box-archive w-5 text-center text-amber-200 text-lg"></i>
+                    <span>Arsip Pengajuan</span>
+                </div>
+                @php
+                    $totalArchivedOrRejected = \App\Models\User::where('role', 'warga')->whereIn('status', ['rejected', 'archived'])->count()
+                        + \App\Models\BirthCertificate::whereIn('status', ['rejected', 'archived'])->count()
+                        + \App\Models\DeathCertificate::whereIn('status', ['rejected', 'archived'])->count();
+                @endphp
+                @if($totalArchivedOrRejected > 0)
+                    <span class="bg-slate-700 text-slate-200 font-bold text-xs px-2 py-0.5 rounded-full shadow-xs">
+                        {{ $totalArchivedOrRejected }}
+                    </span>
+                @endif
+            </a>
+
+            <div class="pt-5 pb-2 px-4 text-xs uppercase font-bold tracking-wider text-teal-300">
                 Akses Publik
             </div>
 

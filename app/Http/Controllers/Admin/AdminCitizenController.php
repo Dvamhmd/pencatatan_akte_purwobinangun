@@ -18,7 +18,7 @@ class AdminCitizenController extends Controller
 
         $query = User::where('role', 'warga');
 
-        if ($status && in_array($status, ['pending', 'active', 'rejected'])) {
+        if ($status && in_array($status, ['pending', 'active', 'rejected', 'archived'])) {
             $query->where('status', $status);
         }
 
@@ -39,6 +39,7 @@ class AdminCitizenController extends Controller
             'pending' => User::where('role', 'warga')->where('status', 'pending')->count(),
             'active' => User::where('role', 'warga')->where('status', 'active')->count(),
             'rejected' => User::where('role', 'warga')->where('status', 'rejected')->count(),
+            'archived' => User::where('role', 'warga')->where('status', 'archived')->count(),
         ];
 
         return view('admin.citizens.index', compact('citizens', 'status', 'search', 'stats'));
@@ -70,10 +71,10 @@ class AdminCitizenController extends Controller
         }
 
         $validated = $request->validate([
-            'action' => 'required|in:approve,reject',
+            'action' => 'required|in:approve,reject,archive',
             'rejection_reason' => 'required_if:action,reject|nullable|string|max:1000',
         ], [
-            'rejection_reason.required_if' => 'Alasan atau catatan penolakan wajib diisi jika Anda menolak pendaftaran.',
+            'rejection_reason.required_if' => 'Alasan atau catatan penolakan/penonaktifan akun wajib diisi.',
         ]);
 
         if ($validated['action'] === 'approve') {
@@ -85,15 +86,28 @@ class AdminCitizenController extends Controller
 
             return redirect()->route('admin.citizens.show', $citizen)
                 ->with('success', 'Akun warga (' . $citizen->name . ') berhasil diverifikasi dan diaktifkan!');
+        } elseif ($validated['action'] === 'archive') {
+            $citizen->status = 'archived';
+            $citizen->verified_at = now();
+            $citizen->verified_by = Auth::user()->name;
+            $citizen->save();
+
+            return redirect()->route('admin.citizens.show', $citizen)
+                ->with('success', 'Data akun warga (' . $citizen->name . ') telah berhasil diarsipkan.');
         } else {
+            $wasActive = $citizen->isActive();
             $citizen->status = 'rejected';
             $citizen->rejection_reason = $validated['rejection_reason'];
             $citizen->verified_at = now();
             $citizen->verified_by = Auth::user()->name;
             $citizen->save();
 
+            $successMsg = $wasActive
+                ? 'Akun warga (' . $citizen->name . ') telah dinonaktifkan.'
+                : 'Pendaftaran akun warga (' . $citizen->name . ') telah ditolak dengan catatan yang diberikan.';
+
             return redirect()->route('admin.citizens.show', $citizen)
-                ->with('success', 'Pendaftaran akun warga (' . $citizen->name . ') telah ditolak dengan catatan yang diberikan.');
+                ->with('success', $successMsg);
         }
     }
 }

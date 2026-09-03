@@ -63,6 +63,15 @@ class WargaAuthController extends Controller
             ])->onlyInput('nik');
         }
 
+        if ($user->isArchived()) {
+            return back()->with('rejected_notice', [
+                'name' => $user->name,
+                'nik' => $user->nik,
+                'reason' => $user->rejection_reason ?: 'Akun telah dinonaktifkan atau diarsipkan oleh petugas kelurahan.',
+                'message' => 'Akun warga Anda saat ini berstatus diarsipkan / dinonaktifkan oleh petugas.',
+            ])->onlyInput('nik');
+        }
+
         // Akun Aktif: Lakukan Login
         Auth::login($user, $request->boolean('remember'));
         $request->session()->regenerate();
@@ -79,7 +88,7 @@ class WargaAuthController extends Controller
 
         $prefill = null;
         if ($request->filled('reapply_nik')) {
-            $prefill = User::where('nik', $request->query('reapply_nik'))->where('status', 'rejected')->first();
+            $prefill = User::where('nik', $request->query('reapply_nik'))->whereIn('status', ['rejected', 'archived'])->first();
         }
 
         return view('warga.auth.register', compact('prefill'));
@@ -87,8 +96,8 @@ class WargaAuthController extends Controller
 
     public function register(Request $request)
     {
-        // Cek apakah ini pendaftaran ulang akun yang sebelumnya ditolak
-        $existingRejected = User::where('nik', $request->nik)->where('status', 'rejected')->first();
+        // Cek apakah ini pendaftaran ulang akun yang sebelumnya ditolak atau diarsipkan
+        $existingRejected = User::where('nik', $request->nik)->whereIn('status', ['rejected', 'archived'])->first();
 
         $rules = [
             'nik' => [
