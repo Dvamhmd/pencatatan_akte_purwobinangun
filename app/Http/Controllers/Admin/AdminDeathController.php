@@ -91,6 +91,10 @@ class AdminDeathController extends Controller
             ? 'Status permohonan Akte Kematian berhasil diperbarui menjadi Sudah Diambil dan telah otomatis masuk ke arsip.'
             : 'Status permohonan Akte Kematian berhasil diperbarui menjadi ' . $death->status_label . '.';
 
+        // Periksa pengaturan saluran notifikasi yang dipilih admin (default aktif jika ada)
+        $sendEmail = $request->boolean('send_email');
+        $sendWhatsApp = $request->boolean('send_whatsapp');
+
         // Cari email warga yang terkait dengan pengajuan
         $recipientEmail = $death->user?->email;
         if (!$recipientEmail && $death->applicant_nik) {
@@ -100,8 +104,8 @@ class AdminDeathController extends Controller
             $recipientEmail = User::where('family_card_no', $death->family_card_no)->whereNotNull('email')->value('email');
         }
 
-        // Kirim email notifikasi otomatis jika status adalah siap diambil, revisi, atau dibatalkan
-        if ($recipientEmail && in_array($validated['status'], ['ready_for_pickup', 'completed', 'revision', 'rejected'])) {
+        // Kirim email notifikasi otomatis jika diaktifkan admin dan status adalah siap diambil, revisi, atau dibatalkan
+        if ($sendEmail && $recipientEmail && in_array($validated['status'], ['ready_for_pickup', 'completed', 'revision', 'rejected'])) {
             try {
                 Mail::to($recipientEmail)->send(new SubmissionStatusNotification(
                     submission: $death,
@@ -118,8 +122,8 @@ class AdminDeathController extends Controller
             }
         }
 
-        // Kirim WhatsApp notifikasi otomatis jika status adalah siap diambil, revisi, atau dibatalkan
-        if (in_array($validated['status'], ['ready_for_pickup', 'completed', 'revision', 'rejected'])) {
+        // Kirim WhatsApp notifikasi otomatis jika diaktifkan admin dan status adalah siap diambil, revisi, atau dibatalkan
+        if ($sendWhatsApp && in_array($validated['status'], ['ready_for_pickup', 'completed', 'revision', 'rejected'])) {
             $waSent = WhatsAppNotificationService::sendSubmissionStatusNotification(
                 submission: $death,
                 type: 'death',

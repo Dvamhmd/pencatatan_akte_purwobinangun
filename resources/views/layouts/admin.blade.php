@@ -18,7 +18,7 @@
     <!-- Vite CSS & JS -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-slate-100 text-slate-800 antialiased h-screen h-[100dvh] overflow-hidden flex m-0 p-0">
+<body data-role="admin" class="admin-portal bg-slate-100 text-slate-800 antialiased h-screen h-[100dvh] overflow-hidden flex m-0 p-0">
 
     <!-- Admin Sidebar -->
     <aside class="w-72 bg-[#065b65] text-white flex-shrink-0 flex flex-col h-screen h-[100dvh] max-h-screen border-r border-[#054850] z-30 overflow-hidden">

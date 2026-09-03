@@ -4,7 +4,17 @@
  */
 
 export function initDissolveEffects() {
-    // Only initialize on citizen portal (Web Warga layout)
+    // Only initialize on citizen portal (Web Warga layout - never on admin panel)
+    if (
+        document.body?.dataset?.role === 'admin' ||
+        document.querySelector('.admin-portal') ||
+        document.querySelector('.admin-sidebar') ||
+        window.location.pathname.startsWith('/admin') ||
+        window.location.pathname.includes('/admin/')
+    ) {
+        return;
+    }
+
     const wargaMain = document.querySelector('main');
     if (!wargaMain) return;
 
@@ -34,7 +44,7 @@ export function initDissolveEffects() {
     });
 
     const isExcluded = (el) => {
-        return el.closest('header, .hero-purwobinangun, nav, footer, .modal-overlay, #preview-modal, #camera-modal, .swal2-container, .modal-dialog-box, #live-clock, #live-date, .popup-notification') !== null;
+        return el.closest('header, .hero-purwobinangun, nav, footer, .modal-overlay, #preview-modal, #camera-modal, .swal2-container, .modal-dialog-box, #live-clock, #live-date, .popup-notification, #notificationConfirmModal, [role="dialog"], .no-dissolve') !== null;
     };
 
     function attachDissolve(card) {

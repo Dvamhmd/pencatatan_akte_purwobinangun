@@ -248,17 +248,28 @@ class CertificateServiceTest extends TestCase
         $responseShowRejected->assertStatus(200);
         $responseShowRejected->assertSee('Arsipkan Pengajuan');
 
-        // 4. Ubah ke Siap diambil
+        // 4. Ubah ke Siap diambil dengan toggle notifikasi (hanya WhatsApp aktif, email nonaktif)
         $this->actingAs($admin)->put('/admin/akte-kelahiran/' . $birth->id . '/status', [
             'status' => 'ready_for_pickup',
             'rejection_note' => 'Akte kelahiran telah selesai dicetak dan siap diambil.',
+            'send_email' => '0',
+            'send_whatsapp' => '1',
         ]);
         $this->assertEquals('Siap diambil', $birth->fresh()->status_label);
+
+        // Halaman verifikasi menampilkan pop-up card konfirmasi notifikasi beserta toggle email dan whatsapp
+        $responseShowReady = $this->actingAs($admin)->get('/admin/akte-kelahiran/' . $birth->id);
+        $responseShowReady->assertStatus(200);
+        $responseShowReady->assertSee('Konfirmasi Pengiriman Notifikasi');
+        $responseShowReady->assertSee('Email Warga');
+        $responseShowReady->assertSee('WhatsApp');
 
         // 5. Ubah ke Sudah diambil (otomatis masuk ke arsip)
         $responsePickedUp = $this->actingAs($admin)->put('/admin/akte-kelahiran/' . $birth->id . '/status', [
             'status' => 'picked_up',
             'rejection_note' => 'Dokumen telah diserahkan dan diambil oleh pemohon.',
+            'send_email' => '1',
+            'send_whatsapp' => '1',
         ]);
         $responsePickedUp->assertSessionHas('success');
         $this->assertEquals('Sudah diambil', $birth->fresh()->status_label);

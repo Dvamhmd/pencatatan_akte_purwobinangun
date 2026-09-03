@@ -232,6 +232,13 @@ footer *,
     will-change: auto;
 }
 
+/* Modal Channel Cards (Email & WhatsApp toggles in admin modal) */
+#cardToggleEmail,
+#cardToggleWhatsApp {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
 /* Print Styles Override: ensure everything is visible in prints */
 @media print {
 
@@ -315,7 +322,50 @@ footer *,
     background: rgba(184, 237, 230, 0.5);
 }
 
-.custom-admin-scrollbar {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(184, 237, 230, 0.25) rgba(5, 75, 83, 0.4);
+/* =================================================================
+   CUSTOM TOGGLE SWITCH (NOTIFIKASI EMAIL & WHATSAPP)
+   ================================================================= */
+.toggle-switch-container {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.toggle-switch-track {
+    width: 46px;
+    height: 26px;
+    border-radius: 9999px;
+    background-color: #cbd5e1;
+    border: 2px solid #94a3b8;
+    position: relative;
+    transition: all 0.2s ease-in-out;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+
+.toggle-switch-track.active-email {
+    background-color: #0b7c89 !important;
+    border-color: #0b7c89 !important;
+}
+
+.toggle-switch-track.active-whatsapp {
+    background-color: #16a34a !important;
+    border-color: #16a34a !important;
+}
+
+.toggle-switch-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 9999px;
+    background-color: #ffffff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateX(0);
+}
+
+.toggle-switch-thumb.active {
+    transform: translateX(20px) !important;
 }
