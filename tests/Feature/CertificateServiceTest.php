@@ -256,10 +256,11 @@ class CertificateServiceTest extends TestCase
         $responseShowPickedUp->assertStatus(200);
         $responseShowPickedUp->assertSee('Arsipkan Pengajuan');
 
-        // Manual archive test
+        // Manual archive test (redirect ke halaman kelola dan status tetap terjaga)
         $responseArchiveManual = $this->actingAs($admin)->post('/admin/arsip/akte-kelahiran/' . $birth->id . '/archive');
+        $responseArchiveManual->assertRedirect(route('admin.birth.index'));
         $responseArchiveManual->assertSessionHas('success');
-        $this->assertEquals('archived', $birth->fresh()->status);
+        $this->assertTrue($birth->fresh()->is_archived);
 
         // Verifikasi TIDAK muncul di daftar utama /admin/akte-kelahiran
         $this->flushSession();
@@ -268,10 +269,119 @@ class CertificateServiceTest extends TestCase
         $responseIndex->assertDontSee('AKL-20260903-0001');
         $responseIndex->assertDontSee('Bayi Sukses');
 
-        // Verifikasi HANYA muncul di menu Arsip tab birth
+        // Verifikasi HANYA muncul di menu Arsip tab birth dan status tetap terlihat sesuai aslinya
         $responseArchive = $this->actingAs($admin)->get('/admin/arsip?tab=birth');
         $responseArchive->assertStatus(200);
         $responseArchive->assertSee('AKL-20260903-0001');
         $responseArchive->assertSee('Bayi Sukses');
+    }
+
+    public function test_admin_can_update_death_certificate_through_all_six_statuses(): void
+    {
+        $admin = User::create([
+            'name' => 'Petugas Kalurahan',
+            'email' => 'admin@purwobinangun.desa.id',
+            'role' => 'admin',
+            'password' => bcrypt('admin123'),
+        ]);
+
+        $death = DeathCertificate::create([
+            'registration_no' => 'AKM-20260903-0001',
+            'deceased_nik' => '3404050101450001',
+            'deceased_name' => 'Almarhum Uji Coba',
+            'gender' => 'L',
+            'religion' => 'Islam',
+            'padukuhan' => 'Kadilobo',
+            'rt' => '01',
+            'rw' => '02',
+            'death_date' => '2026-08-10',
+            'death_place' => 'Rumah',
+            'cause_of_death' => 'Sakit Usia Lanjut',
+            'reported_by_title' => 'Dokter',
+            'applicant_nik' => '3404051109720002',
+            'applicant_name' => 'Anak Uji Coba',
+            'applicant_phone' => '08198765432',
+            'applicant_relation' => 'Anak Kandung',
+            'status' => 'pending',
+        ]);
+
+        // Validasi gagal jika catatan verifikator kosong
+        $responseFailed = $this->actingAs($admin)->put('/admin/akte-kematian/' . $death->id . '/status', [
+            'status' => 'in_process',
+            'rejection_note' => '',
+        ]);
+        $responseFailed->assertSessionHasErrors('rejection_note');
+
+        // 1. Ubah ke Sedang Diproses
+        $this->actingAs($admin)->put('/admin/akte-kematian/' . $death->id . '/status', [
+            'status' => 'in_process',
+            'rejection_note' => 'Berkas terverifikasi lengkap dan sedang diproses.',
+        ])->assertRedirect(route('admin.death.show', $death));
+        $this->assertEquals('Sedang Diproses', $death->fresh()->status_label);
+
+        // 2. Ubah ke Revisi Berkas
+        $this->actingAs($admin)->put('/admin/akte-kematian/' . $death->id . '/status', [
+            'status' => 'revision',
+            'rejection_note' => 'Mohon unggah surat keterangan kematian yang lebih jelas.',
+        ]);
+        $this->assertEquals('Revisi Berkas', $death->fresh()->status_label);
+
+        // 3. Ubah ke Dibatalkan (rejected)
+        $this->actingAs($admin)->put('/admin/akte-kematian/' . $death->id . '/status', [
+            'status' => 'rejected',
+            'rejection_note' => 'Data kematian tidak valid atau dibatalkan oleh pelapor.',
+        ]);
+        $this->assertEquals('Dibatalkan', $death->fresh()->status_label);
+
+        // Halaman detail menampilkan tombol "Arsipkan Pengajuan" saat status Dibatalkan
+        $responseShowRejected = $this->actingAs($admin)->get('/admin/akte-kematian/' . $death->id);
+        $responseShowRejected->assertStatus(200);
+        $responseShowRejected->assertSee('Arsipkan Pengajuan');
+
+        // Saat status Dibatalkan lalu diarsipkan: status tetap 'rejected' (Dibatalkan) dan redirect ke halaman kelola /admin/akte-kematian
+        $responseArchiveRejected = $this->actingAs($admin)->post('/admin/arsip/akte-kematian/' . $death->id . '/archive');
+        $responseArchiveRejected->assertRedirect(route('admin.death.index'));
+        $this->assertEquals('rejected', $death->fresh()->status);
+        $this->assertEquals('Dibatalkan', $death->fresh()->status_label);
+        $this->assertTrue($death->fresh()->is_archived);
+
+        // 4. Ubah ke Siap Diambil
+        $this->actingAs($admin)->put('/admin/akte-kematian/' . $death->id . '/status', [
+            'status' => 'ready_for_pickup',
+            'rejection_note' => 'Surat keterangan / akte kematian telah selesai dicetak dan siap diambil.',
+        ]);
+        $this->assertEquals('Siap Diambil', $death->fresh()->status_label);
+
+        // 5. Ubah ke Sudah Diambil (otomatis masuk ke arsip)
+        $responsePickedUp = $this->actingAs($admin)->put('/admin/akte-kematian/' . $death->id . '/status', [
+            'status' => 'picked_up',
+            'rejection_note' => 'Dokumen telah diserahkan dan diambil oleh ahli waris / pelapor.',
+        ]);
+        $responsePickedUp->assertSessionHas('success');
+        $this->assertEquals('Sudah Diambil', $death->fresh()->status_label);
+
+        // Halaman detail menampilkan tombol "Arsipkan Pengajuan" saat status Sudah diambil
+        $responseShowPickedUp = $this->actingAs($admin)->get('/admin/akte-kematian/' . $death->id);
+        $responseShowPickedUp->assertStatus(200);
+        $responseShowPickedUp->assertSee('Arsipkan Pengajuan');
+
+        // Manual archive test (redirect ke halaman kelola /admin/akte-kematian)
+        $responseArchiveManual = $this->actingAs($admin)->post('/admin/arsip/akte-kematian/' . $death->id . '/archive');
+        $responseArchiveManual->assertRedirect(route('admin.death.index'));
+        $responseArchiveManual->assertSessionHas('success');
+        $this->assertTrue($death->fresh()->is_archived);
+
+        // Verifikasi TIDAK muncul di daftar utama /admin/akte-kematian
+        $this->flushSession();
+        $responseIndex = $this->actingAs($admin)->get('/admin/akte-kematian');
+        $responseIndex->assertStatus(200);
+        $responseIndex->assertDontSee('AKM-20260903-0001');
+        $responseIndex->assertDontSee('Almarhum Uji Coba');
+
+        // Verifikasi HANYA muncul di menu Arsip tab death
+        $responseArchive = $this->actingAs($admin)->get('/admin/arsip?tab=death');
+        $responseArchive->assertStatus(200);
+        $responseArchive->assertSee('AKM-20260903-0001');
+        $responseArchive->assertSee('Almarhum Uji Coba');
     }
 }

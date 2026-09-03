@@ -47,6 +47,7 @@ class BirthCertificate extends Model
         'doc_parents_ktp',
         'doc_witness_ktp',
         'status',
+        'is_archived',
         'rejection_note',
         'processed_by',
     ];
@@ -55,6 +56,7 @@ class BirthCertificate extends Model
         'birth_date' => 'date',
         'father_birth_date' => 'date',
         'mother_birth_date' => 'date',
+        'is_archived' => 'boolean',
     ];
 
     public function user(): BelongsTo
@@ -138,6 +140,6 @@ class BirthCertificate extends Model
 
     public function isArchived(): bool
     {
-        return in_array($this->status, ['picked_up', 'archived']);
+        return $this->is_archived || in_array($this->status, ['picked_up', 'archived']);
     }
 }

@@ -115,11 +115,11 @@
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Ubah Status Permohonan</label>
                         <select name="status" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-rose-600 font-medium">
                             <option value="pending" {{ $death->status === 'pending' ? 'selected' : '' }}>1. Menunggu Verifikasi</option>
-                            <option value="verified" {{ $death->status === 'verified' ? 'selected' : '' }}>2. Berkas Terverifikasi Lengkap</option>
-                            <option value="in_process" {{ $death->status === 'in_process' ? 'selected' : '' }}>3. Sedang Diproses Kalurahan</option>
-                            <option value="completed" {{ $death->status === 'completed' ? 'selected' : '' }}>4. Selesai / Siap Diambil</option>
-                            <option value="rejected" {{ $death->status === 'rejected' ? 'selected' : '' }}>5. Tolak / Minta Perbaikan Berkas</option>
-                            <option value="archived" {{ $death->status === 'archived' ? 'selected' : '' }}>6. Diarsipkan (Nonaktif)</option>
+                            <option value="in_process" {{ ($death->status === 'in_process' || $death->status === 'verified') ? 'selected' : '' }}>2. Sedang Diproses</option>
+                            <option value="revision" {{ $death->status === 'revision' ? 'selected' : '' }}>3. Revisi Berkas</option>
+                            <option value="rejected" {{ $death->status === 'rejected' ? 'selected' : '' }}>4. Dibatalkan</option>
+                            <option value="ready_for_pickup" {{ ($death->status === 'ready_for_pickup' || $death->status === 'completed') ? 'selected' : '' }}>5. Siap Diambil</option>
+                            <option value="picked_up" {{ ($death->status === 'picked_up' || $death->status === 'archived') ? 'selected' : '' }}>6. Sudah Diambil (Masuk Arsip)</option>
                         </select>
                     </div>
 
@@ -141,6 +141,19 @@
                         <i class="fa-solid fa-floppy-disk"></i> Simpan Perubahan Status
                     </button>
                 </form>
+
+                @if(!$death->is_archived && ($death->status === 'rejected' || $death->status === 'picked_up'))
+                    <form action="{{ route('admin.archive.death.archive', $death) }}" method="POST" class="mt-3">
+                        @csrf
+                        <button type="submit" onclick="return confirm('Apakah Anda yakin ingin MENGARSIPKAN pengajuan akte kematian ini secara manual?');" class="btn-archive w-full bg-slate-700 hover:bg-slate-800 text-white font-bold text-xs py-2.5 rounded-lg shadow-xs transition flex items-center justify-center gap-1.5" style="background-color: #334155; color: #ffffff;">
+                            <i class="fa-solid fa-box-archive text-amber-300"></i> Arsipkan Pengajuan
+                        </button>
+                    </form>
+                @elseif($death->is_archived)
+                    <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center text-slate-500 text-[11px] mt-3">
+                        <i class="fa-solid fa-circle-info text-rose-700 mr-1"></i> Pengajuan ini sudah berada di dalam daftar arsip.
+                    </div>
+                @endif
             </div>
 
             <!-- Ringkasan Pelapor & Saksi -->

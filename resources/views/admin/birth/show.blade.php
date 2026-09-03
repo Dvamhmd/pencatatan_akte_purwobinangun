@@ -157,13 +157,17 @@
                     </button>
                 </form>
 
-                @if($birth->status === 'rejected' || $birth->status === 'picked_up' || $birth->status === 'archived')
+                @if(!$birth->is_archived && ($birth->status === 'rejected' || $birth->status === 'picked_up'))
                     <form action="{{ route('admin.archive.birth.archive', $birth) }}" method="POST" class="mt-3">
                         @csrf
                         <button type="submit" onclick="return confirm('Apakah Anda yakin ingin MENGARSIPKAN pengajuan akte kelahiran ini secara manual?');" class="btn-archive w-full bg-slate-700 hover:bg-slate-800 text-white font-bold text-xs py-2.5 rounded-lg shadow-xs transition flex items-center justify-center gap-1.5" style="background-color: #334155; color: #ffffff;">
                             <i class="fa-solid fa-box-archive text-amber-300"></i> Arsipkan Pengajuan
                         </button>
                     </form>
+                @elseif($birth->is_archived)
+                    <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center text-slate-500 text-[11px] mt-3">
+                        <i class="fa-solid fa-circle-info text-[#0b7c89] mr-1"></i> Pengajuan ini sudah berada di dalam daftar arsip.
+                    </div>
                 @endif
             </div>
 

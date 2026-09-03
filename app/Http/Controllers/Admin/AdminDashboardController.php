@@ -24,7 +24,7 @@ class AdminDashboardController extends Controller
             'total' => DeathCertificate::count(),
             'pending' => DeathCertificate::where('status', 'pending')->count(),
             'in_process' => DeathCertificate::whereIn('status', ['verified', 'in_process'])->count(),
-            'completed' => DeathCertificate::where('status', 'completed')->count(),
+            'completed' => DeathCertificate::whereIn('status', ['ready_for_pickup', 'completed', 'picked_up'])->count(),
             'rejected' => DeathCertificate::where('status', 'rejected')->count(),
         ];
 

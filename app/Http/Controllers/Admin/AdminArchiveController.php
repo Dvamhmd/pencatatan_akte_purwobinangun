@@ -19,8 +19,12 @@ class AdminArchiveController extends Controller
         // Statistik Total Arsip / Ditolak
         $counts = [
             'citizens' => User::where('role', 'warga')->whereIn('status', ['rejected', 'archived'])->count(),
-            'birth' => BirthCertificate::whereIn('status', ['rejected', 'archived', 'picked_up'])->count(),
-            'death' => DeathCertificate::whereIn('status', ['rejected', 'archived'])->count(),
+            'birth' => BirthCertificate::where(function ($q) {
+                $q->where('is_archived', true)->orWhereIn('status', ['picked_up', 'archived']);
+            })->count(),
+            'death' => DeathCertificate::where(function ($q) {
+                $q->where('is_archived', true)->orWhereIn('status', ['picked_up', 'archived']);
+            })->count(),
         ];
         $counts['total'] = $counts['citizens'] + $counts['birth'] + $counts['death'];
 
@@ -44,7 +48,9 @@ class AdminArchiveController extends Controller
 
             $citizens = $query->latest('updated_at')->paginate(10)->withQueryString();
         } elseif ($tab === 'birth') {
-            $query = BirthCertificate::whereIn('status', ['rejected', 'archived', 'picked_up']);
+            $query = BirthCertificate::where(function ($q) {
+                $q->where('is_archived', true)->orWhereIn('status', ['picked_up', 'archived']);
+            });
 
             if ($search) {
                 $query->where(function ($q) use ($search) {
@@ -59,7 +65,9 @@ class AdminArchiveController extends Controller
 
             $births = $query->latest('updated_at')->paginate(10)->withQueryString();
         } elseif ($tab === 'death') {
-            $query = DeathCertificate::whereIn('status', ['rejected', 'archived']);
+            $query = DeathCertificate::where(function ($q) {
+                $q->where('is_archived', true)->orWhereIn('status', ['picked_up', 'archived']);
+            });
 
             if ($search) {
                 $query->where(function ($q) use ($search) {
@@ -107,15 +115,17 @@ class AdminArchiveController extends Controller
 
     public function archiveBirth(BirthCertificate $birth)
     {
-        $birth->status = 'archived';
+        $birth->is_archived = true;
         $birth->processed_by = Auth::user()->name;
         $birth->save();
 
-        return back()->with('success', 'Pengajuan Akte Kelahiran (' . $birth->registration_no . ') berhasil diarsipkan.');
+        return redirect()->route('admin.birth.index')
+            ->with('success', 'Pengajuan Akte Kelahiran (' . $birth->registration_no . ') berhasil diarsipkan.');
     }
 
     public function restoreBirth(BirthCertificate $birth)
     {
+        $birth->is_archived = false;
         $birth->status = 'pending';
         $birth->processed_by = Auth::user()->name;
         $birth->save();
@@ -125,15 +135,17 @@ class AdminArchiveController extends Controller
 
     public function archiveDeath(DeathCertificate $death)
     {
-        $death->status = 'archived';
+        $death->is_archived = true;
         $death->processed_by = Auth::user()->name;
         $death->save();
 
-        return back()->with('success', 'Pengajuan Akte Kematian (' . $death->registration_no . ') berhasil diarsipkan.');
+        return redirect()->route('admin.death.index')
+            ->with('success', 'Pengajuan Akte Kematian (' . $death->registration_no . ') berhasil diarsipkan.');
     }
 
     public function restoreDeath(DeathCertificate $death)
     {
+        $death->is_archived = false;
         $death->status = 'pending';
         $death->processed_by = Auth::user()->name;
         $death->save();

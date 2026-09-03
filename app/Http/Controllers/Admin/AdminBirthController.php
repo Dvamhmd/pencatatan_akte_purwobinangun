@@ -15,7 +15,7 @@ class AdminBirthController extends Controller
         $search = $request->input('search');
 
         // Pengajuan yang sudah diambil / diarsipkan hanya muncul di menu Arsip
-        $query = BirthCertificate::whereNotIn('status', ['picked_up', 'archived']);
+        $query = BirthCertificate::where('is_archived', false)->whereNotIn('status', ['picked_up', 'archived']);
 
         if ($status && !in_array($status, ['picked_up', 'archived'])) {
             if ($status === 'in_process') {
@@ -58,6 +58,7 @@ class AdminBirthController extends Controller
         ]);
 
         $birth->status = $validated['status'];
+        $birth->is_archived = in_array($validated['status'], ['picked_up', 'archived']);
         $birth->rejection_note = $validated['rejection_note'];
         $birth->processed_by = Auth::user()->name;
         $birth->save();

@@ -155,15 +155,7 @@
                                                 <i class="fa-solid fa-eye"></i> Detail
                                             </a>
 
-                                            @if($citizen->isRejected())
-                                                <!-- Tombol Arsipkan Cepat -->
-                                                <form action="{{ route('admin.archive.citizen.archive', $citizen) }}" method="POST" class="inline">
-                                                    @csrf
-                                                    <button type="submit" onclick="return confirm('Apakah Anda yakin ingin MENGARSIPKAN akun warga ini?');" class="btn-archive bg-slate-700 hover:bg-slate-800 text-white font-bold text-[11px] px-2.5 py-1.5 rounded-lg transition" style="background-color: #334155; color: #ffffff;" title="Pindahkan ke Arsip">
-                                                        <i class="fa-solid fa-box-archive text-amber-300"></i> Arsipkan
-                                                    </button>
-                                                </form>
-                                            @endif
+
 
                                             <!-- Tombol Pulihkan & Aktifkan -->
                                             <form action="{{ route('admin.archive.citizen.restore', $citizen) }}" method="POST" class="inline">
@@ -248,15 +240,7 @@
                                                 <i class="fa-solid fa-eye"></i> Berkas
                                             </a>
 
-                                            @if($birth->status === 'rejected' || $birth->status === 'revision')
-                                                <!-- Tombol Arsipkan -->
-                                                <form action="{{ route('admin.archive.birth.archive', $birth) }}" method="POST" class="inline">
-                                                    @csrf
-                                                    <button type="submit" onclick="return confirm('Apakah Anda yakin ingin MENGARSIPKAN permohonan ini?');" class="btn-archive bg-slate-700 hover:bg-slate-800 text-white font-bold text-[11px] px-2.5 py-1.5 rounded-lg transition" style="background-color: #334155; color: #ffffff;" title="Pindahkan ke Arsip">
-                                                        <i class="fa-solid fa-box-archive text-amber-300"></i> Arsipkan
-                                                    </button>
-                                                </form>
-                                            @endif
+
 
                                             <!-- Tombol Pulihkan -->
                                             <form action="{{ route('admin.archive.birth.restore', $birth) }}" method="POST" class="inline">
@@ -341,15 +325,7 @@
                                                 <i class="fa-solid fa-eye"></i> Berkas
                                             </a>
 
-                                            @if($death->status === 'rejected')
-                                                <!-- Tombol Arsipkan -->
-                                                <form action="{{ route('admin.archive.death.archive', $death) }}" method="POST" class="inline">
-                                                    @csrf
-                                                    <button type="submit" onclick="return confirm('Apakah Anda yakin ingin MENGARSIPKAN permohonan ini?');" class="btn-archive bg-slate-700 hover:bg-slate-800 text-white font-bold text-[11px] px-2.5 py-1.5 rounded-lg transition" style="background-color: #334155; color: #ffffff;" title="Pindahkan ke Arsip">
-                                                        <i class="fa-solid fa-box-archive text-amber-300"></i> Arsipkan
-                                                    </button>
-                                                </form>
-                                            @endif
+
 
                                             <!-- Tombol Pulihkan -->
                                             <form action="{{ route('admin.archive.death.restore', $death) }}" method="POST" class="inline">
