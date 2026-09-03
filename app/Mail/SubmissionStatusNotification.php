@@ -63,7 +63,7 @@ class SubmissionStatusNotification extends Mailable
     {
         $subject = "Pemberitahuan: {$this->typeLabel} ({$this->submission->registration_no}) - {$this->statusLabel}";
 
-        $fromAddress = config('mail.from.address') ?: 'pelayanan@purwobinangun.desa.id';
+        $fromAddress = config('mail.from.address') ?: 'ahmadtaupik580@gmail.com';
         $fromName = config('mail.from.name') ?: 'Pelayanan Kalurahan Purwobinangun';
 
         $envelope = new Envelope(
@@ -87,6 +87,7 @@ class SubmissionStatusNotification extends Mailable
     {
         return new Content(
             view: 'emails.submission-status',
+            text: 'emails.submission-status-text',
             with: [
                 'submission' => $this->submission,
                 'type' => $this->type,

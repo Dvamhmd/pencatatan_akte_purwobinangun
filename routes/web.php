@@ -12,6 +12,7 @@ use App\Http\Controllers\BirthCertificateController;
 use App\Http\Controllers\DeathCertificateController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TrackingController;
+use App\Http\Controllers\Warga\WargaProfileController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -49,6 +50,13 @@ Route::prefix('lacak')->name('tracking.')->group(function () {
 */
 Route::middleware('auth.warga')->group(function () {
     
+    // Profil & Data Warga
+    Route::prefix('profil')->name('profile.')->group(function () {
+        Route::get('/', [WargaProfileController::class, 'index'])->name('index');
+        Route::put('/', [WargaProfileController::class, 'updateProfile'])->name('update');
+        Route::put('/password', [WargaProfileController::class, 'updatePassword'])->name('password');
+    });
+
     // Layanan Akte Kelahiran
     Route::prefix('akte-kelahiran')->name('birth.')->group(function () {
         Route::get('/buat', [BirthCertificateController::class, 'create'])->name('create');
@@ -101,6 +109,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::prefix('warga')->name('citizens.')->group(function () {
             Route::get('/', [AdminCitizenController::class, 'index'])->name('index');
             Route::get('/{citizen}', [AdminCitizenController::class, 'show'])->name('show');
+            Route::get('/{citizen}/edit', [AdminCitizenController::class, 'edit'])->name('edit');
+            Route::put('/{citizen}', [AdminCitizenController::class, 'update'])->name('update');
             Route::post('/{citizen}/verify', [AdminCitizenController::class, 'verify'])->name('verify');
         });
 

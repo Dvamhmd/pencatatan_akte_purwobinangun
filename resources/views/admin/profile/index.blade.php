@@ -71,13 +71,13 @@
                     <label for="name" class="block text-xs font-bold text-slate-700 mb-1">
                         Nama Lengkap Petugas / Administrator <span class="text-rose-500">*</span>
                     </label>
-                    <div class="relative">
+                    <div class="relative" style="position: relative;">
                         <input type="text" name="name" id="name" value="{{ old('name', $admin->name) }}" required
-                            class="w-full text-xs pl-4 pr-10 py-2.5 rounded-xl border {{ $errors->has('name') ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300' }} focus:outline-none focus:ring-2 focus:ring-[#0b7c89]/20 focus:border-[#0b7c89] transition"
-                            style="padding-left: 1rem; padding-right: 2.5rem;">
-                        <div class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-400">
+                            class="w-full text-xs rounded-xl border {{ $errors->has('name') ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300' }} focus:outline-none focus:ring-2 focus:ring-[#0b7c89]/20 focus:border-[#0b7c89] transition"
+                            style="padding-left: 1rem; padding-right: 2.75rem; padding-top: 0.625rem; padding-bottom: 0.625rem;">
+                        <span class="text-slate-400 pointer-events-none flex items-center justify-center" style="position: absolute; right: 0.85rem; top: 50%; transform: translateY(-50%);">
                             <i class="fa-regular fa-user text-xs"></i>
-                        </div>
+                        </span>
                     </div>
                     @error('name')
                         <p class="text-rose-600 text-[11px] mt-1 font-medium">{{ $message }}</p>
@@ -88,13 +88,13 @@
                     <label for="email" class="block text-xs font-bold text-slate-700 mb-1">
                         Alamat Email Admin & Pengirim Notifikasi <span class="text-rose-500">*</span>
                     </label>
-                    <div class="relative">
+                    <div class="relative" style="position: relative;">
                         <input type="email" name="email" id="email" value="{{ old('email', $admin->email) }}" required
-                            class="w-full text-xs pl-4 pr-10 py-2.5 rounded-xl border {{ $errors->has('email') ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300' }} focus:outline-none focus:ring-2 focus:ring-[#0b7c89]/20 focus:border-[#0b7c89] transition"
-                            style="padding-left: 1rem; padding-right: 2.5rem;">
-                        <div class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-400">
+                            class="w-full text-xs rounded-xl border {{ $errors->has('email') ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300' }} focus:outline-none focus:ring-2 focus:ring-[#0b7c89]/20 focus:border-[#0b7c89] transition"
+                            style="padding-left: 1rem; padding-right: 2.75rem; padding-top: 0.625rem; padding-bottom: 0.625rem;">
+                        <span class="text-slate-400 pointer-events-none flex items-center justify-center" style="position: absolute; right: 0.85rem; top: 50%; transform: translateY(-50%);">
                             <i class="fa-regular fa-envelope text-xs"></i>
-                        </div>
+                        </span>
                     </div>
                     <p class="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
                         <i class="fa-solid fa-circle-info text-[#0b7c89]"></i> Email ini digunakan untuk login ke panel admin dan sebagai pengirim email notifikasi berkas.
@@ -108,13 +108,13 @@
                     <label for="phone" class="block text-xs font-bold text-slate-700 mb-1">
                         Nomor HP / WhatsApp Petugas <span class="text-slate-400 font-normal">(Opsional)</span>
                     </label>
-                    <div class="relative">
+                    <div class="relative" style="position: relative;">
                         <input type="text" name="phone" id="phone" value="{{ old('phone', $admin->phone) }}" placeholder="Contoh: 081234567890"
-                            class="w-full text-xs pl-4 pr-10 py-2.5 rounded-xl border {{ $errors->has('phone') ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300' }} focus:outline-none focus:ring-2 focus:ring-[#0b7c89]/20 focus:border-[#0b7c89] transition"
-                            style="padding-left: 1rem; padding-right: 2.5rem;">
-                        <div class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-400">
+                            class="w-full text-xs rounded-xl border {{ $errors->has('phone') ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300' }} focus:outline-none focus:ring-2 focus:ring-[#0b7c89]/20 focus:border-[#0b7c89] transition"
+                            style="padding-left: 1rem; padding-right: 2.75rem; padding-top: 0.625rem; padding-bottom: 0.625rem;">
+                        <span class="text-emerald-600 pointer-events-none flex items-center justify-center" style="position: absolute; right: 0.85rem; top: 50%; transform: translateY(-50%);">
                             <i class="fa-brands fa-whatsapp text-xs"></i>
-                        </div>
+                        </span>
                     </div>
                     @error('phone')
                         <p class="text-rose-600 text-[11px] mt-1 font-medium">{{ $message }}</p>
@@ -147,13 +147,13 @@
                     <label for="current_password" class="block text-xs font-bold text-slate-700 mb-1">
                         Kata Sandi Saat Ini <span class="text-rose-500">*</span>
                     </label>
-                    <div class="relative">
+                    <div class="relative" style="position: relative;">
                         <input type="password" name="current_password" id="current_password" required
-                            class="w-full text-xs pl-4 pr-10 py-2.5 rounded-xl border {{ $errors->has('current_password') ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300' }} focus:outline-none focus:ring-2 focus:ring-[#0b7c89]/20 focus:border-[#0b7c89] transition"
-                            style="padding-left: 1rem; padding-right: 2.5rem;">
-                        <div class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-400">
+                            class="w-full text-xs rounded-xl border {{ $errors->has('current_password') ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300' }} focus:outline-none focus:ring-2 focus:ring-[#0b7c89]/20 focus:border-[#0b7c89] transition"
+                            style="padding-left: 1rem; padding-right: 2.75rem; padding-top: 0.625rem; padding-bottom: 0.625rem;">
+                        <span class="text-slate-400 pointer-events-none flex items-center justify-center" style="position: absolute; right: 0.85rem; top: 50%; transform: translateY(-50%);">
                             <i class="fa-solid fa-lock text-xs"></i>
-                        </div>
+                        </span>
                     </div>
                     @error('current_password')
                         <p class="text-rose-600 text-[11px] mt-1 font-medium">{{ $message }}</p>
@@ -164,13 +164,13 @@
                     <label for="new_password" class="block text-xs font-bold text-slate-700 mb-1">
                         Kata Sandi Baru <span class="text-rose-500">*</span>
                     </label>
-                    <div class="relative">
+                    <div class="relative" style="position: relative;">
                         <input type="password" name="password" id="new_password" required minlength="6" placeholder="Minimal 6 karakter"
-                            class="w-full text-xs pl-4 pr-10 py-2.5 rounded-xl border {{ $errors->has('password') ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300' }} focus:outline-none focus:ring-2 focus:ring-[#0b7c89]/20 focus:border-[#0b7c89] transition"
-                            style="padding-left: 1rem; padding-right: 2.5rem;">
-                        <div class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-400">
+                            class="w-full text-xs rounded-xl border {{ $errors->has('password') ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300' }} focus:outline-none focus:ring-2 focus:ring-[#0b7c89]/20 focus:border-[#0b7c89] transition"
+                            style="padding-left: 1rem; padding-right: 2.75rem; padding-top: 0.625rem; padding-bottom: 0.625rem;">
+                        <span class="text-slate-400 pointer-events-none flex items-center justify-center" style="position: absolute; right: 0.85rem; top: 50%; transform: translateY(-50%);">
                             <i class="fa-solid fa-key text-xs"></i>
-                        </div>
+                        </span>
                     </div>
                     @error('password')
                         <p class="text-rose-600 text-[11px] mt-1 font-medium">{{ $message }}</p>
@@ -181,13 +181,13 @@
                     <label for="password_confirmation" class="block text-xs font-bold text-slate-700 mb-1">
                         Konfirmasi Kata Sandi Baru <span class="text-rose-500">*</span>
                     </label>
-                    <div class="relative">
+                    <div class="relative" style="position: relative;">
                         <input type="password" name="password_confirmation" id="password_confirmation" required minlength="6" placeholder="Ketik ulang kata sandi baru"
-                            class="w-full text-xs pl-4 pr-10 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0b7c89]/20 focus:border-[#0b7c89] transition"
-                            style="padding-left: 1rem; padding-right: 2.5rem;">
-                        <div class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-400">
+                            class="w-full text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0b7c89]/20 focus:border-[#0b7c89] transition"
+                            style="padding-left: 1rem; padding-right: 2.75rem; padding-top: 0.625rem; padding-bottom: 0.625rem;">
+                        <span class="text-slate-400 pointer-events-none flex items-center justify-center" style="position: absolute; right: 0.85rem; top: 50%; transform: translateY(-50%);">
                             <i class="fa-solid fa-shield-check text-xs"></i>
-                        </div>
+                        </span>
                     </div>
                 </div>
 

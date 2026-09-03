@@ -132,9 +132,14 @@
                                     </span>
                                 </td>
                                 <td class="px-4 py-3.5 text-center">
-                                    <a href="{{ route('admin.citizens.show', $citizen) }}" class="inline-flex items-center gap-1.5 bg-[#0b7c89] hover:bg-[#065b65] text-white font-bold text-[11px] px-3 py-1.5 rounded-lg transition shadow-2xs">
-                                        <i class="fa-solid fa-user-check"></i> Detail & Verifikasi
-                                    </a>
+                                    <div class="flex items-center justify-center gap-1.5">
+                                        <a href="{{ route('admin.citizens.show', $citizen) }}" class="inline-flex items-center gap-1 bg-[#0b7c89] hover:bg-[#065b65] text-white font-bold text-[11px] px-2.5 py-1.5 rounded-lg transition shadow-2xs" title="Detail & Verifikasi">
+                                            <i class="fa-solid fa-eye"></i> Detail
+                                        </a>
+                                        <a href="{{ route('admin.citizens.edit', $citizen) }}" class="inline-flex items-center gap-1 bg-amber-500 hover:bg-amber-600 text-white font-bold text-[11px] px-2.5 py-1.5 rounded-lg transition shadow-2xs" title="Edit Data Warga">
+                                            <i class="fa-solid fa-pen-to-square"></i> Edit
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach

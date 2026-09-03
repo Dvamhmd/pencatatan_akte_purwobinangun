@@ -41,16 +41,19 @@
                 <span class="text-teal-400/60 hidden sm:inline">|</span>
                 
                 @if(Auth::check() && Auth::user()->isWarga())
-                    <span class="inline-flex items-center gap-1.5 bg-black/25 px-2.5 py-1 rounded text-teal-100 font-semibold border border-white/10">
+                    <a href="{{ route('profile.index') }}" class="inline-flex items-center gap-1.5 bg-black/25 hover:bg-black/35 px-2.5 py-1 rounded text-teal-100 hover:text-white font-semibold border border-white/10 transition" title="Buka Profil & Pengaturan Akun">
                         <i class="fa-solid fa-circle-user text-amber-300"></i>
                         <span class="truncate max-w-[120px] sm:max-w-[160px]">{{ Auth::user()->name }}</span>
                         <span class="hidden md:inline-block bg-teal-900/60 text-teal-200 text-[10px] px-1.5 py-0.5 rounded font-mono font-normal">
                             KK: {{ Auth::user()->family_card_no }}
                         </span>
-                    </span>
+                        <span class="bg-teal-500/30 text-teal-100 text-[9px] px-1.5 py-0.5 rounded ml-0.5 border border-teal-400/30">
+                            <i class="fa-solid fa-user-pen"></i> Profil
+                        </span>
+                    </a>
                     <form action="{{ route('warga.logout') }}" method="POST" class="inline" onsubmit="try { localStorage.removeItem('purwobinangun_birth_form_draft'); localStorage.removeItem('purwobinangun_birth_form_draft_{{ Auth::id() }}'); localStorage.removeItem('purwobinangun_warga_register_draft'); if(window.indexedDB){ indexedDB.deleteDatabase('PurwobinangunBirthDB'); indexedDB.deleteDatabase('PurwobinangunBirthDB_{{ Auth::id() }}'); } } catch(e){}">
                         @csrf
-                        <button type="submit" class="bg-rose-600/80 hover:bg-rose-700 text-white px-2 py-1 rounded transition inline-flex items-center gap-1" title="Keluar dari Akun Warga">
+                        <button type="submit" class="bg-rose-600/80 hover:bg-rose-700 text-white px-2 py-1 rounded transition inline-flex items-center gap-1 cursor-pointer" title="Keluar dari Akun Warga">
                             <i class="fa-solid fa-right-from-bracket"></i> <span class="hidden sm:inline">Keluar</span>
                         </button>
                     </form>
@@ -118,6 +121,11 @@
                     <a href="{{ route('birth.list') }}" class="px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 {{ request()->routeIs('birth.list') || request()->routeIs('submissions.index') ? 'text-[#095b8c] bg-teal-50 border border-teal-200 font-bold' : 'hover:text-[#095b8c] hover:bg-slate-50' }}">
                         <i class="fa-solid fa-list-check text-[#059cb8]"></i> Daftar Pengajuan
                     </a>
+                    @if(Auth::check() && Auth::user()->isWarga())
+                        <a href="{{ route('profile.index') }}" class="px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 {{ request()->routeIs('profile.*') ? 'text-[#095b8c] bg-teal-50 border border-teal-200 font-bold' : 'hover:text-[#095b8c] hover:bg-slate-50' }}">
+                            <i class="fa-solid fa-user-pen text-[#059cb8]"></i> Profil Saya
+                        </a>
+                    @endif
                     <a href="{{ route('tracking.index') }}" class="px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 {{ request()->routeIs('tracking.*') ? 'text-amber-800 bg-amber-50 border border-amber-200 font-bold' : 'hover:text-amber-700 hover:bg-slate-50' }}">
                         <i class="fa-solid fa-magnifying-glass text-amber-600"></i> Cek Status
                     </a>
@@ -182,6 +190,25 @@
             
             <!-- Left Sidebar Navigation Grid (Sesuai Referensi Gambar Kelurahan) -->
             <aside class="lg:col-span-3 space-y-5">
+                
+                @if(Auth::check() && Auth::user()->isWarga())
+                    <!-- Card Akun Warga Mini di Sidebar -->
+                    <div class="bg-gradient-to-br from-[#095b8c] to-[#059cb8] text-white rounded-xl shadow-xs p-3.5 border border-[#074a73]">
+                        <div class="flex items-center gap-3 mb-2.5">
+                            <div class="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center text-white text-base font-bold shrink-0 border border-white/30">
+                                <i class="fa-solid fa-user-check text-amber-300"></i>
+                            </div>
+                            <div class="overflow-hidden">
+                                <p class="font-bold text-xs truncate text-white">{{ Auth::user()->name }}</p>
+                                <p class="text-[10px] text-teal-100 font-mono truncate">NIK: {{ Auth::user()->nik }}</p>
+                            </div>
+                        </div>
+                        <a href="{{ route('profile.index') }}" class="w-full bg-white/20 hover:bg-white text-teal-100 hover:text-[#095b8c] font-bold text-xs py-1.5 px-2 rounded-lg transition flex items-center justify-center gap-1.5 border border-white/25 shadow-2xs">
+                            <i class="fa-solid fa-user-pen text-amber-300"></i>
+                            <span>Ubah Profil & Data Warga</span>
+                        </a>
+                    </div>
+                @endif
                 
                 <!-- Quick Icon Grid (Mirip Kotak Menu di Referensi) -->
                 <div class="bg-white rounded-xl shadow-xs border border-slate-200 p-3">

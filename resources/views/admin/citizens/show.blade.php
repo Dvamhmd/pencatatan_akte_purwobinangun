@@ -12,6 +12,9 @@
             <i class="fa-solid fa-arrow-left"></i> Kembali ke Daftar Akun Warga
         </a>
         <div class="flex items-center gap-2">
+            <a href="{{ route('admin.citizens.edit', $citizen) }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-300 px-3 py-1.5 rounded-xl shadow-2xs transition">
+                <i class="fa-solid fa-pen-to-square text-amber-600"></i> Edit / Koreksi Data
+            </a>
             <span class="text-xs text-slate-500">Status Akun:</span>
             <span class="inline-block text-xs font-bold px-3 py-1 rounded-full border {{ $citizen->status_badge_class }}">
                 {{ $citizen->status_label }}
@@ -31,7 +34,12 @@
                     <h3 class="font-bold text-xs uppercase tracking-wider text-slate-700 flex items-center gap-2">
                         <i class="fa-solid fa-id-card text-[#0b7c89]"></i> Data Identitas Warga
                     </h3>
-                    <span class="text-[11px] text-slate-400">ID #{{ $citizen->id }}</span>
+                    <div class="flex items-center gap-2">
+                        <a href="{{ route('admin.citizens.edit', $citizen) }}" class="text-[11px] font-bold text-[#0b7c89] hover:text-[#065b65] flex items-center gap-1 bg-teal-50 hover:bg-teal-100 border border-teal-200 px-2 py-0.5 rounded-md transition">
+                            <i class="fa-solid fa-pen-to-square"></i> Ubah Data
+                        </a>
+                        <span class="text-[11px] text-slate-400">ID #{{ $citizen->id }}</span>
+                    </div>
                 </div>
 
                 <div class="p-5 space-y-4 text-xs">

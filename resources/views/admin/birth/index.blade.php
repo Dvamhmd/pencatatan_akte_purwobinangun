@@ -44,7 +44,6 @@
                         <th class="py-4 px-4">No. Registrasi</th>
                         <th class="py-4 px-4">Nama Bayi</th>
                         <th class="py-4 px-4">Tempat, Tgl Lahir</th>
-                        <th class="py-4 px-4">Nama Orang Tua</th>
                         <th class="py-4 px-4">Padukuhan</th>
                         <th class="py-4 px-4">Tgl Pengajuan</th>
                         <th class="py-4 px-4">Status</th>
@@ -57,7 +56,6 @@
                             <td class="py-4 px-4 font-mono font-bold text-base text-[#0b7c89]">{{ $b->registration_no }}</td>
                             <td class="py-4 px-4 font-bold text-base text-slate-900">{{ $b->child_name }} <span class="text-sm font-semibold text-slate-500">({{ $b->gender }})</span></td>
                             <td class="py-4 px-4 text-base">{{ $b->birth_place }}, {{ $b->birth_date->translatedFormat('d M Y') }}</td>
-                            <td class="py-4 px-4 text-base">{{ $b->father_name }} / {{ $b->mother_name }}</td>
                             <td class="py-4 px-4 text-base">Padukuhan {{ $b->padukuhan }}</td>
                             <td class="py-4 px-4 text-base text-slate-500">{{ $b->created_at->translatedFormat('d M Y') }}</td>
                             <td class="py-4 px-4">
@@ -78,7 +76,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="py-10 text-center text-base text-slate-400">
+                            <td colspan="7" class="py-10 text-center text-base text-slate-400">
                                 <i class="fa-solid fa-folder-open text-4xl mb-3 text-slate-300 block"></i>
                                 <p>Tidak ditemukan data permohonan akte kelahiran.</p>
                             </td>

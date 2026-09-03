@@ -8,6 +8,8 @@ use App\Models\DeathCertificate;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class AdminCitizenController extends Controller
 {
@@ -62,6 +64,92 @@ class AdminCitizenController extends Controller
             ->get();
 
         return view('admin.citizens.show', compact('citizen', 'birthSubmissions', 'deathSubmissions', 'familyMembers'));
+    }
+
+    public function edit(User $citizen)
+    {
+        if (!$citizen->isWarga()) {
+            abort(404);
+        }
+
+        return view('admin.citizens.edit', compact('citizen'));
+    }
+
+    public function update(Request $request, User $citizen)
+    {
+        if (!$citizen->isWarga()) {
+            abort(404);
+        }
+
+        $validated = $request->validate([
+            'nik' => [
+                'required',
+                'digits:16',
+                Rule::unique('users', 'nik')->ignore($citizen->id),
+            ],
+            'family_card_no' => 'required|digits:16',
+            'name' => 'required|string|max:255',
+            'birth_place' => 'required|string|max:150',
+            'birth_date' => 'required|date',
+            'gender' => 'required|in:L,P',
+            'phone' => 'required|string|max:20',
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email')->ignore($citizen->id),
+            ],
+            'address' => 'required|string|max:500',
+            'rt' => 'required|string|max:5',
+            'rw' => 'required|string|max:5',
+            'status' => 'required|in:active,pending,rejected,archived',
+            'rejection_reason' => 'nullable|string|max:1000',
+            'password' => 'nullable|string|min:6',
+        ], [
+            'nik.required' => 'NIK wajib diisi.',
+            'nik.digits' => 'NIK harus berupa 16 digit angka.',
+            'nik.unique' => 'NIK sudah digunakan oleh akun lain.',
+            'family_card_no.required' => 'Nomor KK wajib diisi.',
+            'family_card_no.digits' => 'Nomor KK harus berupa 16 digit angka.',
+            'name.required' => 'Nama lengkap wajib diisi.',
+            'birth_place.required' => 'Tempat lahir wajib diisi.',
+            'birth_date.required' => 'Tanggal lahir wajib diisi.',
+            'gender.required' => 'Jenis kelamin wajib dipilih.',
+            'phone.required' => 'Nomor HP / WhatsApp wajib diisi.',
+            'email.required' => 'Alamat email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Alamat email sudah digunakan oleh akun lain.',
+            'address.required' => 'Alamat lengkap wajib diisi.',
+            'rt.required' => 'RT wajib diisi.',
+            'rw.required' => 'RW wajib diisi.',
+            'status.required' => 'Status akun wajib dipilih.',
+            'password.min' => 'Password minimal terdiri dari 6 karakter jika ingin diubah.',
+        ]);
+
+        $updateData = [
+            'nik' => $validated['nik'],
+            'family_card_no' => $validated['family_card_no'],
+            'name' => $validated['name'],
+            'birth_place' => $validated['birth_place'],
+            'birth_date' => $validated['birth_date'],
+            'gender' => $validated['gender'],
+            'phone' => $validated['phone'],
+            'email' => $validated['email'],
+            'address' => $validated['address'],
+            'rt' => $validated['rt'],
+            'rw' => $validated['rw'],
+            'status' => $validated['status'],
+            'rejection_reason' => $validated['status'] === 'rejected' ? ($validated['rejection_reason'] ?? $citizen->rejection_reason) : null,
+        ];
+
+        if (!empty($validated['password'])) {
+            $updateData['password'] = Hash::make($validated['password']);
+        }
+
+        $citizen->update($updateData);
+
+        return redirect()->route('admin.citizens.show', $citizen)
+            ->with('success', 'Data warga (' . $citizen->name . ') berhasil diperbarui.');
     }
 
     public function verify(Request $request, User $citizen)
