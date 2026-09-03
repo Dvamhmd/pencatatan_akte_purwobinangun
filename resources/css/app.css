@@ -286,3 +286,28 @@ footer *,
     border-bottom-width: 0 !important;
     pointer-events: none !important;
 }
+
+/* =================================================================
+   CUSTOM ADMIN SIDEBAR SCROLLBAR (STICKY & SMOOTH SCROLL)
+   ================================================================= */
+.custom-admin-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.custom-admin-scrollbar::-webkit-scrollbar-track {
+    background: rgba(5, 75, 83, 0.4);
+}
+
+.custom-admin-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(184, 237, 230, 0.25);
+    border-radius: 4px;
+}
+
+.custom-admin-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(184, 237, 230, 0.5);
+}
+
+.custom-admin-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(184, 237, 230, 0.25) rgba(5, 75, 83, 0.4);
+}

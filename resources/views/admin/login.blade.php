@@ -57,33 +57,36 @@
                 </div>
             @endif
 
-            <form action="{{ route('admin.login.submit') }}" method="POST" class="space-y-4" autocomplete="off">
+            <form id="admin-login-form" action="{{ route('admin.login.submit') }}" method="POST" class="space-y-4" autocomplete="off">
                 @csrf
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Email Petugas</label>
+                    <label for="admin_email" class="block text-xs font-semibold text-slate-700 mb-1">Email Petugas</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 text-xs">
                             <i class="fa-solid fa-envelope"></i>
                         </span>
-                        <input type="email" name="email" value="{{ old('email') }}" required autocomplete="off" placeholder="Masukkan email petugas" class="w-full text-xs pl-9 pr-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0b7c89]">
+                        <input type="email" name="email" id="admin_email" value="{{ $errors->any() ? old('email') : '' }}" required autocomplete="off" placeholder="Masukkan email petugas" class="w-full text-xs pl-9 pr-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0b7c89]">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Kata Sandi</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 text-xs">
+                    <label for="password" class="block text-xs font-semibold text-slate-700 mb-1">Kata Sandi</label>
+                    <div class="relative" style="position: relative;">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 text-xs pointer-events-none">
                             <i class="fa-solid fa-lock"></i>
                         </span>
-                        <input type="password" name="password" required autocomplete="new-password" placeholder="Masukkan kata sandi" class="w-full text-xs pl-9 pr-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0b7c89]">
+                        <input type="password" name="password" id="password" required autocomplete="new-password" placeholder="Masukkan kata sandi" class="w-full text-xs pl-9 pr-10 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0b7c89]">
+                        <button type="button" onclick="toggleAdminPasswordVisibility()" title="Tampilkan / Sembunyikan Kata Sandi" class="flex items-center justify-center text-slate-400 hover:text-slate-700 transition cursor-pointer z-10 focus:outline-none rounded-md" style="position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); width: 2rem; height: 2rem;">
+                            <i id="admin-password-toggle-icon" class="fa-solid fa-eye text-xs"></i>
+                        </button>
                     </div>
                 </div>
 
                 <div class="flex items-center justify-between text-xs">
-                    <label class="flex items-center gap-2 cursor-pointer text-slate-600">
-                        <input type="checkbox" name="remember" class="rounded text-[#0b7c89] focus:ring-[#0b7c89]">
-                        <span>Ingat Saya</span>
+                    <label for="remember" class="flex items-center gap-2 cursor-pointer text-slate-600">
+                        <input type="checkbox" name="remember" id="remember" value="1" {{ old('remember') ? 'checked' : '' }} class="w-4 h-4 rounded text-[#0b7c89] focus:ring-[#0b7c89] border-slate-300 cursor-pointer">
+                        <span class="select-none">Ingat Saya</span>
                     </label>
                 </div>
 
@@ -105,5 +108,48 @@
 
     </div>
 
+    <script>
+    function toggleAdminPasswordVisibility() {
+        const input = document.getElementById('password');
+        const icon = document.getElementById('admin-password-toggle-icon');
+        if (!input || !icon) return;
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+
+    // Bersihkan auto-fill peramban saat logout atau saat membuka halaman login
+    function clearLoginFormFields() {
+        @if(!$errors->any())
+            const emailField = document.getElementById('admin_email');
+            const passwordField = document.getElementById('password');
+            const rememberField = document.getElementById('remember');
+            const loginForm = document.getElementById('admin-login-form');
+
+            if (loginForm) loginForm.reset();
+            if (emailField) emailField.value = '';
+            if (passwordField) passwordField.value = '';
+            if (rememberField) rememberField.checked = false;
+        @endif
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        clearLoginFormFields();
+        // Beri interval timer untuk menangani autofill otomatis peramban (browser password manager)
+        setTimeout(clearLoginFormFields, 50);
+        setTimeout(clearLoginFormFields, 200);
+        setTimeout(clearLoginFormFields, 500);
+    });
+
+    window.addEventListener('pageshow', function(e) {
+        clearLoginFormFields();
+    });
+    </script>
 </body>
 </html>

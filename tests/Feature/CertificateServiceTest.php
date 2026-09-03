@@ -171,10 +171,15 @@ class CertificateServiceTest extends TestCase
         $response = $this->post('/admin/login', [
             'email' => 'admin@purwobinangun.desa.id',
             'password' => 'admin123',
+            'remember' => '1',
         ]);
 
         $response->assertRedirect(route('admin.dashboard'));
         $this->assertAuthenticatedAs($admin);
+
+        // Saat admin yang sudah login/diingat mengakses /admin/login, diarahkan otomatis ke dashboard
+        $loginPageResponse = $this->actingAs($admin)->get('/admin/login');
+        $loginPageResponse->assertRedirect(route('admin.dashboard'));
 
         $dashResponse = $this->actingAs($admin)->get('/admin/dashboard');
         $dashResponse->assertStatus(200);
