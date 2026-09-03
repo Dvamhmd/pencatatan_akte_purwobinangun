@@ -160,6 +160,7 @@
                 <div><span class="text-slate-400 block text-[11px]">Nama Pelapor:</span> <strong class="text-slate-800">{{ $death->applicant_name }}</strong></div>
                 <div><span class="text-slate-400 block text-[11px]">NIK Pelapor:</span> <span class="font-mono">{{ $death->applicant_nik }}</span></div>
                 <div><span class="text-slate-400 block text-[11px]">Hubungan:</span> <span>{{ $death->applicant_relation }}</span></div>
+                <div><span class="text-slate-400 block text-[11px]">Email Warga:</span> <span class="font-medium text-slate-800">{{ $death->applicant_email ?: '-' }}</span></div>
                 <div><span class="text-slate-400 block text-[11px]">Kontak / WhatsApp:</span> <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $death->applicant_phone) }}" target="_blank" class="text-rose-700 font-bold hover:underline">{{ $death->applicant_phone }}</a></div>
                 @if($death->witness_name)
                     <div class="pt-2 border-t border-slate-100">

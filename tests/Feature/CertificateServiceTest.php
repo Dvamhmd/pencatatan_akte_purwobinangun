@@ -256,9 +256,10 @@ class CertificateServiceTest extends TestCase
         $responsePickedUp->assertSessionHas('success');
         $this->assertEquals('Sudah diambil', $birth->fresh()->status_label);
 
-        // Halaman detail menampilkan tombol "Arsipkan Pengajuan" saat status Sudah diambil
+        // Halaman detail menampilkan tombol "Arsipkan Pengajuan" saat status Sudah diambil serta email warga pemohon
         $responseShowPickedUp = $this->actingAs($admin)->get('/admin/akte-kelahiran/' . $birth->id);
         $responseShowPickedUp->assertStatus(200);
+        $responseShowPickedUp->assertSee('Email Warga');
         $responseShowPickedUp->assertSee('Arsipkan Pengajuan');
 
         // Manual archive test (redirect ke halaman kelola dan status tetap terjaga)

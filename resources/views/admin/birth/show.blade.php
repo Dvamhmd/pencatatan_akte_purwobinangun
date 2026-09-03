@@ -175,6 +175,7 @@
                 <div><span class="text-slate-400 block text-[11px]">Nama Pelapor:</span> <strong class="text-slate-800">{{ $birth->applicant_name }}</strong></div>
                 <div><span class="text-slate-400 block text-[11px]">NIK Pelapor:</span> <span class="font-mono">{{ $birth->applicant_nik }}</span></div>
                 <div><span class="text-slate-400 block text-[11px]">Hubungan:</span> <span>{{ $birth->applicant_relation }}</span></div>
+                <div><span class="text-slate-400 block text-[11px]">Email Warga:</span> <span class="font-medium text-slate-800">{{ $birth->applicant_email ?: '-' }}</span></div>
                 <div><span class="text-slate-400 block text-[11px]">Kontak / WhatsApp:</span> <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $birth->applicant_phone) }}" target="_blank" class="text-[#0b7c89] font-bold hover:underline">{{ $birth->applicant_phone }}</a></div>
                 <div><span class="text-slate-400 block text-[11px]">Wilayah Padukuhan:</span> <span>Padukuhan {{ $birth->padukuhan }}, RT {{ $birth->rt }} / RW {{ $birth->rw }}</span></div>
             </div>

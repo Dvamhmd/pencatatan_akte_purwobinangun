@@ -142,4 +142,24 @@ class BirthCertificate extends Model
     {
         return $this->is_archived || in_array($this->status, ['picked_up', 'archived']);
     }
+
+    public function getApplicantEmailAttribute(): ?string
+    {
+        if ($this->user?->email) {
+            return $this->user->email;
+        }
+
+        if ($this->applicant_nik) {
+            $email = User::where('nik', $this->applicant_nik)->value('email');
+            if ($email) {
+                return $email;
+            }
+        }
+
+        if ($this->family_card_no) {
+            return User::where('family_card_no', $this->family_card_no)->whereNotNull('email')->value('email');
+        }
+
+        return null;
+    }
 }
