@@ -1,11 +1,21 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
+    <meta name="x-apple-disable-message-reformatting">
+    <meta name="color-scheme" content="light">
+    <meta name="supported-color-schemes" content="light">
     <title>{{ $statusLabel }} - Pelayanan Kalurahan Purwobinangun</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f1f5f9; color: #1e293b; -webkit-font-smoothing: antialiased; line-height: 1.6;">
+
+    <!-- Preheader Text (Hidden, prevents spam filters from picking raw code and gives clean inbox summary) -->
+    <div style="display: none; font-size: 1px; color: #f1f5f9; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; mso-hide: all;">
+        Pemberitahuan resmi: Permohonan {{ $typeLabel }} ({{ $submission->registration_no }}) berstatus: {{ $statusLabel }}.
+    </div>
 
     <!-- Wrapper -->
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f1f5f9; padding: 30px 15px;">
@@ -129,7 +139,7 @@
                                 @if($isReady)
                                 <ul style="margin: 0; padding-left: 20px; font-size: 12px; color: #475569; line-height: 1.6;">
                                     <li>Silakan datang ke <strong>Kantor Kalurahan Purwobinangun</strong> pada jam pelayanan (Senin - Jumat: 08.00 - 15.00 WIB).</li>
-                                    <li>Bawa dokumen asli untuk verifikasi fisik: <strong>KTP Asli Pemohon, Kartu Keluarga (KK) Asli</strong>, dan <strong>Resi Pendaftaran</strong> (bisa ditunjukkan dari HP atau dicetak).</li>
+                                    <li>Bawa dokumen asli untuk verifikasi fisik: <strong>KTP Asli Pemohon, Kartu Keluarga (KK) Asli</strong>, dan <strong>Resi Pendaftaran</strong>.</li>
                                 </ul>
                                 @elseif($isRevision)
                                 <ul style="margin: 0; padding-left: 20px; font-size: 12px; color: #475569; line-height: 1.6;">
@@ -149,6 +159,7 @@
                             </div>
 
                             <!-- CTA Button -->
+                            @if(!empty($trackingUrl))
                             <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin: 25px 0 10px 0;">
                                 <tr>
                                     <td align="center">
@@ -158,6 +169,7 @@
                                     </td>
                                 </tr>
                             </table>
+                            @endif
 
                         </td>
                     </tr>
@@ -167,8 +179,11 @@
                         <td style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 20px 30px; text-align: center; color: #64748b; font-size: 11px; line-height: 1.5;">
                             <p style="margin: 0 0 4px 0; font-weight: bold; color: #334155;">Pemerintah Kalurahan Purwobinangun</p>
                             <p style="margin: 0 0 8px 0;">Jl. Boyong No. 1, Purwobinangun, Pakem, Sleman, D.I. Yogyakarta 55582</p>
+                            <p style="margin: 0 0 4px 0; color: #64748b; font-size: 10.5px;">
+                                Anda menerima pesan ini sebagai notifikasi resmi terkait permohonan <strong>{{ $typeLabel }} ({{ $submission->registration_no }})</strong> di Kalurahan Purwobinangun.
+                            </p>
                             <p style="margin: 0; color: #94a3b8; font-size: 10px;">
-                                Email ini dikirimkan secara otomatis oleh Sistem Pelayanan Akte Kalurahan Purwobinangun. Harap tidak membalas langsung ke alamat email sistem jika no-reply.
+                                Email ini dikirim secara otomatis oleh Sistem Pelayanan Akte Kalurahan Purwobinangun. Mohon jangan membalas langsung ke alamat ini.
                             </p>
                         </td>
                     </tr>

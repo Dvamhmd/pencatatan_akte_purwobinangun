@@ -61,7 +61,7 @@ class SubmissionStatusNotification extends Mailable
      */
     public function envelope(): Envelope
     {
-        $subject = "Pemberitahuan: {$this->typeLabel} ({$this->submission->registration_no}) - {$this->statusLabel}";
+        $subject = "[Kalurahan Purwobinangun] {$this->statusLabel} - {$this->typeLabel} ({$this->submission->registration_no})";
 
         $fromAddress = config('mail.from.address') ?: 'ahmadtaupik580@gmail.com';
         $fromName = config('mail.from.name') ?: 'Pelayanan Kalurahan Purwobinangun';
@@ -71,13 +71,28 @@ class SubmissionStatusNotification extends Mailable
             subject: $subject,
         );
 
-        if ($this->adminEmail) {
-            $envelope->replyTo = [
-                new Address($this->adminEmail, $this->processedBy),
-            ];
-        }
+        // Gunakan fromAddress sebagai replyTo untuk mencegah flag phishing/DMARC mismatch dari Gmail/Yahoo
+        $envelope->replyTo = [
+            new Address($fromAddress, $fromName),
+        ];
 
         return $envelope;
+    }
+
+    /**
+     * Get the message headers for anti-spam deliverability.
+     */
+    public function headers(): \Illuminate\Mail\Mailables\Headers
+    {
+        return new \Illuminate\Mail\Mailables\Headers(
+            text: [
+                'X-Auto-Response-Suppress' => 'OOF, AutoReply',
+                'Auto-Submitted' => 'auto-generated',
+                'X-Mailer' => 'Kalurahan Purwobinangun Notification System',
+                'X-Priority' => '1',
+                'Importance' => 'High',
+            ],
+        );
     }
 
     /**
