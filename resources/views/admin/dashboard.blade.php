@@ -117,13 +117,85 @@
 
     </div>
 
+    <!-- Pengajuan Akun Warga Terbaru -->
+    <div class="bg-white rounded-xl shadow-xs border border-slate-200 overflow-hidden">
+        <div class="p-4 sm:p-5 flex flex-wrap items-center justify-between gap-3 border-b border-amber-300/40" style="background-color: rgba(217, 119, 6, 0.5);">
+            <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-xl text-white shadow-xs" style="background-color: #d97706;">
+                <i class="fa-solid fa-users text-lg text-white"></i>
+                <h3 class="font-extrabold text-sm sm:text-base uppercase tracking-wider text-white">Pengajuan Akun Warga Terbaru</h3>
+            </div>
+            <a href="{{ route('admin.citizens.index') }}" class="text-xs md:text-sm font-bold text-amber-900 bg-white hover:bg-amber-50 px-3.5 py-2 rounded-xl transition shadow-xs inline-flex items-center gap-1.5">
+                Semua &rarr;
+            </a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-base">
+                <thead class="bg-slate-50 text-slate-700 uppercase text-xs tracking-wider border-b border-slate-200 font-bold">
+                    <tr>
+                        <th class="py-4 px-4">NIK & No. KK</th>
+                        <th class="py-4 px-4">Nama Lengkap</th>
+                        <th class="py-4 px-4">Alamat</th>
+                        <th class="py-4 px-4">Kontak</th>
+                        <th class="py-4 px-4">Tanggal Masuk</th>
+                        <th class="py-4 px-4">Status</th>
+                        <th class="py-4 px-4 text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-slate-700">
+                    @forelse($latestCitizens as $c)
+                        <tr class="hover:bg-slate-50/70 transition">
+                            <td class="py-4 px-4">
+                                <div class="font-mono font-bold text-base text-slate-900">{{ $c->nik }}</div>
+                                <span class="text-xs text-teal-800 bg-teal-50 px-1.5 py-0.5 rounded border border-teal-200 font-mono">
+                                    KK: {{ $c->family_card_no }}
+                                </span>
+                            </td>
+                            <td class="py-4 px-4">
+                                <span class="font-bold text-base text-slate-900">{{ $c->name }}</span>
+                                <span class="text-sm font-semibold text-slate-500">({{ $c->gender === 'L' ? 'Laki-laki' : 'Perempuan' }})</span>
+                            </td>
+                            <td class="py-4 px-4 text-base">
+                                <div>{{ $c->address }}</div>
+                                <span class="text-sm text-slate-500">RT {{ $c->rt }} / RW {{ $c->rw }}</span>
+                            </td>
+                            <td class="py-4 px-4 text-base">
+                                <div class="font-semibold text-slate-800"><i class="fa-brands fa-whatsapp text-emerald-600"></i> {{ $c->phone }}</div>
+                                @if($c->email)
+                                    <span class="text-xs text-slate-500">{{ $c->email }}</span>
+                                @endif
+                            </td>
+                            <td class="py-4 px-4 text-base text-slate-500">{{ $c->created_at->translatedFormat('d M Y') }}</td>
+                            <td class="py-4 px-4">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold border {{ $c->status_badge_class }}">
+                                    {{ $c->status_label }}
+                                </span>
+                            </td>
+                            <td class="py-4 px-4 text-center">
+                                <a href="{{ route('admin.citizens.show', $c) }}" class="bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-sm px-3.5 py-1.5 rounded-lg border border-amber-200 transition inline-block">
+                                    Verifikasi
+                                </a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="py-8 text-center text-base text-slate-400">Belum ada data pendaftaran akun warga.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <!-- Permohonan Kelahiran Terbaru -->
     <div class="bg-white rounded-xl shadow-xs border border-slate-200 overflow-hidden">
-        <div class="p-5 border-b border-slate-100 flex items-center justify-between">
-            <h3 class="font-bold text-base uppercase tracking-wider text-slate-800 flex items-center gap-2.5">
-                <i class="fa-solid fa-baby text-[#0b7c89] text-lg"></i> Pengajuan Akte Kelahiran Terbaru
-            </h3>
-            <a href="{{ route('admin.birth.index') }}" class="text-base font-bold text-[#0b7c89] hover:underline">Semua &rarr;</a>
+        <div class="p-4 sm:p-5 flex flex-wrap items-center justify-between gap-3 border-b border-teal-300/40" style="background-color: rgba(11, 124, 137, 0.5);">
+            <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-xl text-white shadow-xs" style="background-color: #0b7c89;">
+                <i class="fa-solid fa-baby text-lg text-white"></i>
+                <h3 class="font-extrabold text-sm sm:text-base uppercase tracking-wider text-white">Pengajuan Akte Kelahiran Terbaru</h3>
+            </div>
+            <a href="{{ route('admin.birth.index') }}" class="text-xs md:text-sm font-bold text-[#0b7c89] bg-white hover:bg-teal-50 px-3.5 py-2 rounded-xl transition shadow-xs inline-flex items-center gap-1.5">
+                Semua &rarr;
+            </a>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full text-left text-base">
@@ -169,11 +241,14 @@
 
     <!-- Permohonan Kematian Terbaru -->
     <div class="bg-white rounded-xl shadow-xs border border-slate-200 overflow-hidden">
-        <div class="p-5 border-b border-slate-100 flex items-center justify-between">
-            <h3 class="font-bold text-base uppercase tracking-wider text-slate-800 flex items-center gap-2.5">
-                <i class="fa-solid fa-book-skull text-rose-700 text-lg"></i> Pengajuan Akte Kematian Terbaru
-            </h3>
-            <a href="{{ route('admin.death.index') }}" class="text-base font-bold text-rose-700 hover:underline">Semua &rarr;</a>
+        <div class="p-4 sm:p-5 flex flex-wrap items-center justify-between gap-3 border-b border-rose-300/40" style="background-color: rgba(190, 18, 60, 0.5);">
+            <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-xl text-white shadow-xs" style="background-color: #be123c;">
+                <i class="fa-solid fa-book-skull text-lg text-white"></i>
+                <h3 class="font-extrabold text-sm sm:text-base uppercase tracking-wider text-white">Pengajuan Akte Kematian Terbaru</h3>
+            </div>
+            <a href="{{ route('admin.death.index') }}" class="text-xs md:text-sm font-bold text-rose-900 bg-white hover:bg-rose-50 px-3.5 py-2 rounded-xl transition shadow-xs inline-flex items-center gap-1.5">
+                Semua &rarr;
+            </a>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full text-left text-base">

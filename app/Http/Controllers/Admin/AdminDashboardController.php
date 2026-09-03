@@ -37,6 +37,7 @@ class AdminDashboardController extends Controller
 
         $latestBirths = BirthCertificate::latest()->take(4)->get();
         $latestDeaths = DeathCertificate::latest()->take(4)->get();
+        $latestCitizens = User::where('role', 'warga')->latest()->take(4)->get();
         $pendingCitizens = User::where('role', 'warga')->where('status', 'pending')->latest()->take(4)->get();
 
         return view('admin.dashboard', compact(
@@ -45,6 +46,7 @@ class AdminDashboardController extends Controller
             'citizenStats',
             'latestBirths',
             'latestDeaths',
+            'latestCitizens',
             'pendingCitizens'
         ));
     }
