@@ -62,6 +62,25 @@ class AdminDeathController extends Controller
             'rejection_note.min' => 'Catatan verifikator minimal berisi 3 karakter.',
         ]);
 
+        // Normalisasi status awal dan status baru untuk perbandingan
+        $statusMap = [
+            'verified' => 'in_process',
+            'completed' => 'ready_for_pickup',
+            'archived' => 'picked_up',
+        ];
+        $currentNormalizedStatus = $statusMap[$death->status] ?? $death->status;
+        $newNormalizedStatus = $statusMap[$validated['status']] ?? $validated['status'];
+
+        $isStatusChanged = $currentNormalizedStatus !== $newNormalizedStatus;
+        $initialNote = trim((string)$death->rejection_note);
+        $newNote = trim((string)$validated['rejection_note']);
+
+        if ($isStatusChanged && $initialNote !== '' && $initialNote === $newNote) {
+            return back()->withErrors([
+                'rejection_note' => 'Status pengajuan telah diubah. Silakan perbarui Catatan Verifikator / Pesan terlebih dahulu sesuai status yang baru.'
+            ])->withInput();
+        }
+
         $death->status = $validated['status'];
         $death->is_archived = in_array($validated['status'], ['picked_up', 'archived']);
         $death->rejection_note = $validated['rejection_note'];

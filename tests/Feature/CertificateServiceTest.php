@@ -229,7 +229,14 @@ class CertificateServiceTest extends TestCase
         ]);
         $this->assertEquals('Revisi Berkas', $birth->fresh()->status_label);
 
-        // 3. Ubah ke Dibatalkan (rejected)
+        // Validasi gagal jika status diubah tapi pesan/catatan belum diganti dari pesan sebelumnya
+        $responseUnchangedNote = $this->actingAs($admin)->put('/admin/akte-kelahiran/' . $birth->id . '/status', [
+            'status' => 'rejected',
+            'rejection_note' => 'Mohon unggah ulang foto KTP saksi yang lebih jelas.',
+        ]);
+        $responseUnchangedNote->assertSessionHasErrors('rejection_note');
+
+        // 3. Ubah ke Dibatalkan (rejected) dengan catatan yang sudah diperbarui
         $this->actingAs($admin)->put('/admin/akte-kelahiran/' . $birth->id . '/status', [
             'status' => 'rejected',
             'rejection_note' => 'Data tidak sesuai database kependudukan.',

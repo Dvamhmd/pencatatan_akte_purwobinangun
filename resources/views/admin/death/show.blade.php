@@ -107,13 +107,13 @@
                     <i class="fa-solid fa-stamp text-rose-700"></i> Validasi Petugas
                 </h4>
 
-                <form action="{{ route('admin.death.update_status', $death) }}" method="POST" class="space-y-4">
+                <form id="statusDeathForm" action="{{ route('admin.death.update_status', $death) }}" method="POST" class="space-y-4">
                     @csrf
                     @method('PUT')
 
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Ubah Status Permohonan</label>
-                        <select name="status" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-rose-600 font-medium">
+                        <select name="status" id="statusDeathSelect" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-rose-600 font-medium">
                             <option value="pending" {{ $death->status === 'pending' ? 'selected' : '' }}>1. Menunggu Verifikasi</option>
                             <option value="in_process" {{ ($death->status === 'in_process' || $death->status === 'verified') ? 'selected' : '' }}>2. Sedang Diproses</option>
                             <option value="revision" {{ $death->status === 'revision' ? 'selected' : '' }}>3. Revisi Berkas</option>
@@ -123,14 +123,24 @@
                         </select>
                     </div>
 
+                    <!-- Warning jika status diubah namun catatan belum diganti -->
+                    <div id="statusDeathChangeWarning" class="hidden p-3 bg-amber-50 border border-amber-300 rounded-lg text-[11px] text-amber-900 flex items-start gap-2 animate-fadeIn">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-600 text-sm mt-0.5 shrink-0"></i>
+                        <div>
+                            <p class="font-bold">Perhatian: Status Pengajuan Diubah</p>
+                            <p class="text-amber-800">Silakan perbarui catatan / pesan verifikator di bawah sesuai dengan status baru sebelum menyimpan.</p>
+                        </div>
+                    </div>
+
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">
                             Catatan Verifikator / Alasan <span class="text-rose-600 font-bold">* (Wajib diisi)</span>
                         </label>
-                        <textarea name="rejection_note" rows="3" required placeholder="Tuliskan catatan verifikasi, instruksi pengambilan berkas, atau alasan perubahan status..." class="w-full text-xs px-3 py-2 rounded-lg border @error('rejection_note') border-rose-500 @else border-slate-300 @enderror focus:outline-none focus:ring-2 focus:ring-rose-600">{{ old('rejection_note', $death->rejection_note) }}</textarea>
+                        <textarea name="rejection_note" id="rejectionDeathNote" rows="3" required placeholder="Tuliskan catatan verifikasi, instruksi pengambilan berkas, atau alasan perubahan status..." class="w-full text-xs px-3 py-2 rounded-lg border @error('rejection_note') border-rose-500 ring-2 ring-rose-200 @else border-slate-300 @enderror focus:outline-none focus:ring-2 focus:ring-rose-600 transition">{{ old('rejection_note', $death->rejection_note) }}</textarea>
                         @error('rejection_note')
                             <p class="text-rose-600 text-[11px] mt-1 font-medium">{{ $message }}</p>
                         @enderror
+                        <p id="noteDeathJsError" class="hidden text-rose-600 text-[11px] mt-1 font-medium"></p>
                     </div>
 
                     <div class="text-[11px] text-slate-500">
@@ -175,4 +185,63 @@
     </div>
 
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const statusForm = document.getElementById('statusDeathForm');
+    const statusSelect = document.getElementById('statusDeathSelect');
+    const rejectionNote = document.getElementById('rejectionDeathNote');
+    const statusChangeWarning = document.getElementById('statusDeathChangeWarning');
+    const noteJsError = document.getElementById('noteDeathJsError');
+
+    if (!statusForm || !statusSelect || !rejectionNote) return;
+
+    const initialStatus = statusSelect.value;
+    const initialNote = @json((string) $death->rejection_note).trim();
+
+    function validateNoteChange() {
+        const currentStatus = statusSelect.value;
+        const currentNote = rejectionNote.value.trim();
+        const isStatusChanged = (currentStatus !== initialStatus);
+        const isNoteUnchanged = (initialNote !== '' && currentNote === initialNote);
+
+        if (isStatusChanged && isNoteUnchanged) {
+            if (statusChangeWarning) statusChangeWarning.classList.remove('hidden');
+            return false;
+        } else {
+            if (statusChangeWarning) statusChangeWarning.classList.add('hidden');
+            if (noteJsError) noteJsError.classList.add('hidden');
+            rejectionNote.classList.remove('border-rose-500', 'ring-2', 'ring-rose-400');
+            return true;
+        }
+    }
+
+    statusSelect.addEventListener('change', function() {
+        validateNoteChange();
+    });
+
+    rejectionNote.addEventListener('input', function() {
+        validateNoteChange();
+    });
+
+    statusForm.addEventListener('submit', function(e) {
+        const currentStatus = statusSelect.value;
+        const currentNote = rejectionNote.value.trim();
+        const isStatusChanged = (currentStatus !== initialStatus);
+        const isNoteUnchanged = (initialNote !== '' && currentNote === initialNote);
+
+        if (isStatusChanged && isNoteUnchanged) {
+            e.preventDefault();
+            if (statusChangeWarning) statusChangeWarning.classList.remove('hidden');
+            if (noteJsError) {
+                noteJsError.textContent = 'Peringatan: Status pengajuan telah diubah, silakan perbarui Catatan Verifikator / Pesan terlebih dahulu.';
+                noteJsError.classList.remove('hidden');
+            }
+            rejectionNote.classList.add('border-rose-500', 'ring-2', 'ring-rose-400');
+            rejectionNote.focus();
+            alert('Peringatan: Status pengajuan telah diubah tetapi pesan/catatan verifikator masih belum diganti. Silakan ubah catatan terlebih dahulu sebelum menyimpan.');
+        }
+    });
+});
+</script>
 @endsection
