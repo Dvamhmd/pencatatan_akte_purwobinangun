@@ -96,7 +96,8 @@ class AdminArchiveController extends Controller
         $citizen->verified_by = Auth::user()->name;
         $citizen->save();
 
-        return back()->with('success', 'Akun warga (' . $citizen->name . ') berhasil dipindahkan ke arsip.');
+        return redirect()->route('admin.citizens.index')
+            ->with('success', 'Akun warga (' . $citizen->name . ') berhasil dipindahkan ke arsip.');
     }
 
     public function restoreCitizen(User $citizen)

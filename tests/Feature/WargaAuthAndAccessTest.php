@@ -206,6 +206,7 @@ class WargaAuthAndAccessTest extends TestCase
         $responseArchive = $this->actingAs($admin)->post('/admin/warga/' . $pendingCitizen->id . '/verify', [
             'action' => 'archive',
         ]);
+        $responseArchive->assertRedirect('/admin/warga');
         $this->assertDatabaseHas('users', [
             'id' => $pendingCitizen->id,
             'status' => 'archived',

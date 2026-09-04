@@ -152,6 +152,11 @@ class AdminCitizenController extends Controller
 
         $citizen->update($updateData);
 
+        if ($validated['status'] === 'archived') {
+            return redirect()->route('admin.citizens.index')
+                ->with('success', 'Data akun warga (' . $citizen->name . ') berhasil diperbarui dan dipindahkan ke arsip.');
+        }
+
         return redirect()->route('admin.citizens.show', $citizen)
             ->with('success', 'Data warga (' . $citizen->name . ') berhasil diperbarui.');
     }
@@ -220,7 +225,7 @@ class AdminCitizenController extends Controller
             $citizen->verified_by = $verifierName;
             $citizen->save();
 
-            return redirect()->route('admin.citizens.show', $citizen)
+            return redirect()->route('admin.citizens.index')
                 ->with('success', 'Data akun warga (' . $citizen->name . ') telah berhasil diarsipkan.');
         } else {
             $wasActive = $citizen->isActive();
