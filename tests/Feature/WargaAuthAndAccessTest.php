@@ -245,4 +245,58 @@ class WargaAuthAndAccessTest extends TestCase
         $responseDeathArchive = $this->actingAs($admin)->get('/admin/arsip?tab=death');
         $responseDeathArchive->assertStatus(200);
     }
+
+    public function test_citizen_verification_triggers_email_and_whatsapp_notifications()
+    {
+        \Illuminate\Support\Facades\Mail::fake();
+        \Illuminate\Support\Facades\Http::fake([
+            'api.fonnte.com/*' => \Illuminate\Support\Facades\Http::response(['status' => true, 'target' => '6281234567890'], 200),
+        ]);
+
+        $admin = User::where('email', 'admin@purwobinangun.desa.id')->first();
+        $pendingCitizen = User::where('status', 'pending')->first();
+
+        // 1. Cek halaman menampilkan pop up konfirmasi notifikasi dan toggle
+        $responseShow = $this->actingAs($admin)->get('/admin/warga/' . $pendingCitizen->id);
+        $responseShow->assertStatus(200);
+        $responseShow->assertSee('Konfirmasi Pengiriman Notifikasi');
+        $responseShow->assertSee('Email Warga');
+        $responseShow->assertSee('WhatsApp');
+
+        // 2. Admin menyetujui akun dengan notifikasi email & whatsapp aktif
+        $responseApprove = $this->actingAs($admin)->post('/admin/warga/' . $pendingCitizen->id . '/verify', [
+            'action' => 'approve',
+            'send_email' => '1',
+            'send_whatsapp' => '1',
+        ]);
+
+        $responseApprove->assertRedirect('/admin/warga/' . $pendingCitizen->id);
+        $this->assertDatabaseHas('users', [
+            'id' => $pendingCitizen->id,
+            'status' => 'active',
+        ]);
+
+        \Illuminate\Support\Facades\Mail::assertSent(\App\Mail\CitizenAccountStatusNotification::class, function ($mail) use ($pendingCitizen) {
+            return $mail->citizen->id === $pendingCitizen->id && $mail->actionType === 'approved';
+        });
+
+        // 3. Admin menonaktifkan akun dengan notifikasi email & whatsapp aktif
+        $responseDeactivate = $this->actingAs($admin)->post('/admin/warga/' . $pendingCitizen->id . '/verify', [
+            'action' => 'reject',
+            'rejection_reason' => 'Data NIK ganda atau perlu verifikasi ulang.',
+            'send_email' => '1',
+            'send_whatsapp' => '1',
+        ]);
+
+        $responseDeactivate->assertRedirect('/admin/warga/' . $pendingCitizen->id);
+        $this->assertDatabaseHas('users', [
+            'id' => $pendingCitizen->id,
+            'status' => 'rejected',
+            'rejection_reason' => 'Data NIK ganda atau perlu verifikasi ulang.',
+        ]);
+
+        \Illuminate\Support\Facades\Mail::assertSent(\App\Mail\CitizenAccountStatusNotification::class, function ($mail) use ($pendingCitizen) {
+            return $mail->citizen->id === $pendingCitizen->id && $mail->actionType === 'deactivated';
+        });
+    }
 }

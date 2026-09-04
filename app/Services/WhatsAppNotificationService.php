@@ -156,4 +156,74 @@ class WhatsAppNotificationService
 
         return self::sendMessage($rawPhone, $message);
     }
+
+    /**
+     * Kirim pesan notifikasi status akun warga (disetujui, ditolak, dinonaktifkan).
+     */
+    public static function sendCitizenAccountStatusNotification(
+        $citizen,
+        string $actionType,
+        ?string $reason = null,
+        ?string $adminName = null
+    ): bool {
+        $rawPhone = $citizen->phone;
+
+        if (empty($rawPhone)) {
+            Log::info("WhatsApp tidak dikirim: Nomor telepon tidak ditemukan pada akun warga NIK {$citizen->nik}.");
+            return false;
+        }
+
+        $loginUrl = route('warga.login');
+        $adminOfficer = $adminName ?: 'Petugas Pelayanan Kalurahan';
+
+        $message = "🏛️ *PEMBERITAHUAN STATUS AKUN WARGA*\n";
+        $message .= "*Pemerintah Kalurahan Purwobinangun*\n";
+        $message .= "────────────────────────────\n";
+        $message .= "Yth. Bpk/Ibu *{$citizen->name}*,\n\n";
+
+        if ($actionType === 'approved') {
+            $message .= "Pendaftaran Akun Warga Anda di Sistem Pelayanan Kalurahan Purwobinangun telah *DISETUJUI & DIAKTIFKAN* oleh petugas.\n\n";
+            $message .= "📌 *NIK:* `{$citizen->nik}`\n";
+            $message .= "🏠 *No. KK:* `{$citizen->family_card_no}`\n";
+            $message .= "📊 *Status Akun:* *Aktif / Terverifikasi*\n";
+            $message .= "👤 *Petugas:* {$adminOfficer}\n";
+
+            if (!empty($reason)) {
+                $message .= "\n📝 *Catatan Petugas:* \n_{$reason}_\n";
+            }
+
+            $message .= "\n✅ Anda sekarang dapat masuk (login) ke website pelayanan kependudukan untuk mengajukan permohonan Akte Kelahiran maupun Akte Kematian secara online.\n\n";
+            $message .= "🔗 *Masuk Akun Warga:* \n{$loginUrl}\n";
+        } elseif ($actionType === 'deactivated') {
+            $message .= "Pemberitahuan: Akun Warga Anda di Sistem Pelayanan Kalurahan Purwobinangun telah *DINONAKTIFKAN* oleh petugas pelayanan.\n\n";
+            $message .= "📌 *NIK:* `{$citizen->nik}`\n";
+            $message .= "🏠 *No. KK:* `{$citizen->family_card_no}`\n";
+            $message .= "📊 *Status Akun:* *Dinonaktifkan*\n";
+            $message .= "👤 *Petugas:* {$adminOfficer}\n";
+
+            if (!empty($reason)) {
+                $message .= "\n📝 *Catatan / Alasan Petugas:* \n_{$reason}_\n";
+            }
+
+            $message .= "\nℹ️ Jika Anda memerlukan klarifikasi atau bantuan lebih lanjut, silakan hubungi Kantor Kalurahan Purwobinangun pada hari dan jam kerja.\n";
+        } else {
+            // rejected
+            $message .= "Pendaftaran Akun Warga Anda di Sistem Pelayanan Kalurahan Purwobinangun *BELUM DAPAT DISETUJUI / DITOLAK* oleh petugas verifikator.\n\n";
+            $message .= "📌 *NIK:* `{$citizen->nik}`\n";
+            $message .= "🏠 *No. KK:* `{$citizen->family_card_no}`\n";
+            $message .= "📊 *Status Akun:* *Ditolak*\n";
+            $message .= "👤 *Petugas:* {$adminOfficer}\n";
+
+            if (!empty($reason)) {
+                $message .= "\n📝 *Catatan / Alasan Penolakan:* \n_{$reason}_\n";
+            }
+
+            $message .= "\nℹ️ Silakan periksa kembali kelengkapan data atau hubungi Kantor Kalurahan Purwobinangun jika membutuhkan bantuan lebih lanjut.\n";
+        }
+
+        $message .= "────────────────────────────\n";
+        $message .= "_Pesan ini dikirimkan secara otomatis oleh Sistem Pelayanan Kalurahan Purwobinangun._";
+
+        return self::sendMessage($rawPhone, $message);
+    }
 }
