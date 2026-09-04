@@ -21,10 +21,7 @@
 <body class="bg-slate-100 p-4 md:p-8 text-slate-800 antialiased font-sans">
 
     <!-- Floating Action Toolbar (No Print) -->
-    <div class="max-w-2xl mx-auto mb-4 no-print flex items-center justify-between">
-        <a href="javascript:history.back()" class="text-xs font-semibold text-slate-600 hover:text-slate-900 flex items-center gap-1">
-            <i class="fa-solid fa-arrow-left"></i> Kembali
-        </a>
+    <div class="max-w-2xl mx-auto mb-4 no-print flex items-center justify-end">
         <button onclick="window.print()" class="bg-[#0b7c89] hover:bg-[#065b65] text-white font-bold text-xs px-4 py-2 rounded-lg shadow-sm transition flex items-center gap-2">
             <i class="fa-solid fa-print"></i> Cetak / Simpan PDF
         </button>
