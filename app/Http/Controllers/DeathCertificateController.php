@@ -6,6 +6,7 @@ use App\Models\DeathCertificate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Services\AdminNotificationService;
 
 class DeathCertificateController extends Controller
 {
@@ -82,6 +83,9 @@ class DeathCertificateController extends Controller
         }
 
         $death = DeathCertificate::create($data);
+
+        // Notifikasi email otomatis ke admin/petugas kalurahan
+        AdminNotificationService::notifyNewDeathCertificate($death);
 
         return redirect()->route('death.success', ['registration_no' => $death->registration_no])
             ->with('success', 'Permohonan Akte Kematian berhasil diajukan!');

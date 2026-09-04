@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use App\Services\AdminNotificationService;
 
 class WargaProfileController extends Controller
 {
@@ -158,9 +159,13 @@ class WargaProfileController extends Controller
 
         if ($pendingRequest) {
             $pendingRequest->update($dataToSave);
+            $savedRequest = $pendingRequest;
         } else {
-            ProfileUpdateRequest::create($dataToSave);
+            $savedRequest = ProfileUpdateRequest::create($dataToSave);
         }
+
+        // Notifikasi email otomatis ke admin/petugas kalurahan
+        AdminNotificationService::notifyNewProfileUpdateRequest($savedRequest);
 
         return redirect()->route('profile.index')
             ->with('success', 'Permohonan perubahan data profil dan anggota keluarga Anda berhasil dikirim ke admin kelurahan. Data akun Anda akan diperbarui setelah diverifikasi dan disetujui oleh admin.');

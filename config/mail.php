@@ -123,4 +123,16 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Admin Notification Email
+    |--------------------------------------------------------------------------
+    |
+    | Alamat email admin atau petugas yang akan menerima notifikasi otomatis
+    | setiap kali ada permohonan baru yang menunggu verifikasi.
+    |
+    */
+
+    'admin_notification_email' => env('ADMIN_NOTIFICATION_EMAIL'),
+
 ];

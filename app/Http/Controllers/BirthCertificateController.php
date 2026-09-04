@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Services\AdminNotificationService;
 
 class BirthCertificateController extends Controller
 {
@@ -224,6 +225,9 @@ class BirthCertificateController extends Controller
         }
 
         $birth = BirthCertificate::create($data);
+
+        // Notifikasi email otomatis ke admin/petugas kalurahan
+        AdminNotificationService::notifyNewBirthCertificate($birth);
 
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
