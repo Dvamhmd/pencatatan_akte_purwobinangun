@@ -12,9 +12,9 @@
 </head>
 <body style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f1f5f9; color: #1e293b; -webkit-font-smoothing: antialiased; line-height: 1.6;">
 
-    <!-- Preheader Text (Hidden, prevents spam filters from picking raw code and gives clean inbox summary) -->
-    <div style="display: none; font-size: 1px; color: #f1f5f9; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; mso-hide: all;">
-        Pemberitahuan resmi: Permohonan {{ $typeLabel }} ({{ $submission->registration_no }}) berstatus: {{ $statusLabel }}.
+    <!-- Preheader Text (Hidden, gives clean inbox summary without spam penalties) -->
+    <div style="display: none; max-height: 0px; overflow: hidden; font-size: 1px; line-height: 1px; max-width: 0px; mso-hide: all;">
+        Pemberitahuan resmi pembaruan status permohonan dokumen kependudukan Kalurahan Purwobinangun.
     </div>
 
     <!-- Wrapper -->

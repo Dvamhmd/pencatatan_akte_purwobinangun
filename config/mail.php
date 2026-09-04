@@ -46,7 +46,15 @@ return [
             'username' => env('MAIL_USERNAME'),
             'password' => env('MAIL_PASSWORD'),
             'timeout' => null,
-            'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url((string) env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
+            'local_domain' => env('MAIL_EHLO_DOMAIN', (function () {
+                $host = parse_url((string) env('APP_URL', 'http://localhost'), PHP_URL_HOST);
+                if (empty($host) || in_array(strtolower($host), ['localhost', '127.0.0.1', '::1'])) {
+                    $email = env('MAIL_FROM_ADDRESS', 'gmail.com');
+                    $domain = substr(strrchr((string) $email, "@"), 1);
+                    return $domain ?: 'gmail.com';
+                }
+                return $host;
+            })()),
         ],
 
         'ses' => [

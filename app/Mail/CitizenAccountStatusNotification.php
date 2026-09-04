@@ -51,7 +51,8 @@ class CitizenAccountStatusNotification extends Mailable
      */
     public function envelope(): Envelope
     {
-        $subject = "[Kalurahan Purwobinangun] {$this->statusLabel} - NIK {$this->citizen->nik}";
+        // Hindari 16-digit NIK mentah di subjek email agar tidak terpicu filter deteksi PII / phishing
+        $subject = "Pemberitahuan: {$this->statusLabel} - Pelayanan Kalurahan Purwobinangun";
 
         $fromAddress = config('mail.from.address') ?: 'ahmadtaupik580@gmail.com';
         $fromName = config('mail.from.name') ?: 'Pelayanan Kalurahan Purwobinangun';
@@ -73,13 +74,11 @@ class CitizenAccountStatusNotification extends Mailable
      */
     public function headers(): \Illuminate\Mail\Mailables\Headers
     {
+        // Hapus X-Priority: 1 dan Importance: High karena merupakan penanda spam paling umum di filter SpamAssassin & Gmail
         return new \Illuminate\Mail\Mailables\Headers(
             text: [
                 'X-Auto-Response-Suppress' => 'OOF, AutoReply',
                 'Auto-Submitted' => 'auto-generated',
-                'X-Mailer' => 'Kalurahan Purwobinangun Notification System',
-                'X-Priority' => '1',
-                'Importance' => 'High',
             ],
         );
     }

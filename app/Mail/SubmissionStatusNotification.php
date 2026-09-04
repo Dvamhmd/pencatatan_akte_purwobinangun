@@ -64,7 +64,7 @@ class SubmissionStatusNotification extends Mailable
      */
     public function envelope(): Envelope
     {
-        $subject = "[Kalurahan Purwobinangun] {$this->statusLabel} - {$this->typeLabel} ({$this->submission->registration_no})";
+        $subject = "Pemberitahuan: {$this->statusLabel} - {$this->typeLabel} ({$this->submission->registration_no})";
 
         $fromAddress = config('mail.from.address') ?: 'ahmadtaupik580@gmail.com';
         $fromName = config('mail.from.name') ?: 'Pelayanan Kalurahan Purwobinangun';
@@ -91,9 +91,6 @@ class SubmissionStatusNotification extends Mailable
             text: [
                 'X-Auto-Response-Suppress' => 'OOF, AutoReply',
                 'Auto-Submitted' => 'auto-generated',
-                'X-Mailer' => 'Kalurahan Purwobinangun Notification System',
-                'X-Priority' => '1',
-                'Importance' => 'High',
             ],
         );
     }

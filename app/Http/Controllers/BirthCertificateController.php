@@ -21,7 +21,98 @@ class BirthCertificateController extends Controller
 
         $user = Auth::user();
 
-        return view('birth.create', compact('padukuhanList', 'user'));
+        $defaultFather = null;
+        $defaultMother = null;
+
+        if ($user) {
+            $candidates = collect();
+
+            // 1. Data akun pemohon (User yang sedang login)
+            $candidates->push((object)[
+                'name' => $user->name,
+                'nik' => $user->nik,
+                'birth_date' => $user->birth_date ? ($user->birth_date instanceof \DateTimeInterface ? $user->birth_date->format('Y-m-d') : substr((string)$user->birth_date, 0, 10)) : null,
+                'gender' => $user->gender,
+                'family_relationship' => $user->family_relationship,
+            ]);
+
+            // 2. Data anggota keluarga dari tabel family_members
+            $familyMembersQuery = \App\Models\FamilyMember::where('user_id', $user->id);
+            if (!empty($user->family_card_no)) {
+                $familyMembersQuery->orWhere('family_card_no', $user->family_card_no);
+            }
+            foreach ($familyMembersQuery->get() as $fm) {
+                $candidates->push((object)[
+                    'name' => $fm->name,
+                    'nik' => $fm->nik,
+                    'birth_date' => $fm->birth_date ? ($fm->birth_date instanceof \DateTimeInterface ? $fm->birth_date->format('Y-m-d') : substr((string)$fm->birth_date, 0, 10)) : null,
+                    'gender' => $fm->gender,
+                    'family_relationship' => $fm->family_relationship,
+                ]);
+            }
+
+            // 3. Data warga lain yang memiliki Nomor KK sama (jika ada)
+            if (!empty($user->family_card_no)) {
+                $otherUsers = \App\Models\User::where('family_card_no', $user->family_card_no)
+                    ->where('id', '!=', $user->id)
+                    ->where('role', 'warga')
+                    ->get();
+                foreach ($otherUsers as $ou) {
+                    $candidates->push((object)[
+                        'name' => $ou->name,
+                        'nik' => $ou->nik,
+                        'birth_date' => $ou->birth_date ? ($ou->birth_date instanceof \DateTimeInterface ? $ou->birth_date->format('Y-m-d') : substr((string)$ou->birth_date, 0, 10)) : null,
+                        'gender' => $ou->gender,
+                        'family_relationship' => $ou->family_relationship,
+                    ]);
+                }
+            }
+
+            // Unikkan berdasarkan NIK agar tidak ada duplikasi data
+            $candidates = $candidates->unique(function ($item) {
+                return !empty($item->nik) ? $item->nik : spl_object_hash($item);
+            })->values();
+
+            // Logika Auto-Fill Data Ayah:
+            // hubungan_dalam_kk = "Kepala Keluarga" AND jenis_kelamin = "Laki-laki"
+            $fatherCandidate = $candidates->first(function ($item) {
+                $rel = strtolower(trim($item->family_relationship ?? ''));
+                $gender = strtoupper(trim($item->gender ?? ''));
+                $isKepalaKeluarga = ($rel === 'kepala keluarga');
+                $isLakiLaki = in_array($gender, ['L', 'LAKI-LAKI']);
+
+                return $isKepalaKeluarga && $isLakiLaki;
+            });
+
+            if ($fatherCandidate) {
+                $defaultFather = [
+                    'name' => $fatherCandidate->name,
+                    'nik' => $fatherCandidate->nik,
+                    'birth_date' => $fatherCandidate->birth_date,
+                ];
+            }
+
+            // Logika Auto-Fill Data Ibu:
+            // hubungan_dalam_kk = "Istri" AND jenis_kelamin = "Perempuan"
+            $motherCandidate = $candidates->first(function ($item) {
+                $rel = strtolower(trim($item->family_relationship ?? ''));
+                $gender = strtoupper(trim($item->gender ?? ''));
+                $isIstri = ($rel === 'istri');
+                $isPerempuan = in_array($gender, ['P', 'PEREMPUAN']);
+
+                return $isIstri && $isPerempuan;
+            });
+
+            if ($motherCandidate) {
+                $defaultMother = [
+                    'name' => $motherCandidate->name,
+                    'nik' => $motherCandidate->nik,
+                    'birth_date' => $motherCandidate->birth_date,
+                ];
+            }
+        }
+
+        return view('birth.create', compact('padukuhanList', 'user', 'defaultFather', 'defaultMother'));
     }
 
     public function store(Request $request)

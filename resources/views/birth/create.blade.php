@@ -212,104 +212,114 @@
                         <i class="fa-solid fa-users text-amber-500"></i> Data Kedua Orang Tua
                     </h4>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
                         
                         <!-- Data Ayah Kandung -->
-                        <div class="bg-slate-50/70 p-4 rounded-xl border border-slate-200 space-y-3.5">
-                            <div class="flex items-center gap-2 pb-2 border-b border-slate-200/80">
-                                <div class="w-6 h-6 rounded-md bg-blue-100 text-blue-700 flex items-center justify-center text-xs">
-                                    <i class="fa-solid fa-user-tie"></i>
-                                </div>
-                                <h5 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Data Ayah Kandung</h5>
-                            </div>
-
-                            <div class="space-y-3">
-                                <!-- NIK Ayah -->
-                                <div>
-                                    <label for="father_nik" class="block text-xs font-semibold text-slate-700 mb-1">
-                                        NIK Ayah (16 Digit) <span class="text-rose-500">*</span>
-                                    </label>
-                                    <input type="text" id="father_nik" name="father_nik" value="{{ old('father_nik') }}" maxlength="16" required placeholder="Masukkan NIK Ayah (16 Angka)" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition font-mono">
-                                    <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-father_nik">NIK Ayah wajib 16 digit angka.</span>
+                        <div class="bg-slate-50/70 p-4 rounded-xl border border-slate-200 space-y-3.5 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center gap-2 pb-2 border-b border-slate-200/80 mb-3.5">
+                                    <div class="w-6 h-6 rounded-md bg-blue-100 text-blue-700 flex items-center justify-center text-xs shrink-0">
+                                        <i class="fa-solid fa-user-tie"></i>
+                                    </div>
+                                    <h5 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Data Ayah Kandung</h5>
                                 </div>
 
-                                <!-- Nama Lengkap Ayah -->
-                                <div>
-                                    <label for="father_name" class="block text-xs font-semibold text-slate-700 mb-1">
-                                        Nama Lengkap Ayah <span class="text-rose-500">*</span>
-                                    </label>
-                                    <input type="text" id="father_name" name="father_name" value="{{ old('father_name') }}" required placeholder="Masukkan Nama Lengkap Ayah" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition">
-                                    <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-father_name">Nama lengkap ayah wajib diisi.</span>
-                                </div>
+                                <div class="space-y-3">
+                                    <!-- NIK Ayah -->
+                                    <div>
+                                        <label for="father_nik" class="block text-xs font-semibold text-slate-700 mb-1">
+                                            NIK Ayah (16 Digit) <span class="text-rose-500">*</span>
+                                        </label>
+                                        <input type="text" id="father_nik" name="father_nik" value="{{ old('father_nik', $defaultFather['nik'] ?? '') }}" maxlength="16" required placeholder="Masukkan NIK Ayah (16 Angka)" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition font-mono">
+                                        <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-father_nik">NIK Ayah wajib 16 digit angka.</span>
+                                    </div>
 
-                                <!-- Tanggal Lahir Ayah -->
-                                <div>
-                                    <label for="father_birth_date" class="block text-xs font-semibold text-slate-700 mb-1">
-                                        Tanggal Lahir Ayah <span class="text-rose-500">*</span>
-                                    </label>
-                                    <input type="date" id="father_birth_date" name="father_birth_date" value="{{ old('father_birth_date') }}" required class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition bg-white">
-                                    <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-father_birth_date">Tanggal lahir ayah wajib diisi.</span>
-                                </div>
+                                    <!-- Nama Lengkap Ayah -->
+                                    <div>
+                                        <label for="father_name" class="block text-xs font-semibold text-slate-700 mb-1">
+                                            Nama Lengkap Ayah <span class="text-rose-500">*</span>
+                                        </label>
+                                        <input type="text" id="father_name" name="father_name" value="{{ old('father_name', $defaultFather['name'] ?? '') }}" required placeholder="Masukkan Nama Lengkap Ayah" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition">
+                                        <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-father_name">Nama lengkap ayah wajib diisi.</span>
+                                    </div>
 
-                                <!-- Pekerjaan Ayah -->
-                                <div>
-                                    <label for="father_job" class="block text-xs font-semibold text-slate-700 mb-1">
-                                        Pekerjaan Ayah <span class="text-rose-500">*</span>
-                                    </label>
-                                    <input type="text" id="father_job" name="father_job" value="{{ old('father_job') }}" required placeholder="Contoh: Karyawan Swasta / Wiraswasta" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition">
-                                    <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-father_job">Pekerjaan ayah wajib diisi.</span>
+                                    <!-- Tanggal Lahir Ayah -->
+                                    <div>
+                                        <label for="father_birth_date" class="block text-xs font-semibold text-slate-700 mb-1">
+                                            Tanggal Lahir Ayah <span class="text-rose-500">*</span>
+                                        </label>
+                                        <input type="date" id="father_birth_date" name="father_birth_date" value="{{ old('father_birth_date', $defaultFather['birth_date'] ?? '') }}" required class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition bg-white">
+                                        <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-father_birth_date">Tanggal lahir ayah wajib diisi.</span>
+                                    </div>
+
+                                    <!-- Pekerjaan Ayah -->
+                                    <div>
+                                        <label for="father_job" class="block text-xs font-semibold text-slate-700 mb-1">
+                                            Pekerjaan Ayah <span class="text-rose-500">*</span>
+                                        </label>
+                                        <input type="text" id="father_job" name="father_job" value="{{ old('father_job') }}" required placeholder="Contoh: Karyawan Swasta / Wiraswasta" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition">
+                                        <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-father_job">Pekerjaan ayah wajib diisi.</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Data Ibu Kandung -->
-                        <div class="bg-slate-50/70 p-4 rounded-xl border border-slate-200 space-y-3.5">
-                            <div class="flex items-center gap-2 pb-2 border-b border-slate-200/80">
-                                <div class="w-6 h-6 rounded-md bg-pink-100 text-pink-700 flex items-center justify-center text-xs">
-                                    <i class="fa-solid fa-user-nurse"></i>
-                                </div>
-                                <h5 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Data Ibu Kandung</h5>
-                            </div>
-
-                            <div class="space-y-3">
-                                <!-- NIK Ibu -->
-                                <div>
-                                    <label for="mother_nik" class="block text-xs font-semibold text-slate-700 mb-1">
-                                        NIK Ibu (16 Digit) <span class="text-rose-500">*</span>
-                                    </label>
-                                    <input type="text" id="mother_nik" name="mother_nik" value="{{ old('mother_nik') }}" maxlength="16" required placeholder="Masukkan NIK Ibu (16 Angka)" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition font-mono">
-                                    <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-mother_nik">NIK Ibu wajib 16 digit angka.</span>
+                        <div class="bg-slate-50/70 p-4 rounded-xl border border-slate-200 space-y-3.5 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center gap-2 pb-2 border-b border-slate-200/80 mb-3.5">
+                                    <div class="w-6 h-6 rounded-md bg-pink-100 text-pink-700 flex items-center justify-center text-xs shrink-0">
+                                        <i class="fa-solid fa-user-nurse"></i>
+                                    </div>
+                                    <h5 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Data Ibu Kandung</h5>
                                 </div>
 
-                                <!-- Nama Lengkap Ibu -->
-                                <div>
-                                    <label for="mother_name" class="block text-xs font-semibold text-slate-700 mb-1">
-                                        Nama Lengkap Ibu <span class="text-rose-500">*</span>
-                                    </label>
-                                    <input type="text" id="mother_name" name="mother_name" value="{{ old('mother_name') }}" required placeholder="Masukkan Nama Lengkap Ibu" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition">
-                                    <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-mother_name">Nama lengkap ibu wajib diisi.</span>
-                                </div>
+                                <div class="space-y-3">
+                                    <!-- NIK Ibu -->
+                                    <div>
+                                        <label for="mother_nik" class="block text-xs font-semibold text-slate-700 mb-1">
+                                            NIK Ibu (16 Digit) <span class="text-rose-500">*</span>
+                                        </label>
+                                        <input type="text" id="mother_nik" name="mother_nik" value="{{ old('mother_nik', $defaultMother['nik'] ?? '') }}" maxlength="16" required placeholder="Masukkan NIK Ibu (16 Angka)" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition font-mono">
+                                        <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-mother_nik">NIK Ibu wajib 16 digit angka.</span>
+                                    </div>
 
-                                <!-- Tanggal Lahir Ibu -->
-                                <div>
-                                    <label for="mother_birth_date" class="block text-xs font-semibold text-slate-700 mb-1">
-                                        Tanggal Lahir Ibu <span class="text-rose-500">*</span>
-                                    </label>
-                                    <input type="date" id="mother_birth_date" name="mother_birth_date" value="{{ old('mother_birth_date') }}" required class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition bg-white">
-                                    <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-mother_birth_date">Tanggal lahir ibu wajib diisi.</span>
-                                </div>
+                                    <!-- Nama Lengkap Ibu -->
+                                    <div>
+                                        <label for="mother_name" class="block text-xs font-semibold text-slate-700 mb-1">
+                                            Nama Lengkap Ibu <span class="text-rose-500">*</span>
+                                        </label>
+                                        <input type="text" id="mother_name" name="mother_name" value="{{ old('mother_name', $defaultMother['name'] ?? '') }}" required placeholder="Masukkan Nama Lengkap Ibu" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition">
+                                        <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-mother_name">Nama lengkap ibu wajib diisi.</span>
+                                    </div>
 
-                                <!-- Pekerjaan Ibu -->
-                                <div>
-                                    <label for="mother_job" class="block text-xs font-semibold text-slate-700 mb-1">
-                                        Pekerjaan Ibu <span class="text-rose-500">*</span>
-                                    </label>
-                                    <input type="text" id="mother_job" name="mother_job" value="{{ old('mother_job') }}" required placeholder="Contoh: Ibu Rumah Tangga / PNS" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition">
-                                    <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-mother_job">Pekerjaan ibu wajib diisi.</span>
+                                    <!-- Tanggal Lahir Ibu -->
+                                    <div>
+                                        <label for="mother_birth_date" class="block text-xs font-semibold text-slate-700 mb-1">
+                                            Tanggal Lahir Ibu <span class="text-rose-500">*</span>
+                                        </label>
+                                        <input type="date" id="mother_birth_date" name="mother_birth_date" value="{{ old('mother_birth_date', $defaultMother['birth_date'] ?? '') }}" required class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition bg-white">
+                                        <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-mother_birth_date">Tanggal lahir ibu wajib diisi.</span>
+                                    </div>
+
+                                    <!-- Pekerjaan Ibu -->
+                                    <div>
+                                        <label for="mother_job" class="block text-xs font-semibold text-slate-700 mb-1">
+                                            Pekerjaan Ibu <span class="text-rose-500">*</span>
+                                        </label>
+                                        <input type="text" id="mother_job" name="mother_job" value="{{ old('mother_job') }}" required placeholder="Contoh: Ibu Rumah Tangga / PNS" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition">
+                                        <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-mother_job">Pekerjaan ibu wajib diisi.</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
+                    </div>
+
+                    <!-- Informasi Kecil di Bawah Section -->
+                    <div class="flex items-center gap-2 text-[11px] text-slate-500 bg-slate-50 px-3.5 py-2.5 rounded-lg border border-slate-200">
+                        <i class="fa-solid fa-circle-info text-[#095b8c] text-xs shrink-0"></i>
+                        <span>Data orang tua diisi otomatis berdasarkan data KK. Silakan periksa dan ubah apabila data tidak sesuai.</span>
                     </div>
                 </div>
 
@@ -942,9 +952,6 @@
                 </div>
             </div>
 
-                </div>
-            </div>
-
         </div>
 
         <!-- Footer Tombol Konfirmasi & Ubah Data -->
@@ -1382,14 +1389,14 @@ document.addEventListener('DOMContentLoaded', function () {
             if (rw && draft.rw !== undefined) rw.value = draft.rw;
             if (address && draft.address !== undefined) address.value = draft.address;
 
-            if (fatherNik && draft.father_nik !== undefined) fatherNik.value = draft.father_nik;
-            if (fatherName && draft.father_name !== undefined) fatherName.value = draft.father_name;
-            if (fatherBirthDate && draft.father_birth_date !== undefined) fatherBirthDate.value = draft.father_birth_date;
+            if (fatherNik && draft.father_nik !== undefined && (draft.father_nik !== '' || !fatherNik.value)) fatherNik.value = draft.father_nik;
+            if (fatherName && draft.father_name !== undefined && (draft.father_name !== '' || !fatherName.value)) fatherName.value = draft.father_name;
+            if (fatherBirthDate && draft.father_birth_date !== undefined && (draft.father_birth_date !== '' || !fatherBirthDate.value)) fatherBirthDate.value = draft.father_birth_date;
             if (fatherJob && draft.father_job !== undefined) fatherJob.value = draft.father_job;
 
-            if (motherNik && draft.mother_nik !== undefined) motherNik.value = draft.mother_nik;
-            if (motherName && draft.mother_name !== undefined) motherName.value = draft.mother_name;
-            if (motherBirthDate && draft.mother_birth_date !== undefined) motherBirthDate.value = draft.mother_birth_date;
+            if (motherNik && draft.mother_nik !== undefined && (draft.mother_nik !== '' || !motherNik.value)) motherNik.value = draft.mother_nik;
+            if (motherName && draft.mother_name !== undefined && (draft.mother_name !== '' || !motherName.value)) motherName.value = draft.mother_name;
+            if (motherBirthDate && draft.mother_birth_date !== undefined && (draft.mother_birth_date !== '' || !motherBirthDate.value)) motherBirthDate.value = draft.mother_birth_date;
             if (motherJob && draft.mother_job !== undefined) motherJob.value = draft.mother_job;
 
             if (childName && draft.child_name !== undefined) childName.value = draft.child_name;
