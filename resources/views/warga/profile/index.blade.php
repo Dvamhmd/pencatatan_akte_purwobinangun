@@ -142,11 +142,11 @@
         }
     @endphp
 
-    <!-- Grid Konten: Form Ubah Profil (Kiri 7 Col) & Form Password + Info KK (Kanan 5 Col) -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- Grid Konten: Form Ubah Profil (Kiri 8 Col) & Form Password + Info KK (Kanan 4 Col) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-        <!-- Kolom Kiri: Form Ubah Data Profil & Anggota Keluarga (7 Col) -->
-        <div class="lg:col-span-7 space-y-6">
+        <!-- Kolom Kiri: Form Ubah Data Profil & Anggota Keluarga (8 Col) -->
+        <div class="lg:col-span-8 space-y-6">
             <div class="bg-white rounded-xl shadow-xs border border-slate-200 overflow-hidden">
                 <div class="bg-slate-50 px-5 py-3.5 border-b border-slate-200 flex items-center justify-between">
                     <h2 class="font-bold text-xs uppercase tracking-wider text-slate-700 flex items-center gap-2">
@@ -155,15 +155,18 @@
                     <span class="text-[11px] text-slate-400"><i class="fa-solid fa-asterisk text-rose-500 text-[9px]"></i> Wajib diisi</span>
                 </div>
 
-                <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data" class="p-5 space-y-6 text-xs" id="form-profile-update">
+                <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data" class="p-5 sm:p-6 space-y-6 text-xs" id="form-profile-update">
                     @csrf
                     @method('PUT')
 
                     <!-- BAGIAN 1: IDENTITAS UTAMA (NIK & KK) -->
                     <div class="space-y-4">
-                        <h3 class="text-xs font-extrabold uppercase tracking-wider text-[#095b8c] pb-2 border-b border-slate-200 flex items-center gap-2">
-                            <i class="fa-solid fa-id-card"></i> 1. Identitas Akun & Kartu Keluarga
-                        </h3>
+                        <div class="pb-2.5 border-b border-slate-200 flex items-center justify-between">
+                            <h3 class="text-xs font-extrabold uppercase tracking-wider text-[#095b8c] flex items-center gap-2">
+                                <i class="fa-solid fa-id-card text-sm"></i> 1. Identitas Akun & Kartu Keluarga
+                            </h3>
+                            <span class="text-[11px] text-slate-400 font-medium hidden sm:inline">Data Pemohon Utama</span>
+                        </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
@@ -198,7 +201,7 @@
                             </label>
 
                             <!-- Kotak Preview Berkas Tersimpan / Dipilih -->
-                            <div id="preview-box-kk" class="{{ $hasDocKk ? '' : 'hidden' }} p-3.5 bg-teal-50/50 rounded-xl border border-teal-200/80 mb-3 flex items-center justify-between gap-3">
+                            <div id="preview-box-kk" class="{{ $hasDocKk ? '' : 'hidden' }} p-3.5 bg-teal-50/50 rounded-xl border border-teal-200/80 mb-3 flex items-center justify-between gap-3 flex-wrap sm:flex-nowrap">
                                 <div class="flex items-center gap-3 min-w-0">
                                     <div class="w-10 h-10 rounded-lg bg-teal-100/80 border border-teal-200 flex items-center justify-center shrink-0">
                                         <div id="img-preview-wrap-kk" class="{{ ($hasDocKk && !$isPdfDocKk) ? '' : 'hidden' }}">
@@ -220,11 +223,11 @@
 
                                 <div class="flex items-center gap-1.5 shrink-0">
                                     @if($hasDocKk)
-                                        <button type="button" id="btn-preview-lightbox" class="text-xs font-bold text-[#095b8c] hover:text-[#074a73] bg-teal-50 hover:bg-teal-100 px-3 py-1.5 rounded-lg border border-teal-200 transition flex items-center gap-1.5 cursor-pointer">
+                                        <button type="button" id="btn-preview-lightbox" class="text-xs font-bold text-[#095b8c] hover:text-[#074a73] bg-teal-50 hover:bg-teal-100 px-3 py-1.5 rounded-lg border border-teal-200 transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
                                             <i class="fa-solid fa-magnifying-glass-plus"></i> Lihat
                                         </button>
                                     @endif
-                                    <label for="doc_family_card" class="text-xs font-bold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg border border-slate-300 transition flex items-center gap-1.5 cursor-pointer">
+                                    <label for="doc_family_card" class="text-xs font-bold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg border border-slate-300 transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
                                         <i class="fa-solid fa-upload"></i> {{ $hasDocKk ? 'Ganti Berkas' : 'Pilih Berkas' }}
                                     </label>
                                 </div>
@@ -291,13 +294,13 @@
                                     Jenis Kelamin <span class="text-rose-500">*</span>
                                 </label>
                                 <div class="grid grid-cols-2 gap-2">
-                                    <label class="flex items-center gap-1.5 p-2 rounded-lg border cursor-pointer transition {{ $activeGender === 'L' ? 'bg-teal-50/80 border-[#059cb8] text-[#095b8c] font-bold' : 'border-slate-200 hover:bg-slate-50' }}">
+                                    <label class="flex items-center justify-center gap-2 p-2.5 rounded-lg border cursor-pointer transition {{ $activeGender === 'L' ? 'bg-teal-50/80 border-[#059cb8] text-[#095b8c] font-bold' : 'border-slate-200 hover:bg-slate-50' }}">
                                         <input type="radio" name="gender" value="L" {{ $activeGender === 'L' ? 'checked' : '' }} required class="text-[#095b8c] focus:ring-[#059cb8]">
-                                        <span class="text-xs"><i class="fa-solid fa-mars text-blue-500 mr-1"></i> Laki-laki</span>
+                                        <span class="text-xs whitespace-nowrap"><i class="fa-solid fa-mars text-blue-500 mr-1"></i> Laki-laki</span>
                                     </label>
-                                    <label class="flex items-center gap-1.5 p-2 rounded-lg border cursor-pointer transition {{ $activeGender === 'P' ? 'bg-pink-50/80 border-pink-400 text-pink-700 font-bold' : 'border-slate-200 hover:bg-slate-50' }}">
+                                    <label class="flex items-center justify-center gap-2 p-2.5 rounded-lg border cursor-pointer transition {{ $activeGender === 'P' ? 'bg-pink-50/80 border-pink-400 text-pink-700 font-bold' : 'border-slate-200 hover:bg-slate-50' }}">
                                         <input type="radio" name="gender" value="P" {{ $activeGender === 'P' ? 'checked' : '' }} required class="text-pink-600 focus:ring-pink-500">
-                                        <span class="text-xs"><i class="fa-solid fa-venus text-pink-500 mr-1"></i> Perempuan</span>
+                                        <span class="text-xs whitespace-nowrap"><i class="fa-solid fa-venus text-pink-500 mr-1"></i> Perempuan</span>
                                     </label>
                                 </div>
                                 @error('gender')
@@ -335,11 +338,11 @@
                                 <label for="phone" class="block font-bold text-slate-700 mb-1">
                                     Nomor HP / WhatsApp <span class="text-rose-500">*</span>
                                 </label>
-                                <div class="relative" style="position: relative;">
+                                <div class="relative">
                                     <input type="text" name="phone" id="phone" value="{{ $activePhone }}" required placeholder="Contoh: 081234567890"
                                         class="w-full text-xs rounded-lg border {{ $errors->has('phone') ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300' }} focus:outline-none focus:ring-2 focus:ring-[#059cb8]/20 focus:border-[#059cb8] transition"
                                         style="padding-left: 0.875rem; padding-right: 2.75rem; padding-top: 0.625rem; padding-bottom: 0.625rem;">
-                                    <span class="text-emerald-600 pointer-events-none flex items-center justify-center" style="position: absolute; right: 0.85rem; top: 50%; transform: translateY(-50%);">
+                                    <span class="text-emerald-600 pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center justify-center">
                                         <i class="fa-brands fa-whatsapp text-sm"></i>
                                     </span>
                                 </div>
@@ -352,11 +355,11 @@
                                 <label for="email" class="block font-bold text-slate-700 mb-1">
                                     Alamat Email <span class="text-rose-500">*</span>
                                 </label>
-                                <div class="relative" style="position: relative;">
+                                <div class="relative">
                                     <input type="email" name="email" id="email" value="{{ $activeEmail }}" required placeholder="nama@email.com"
                                         class="w-full text-xs rounded-lg border {{ $errors->has('email') ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300' }} focus:outline-none focus:ring-2 focus:ring-[#059cb8]/20 focus:border-[#059cb8] transition"
                                         style="padding-left: 0.875rem; padding-right: 2.75rem; padding-top: 0.625rem; padding-bottom: 0.625rem;">
-                                    <span class="text-slate-400 pointer-events-none flex items-center justify-center" style="position: absolute; right: 0.85rem; top: 50%; transform: translateY(-50%);">
+                                    <span class="text-slate-400 pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center justify-center">
                                         <i class="fa-regular fa-envelope text-xs"></i>
                                     </span>
                                 </div>
@@ -366,7 +369,7 @@
                             </div>
                         </div>
 
-                        <!-- Alamat Lengkap, RT, RW -->
+                        <!-- Alamat Lengkap -->
                         <div>
                             <label for="address" class="block font-bold text-slate-700 mb-1">
                                 Alamat Lengkap (Padukuhan / Jalan / Dusun) <span class="text-rose-500">*</span>
@@ -379,14 +382,15 @@
                             @enderror
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4">
+                        <!-- RT & RW -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label for="rt" class="block font-bold text-slate-700 mb-1">
                                     RT <span class="text-rose-500">*</span>
                                 </label>
-                                <input type="text" name="rt" id="rt" value="{{ $activeRt }}" required placeholder="01" maxlength="5"
+                                <input type="text" name="rt" id="rt" value="{{ $activeRt }}" required placeholder="Contoh: 01" maxlength="5"
                                     class="w-full text-xs rounded-lg border {{ $errors->has('rt') ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300' }} focus:outline-none focus:ring-2 focus:ring-[#059cb8]/20 focus:border-[#059cb8] transition"
-                                    style="padding-left: 0.875rem; padding-right: 0.875rem; padding-top: 0.625rem; padding-bottom: 0.625rem;">
+                                    style="padding: 0.625rem 0.875rem;">
                                 @error('rt')
                                     <p class="text-rose-600 text-[11px] mt-1 font-medium">{{ $message }}</p>
                                 @enderror
@@ -396,9 +400,9 @@
                                 <label for="rw" class="block font-bold text-slate-700 mb-1">
                                     RW <span class="text-rose-500">*</span>
                                 </label>
-                                <input type="text" name="rw" id="rw" value="{{ $activeRw }}" required placeholder="05" maxlength="5"
+                                <input type="text" name="rw" id="rw" value="{{ $activeRw }}" required placeholder="Contoh: 05" maxlength="5"
                                     class="w-full text-xs rounded-lg border {{ $errors->has('rw') ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300' }} focus:outline-none focus:ring-2 focus:ring-[#059cb8]/20 focus:border-[#059cb8] transition"
-                                    style="padding-left: 0.875rem; padding-right: 0.875rem; padding-top: 0.625rem; padding-bottom: 0.625rem;">
+                                    style="padding: 0.625rem 0.875rem;">
                                 @error('rw')
                                     <p class="text-rose-600 text-[11px] mt-1 font-medium">{{ $message }}</p>
                                 @enderror
@@ -407,25 +411,25 @@
                     </div>
 
                     <!-- BAGIAN 2: ANGGOTA KELUARGA (TAMBAH / EDIT / KURANGI) -->
-                    <div class="space-y-4 pt-3 border-t border-slate-200">
-                        <div class="flex items-center justify-between pb-2 border-b border-slate-200 flex-wrap gap-2">
+                    <div class="space-y-4 pt-4 border-t border-slate-200">
+                        <div class="flex items-center justify-between pb-2.5 border-b border-slate-200 flex-wrap gap-2">
                             <div>
                                 <h3 class="text-xs font-extrabold uppercase tracking-wider text-[#095b8c] flex items-center gap-2">
-                                    <i class="fa-solid fa-people-roof"></i> 2. Data Anggota Keluarga Satu KK
+                                    <i class="fa-solid fa-people-roof text-sm"></i> 2. Data Anggota Keluarga Satu KK
                                 </h3>
                                 <p class="text-[11px] text-slate-500 mt-0.5">
                                     Kelola daftar anggota keluarga lain yang tercantum di KK. Anda dapat menambah, mengedit, atau menghapus anggota.
                                 </p>
                             </div>
-                            <button type="button" id="btn-add-family-member" class="text-xs font-bold bg-[#095b8c] hover:bg-[#074a73] text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 shadow-2xs cursor-pointer">
+                            <button type="button" id="btn-add-family-member" class="text-xs font-bold bg-[#095b8c] hover:bg-[#074a73] text-white px-3.5 py-2 rounded-lg transition flex items-center gap-1.5 shadow-2xs cursor-pointer shrink-0 whitespace-nowrap">
                                 <i class="fa-solid fa-user-plus text-xs"></i> Tambah Anggota
                             </button>
                         </div>
 
                         <!-- Empty State Placeholder -->
-                        <div id="empty-family-state" class="p-5 bg-slate-50 border border-dashed border-slate-300 rounded-xl text-center text-slate-500 text-xs">
+                        <div id="empty-family-state" class="p-6 bg-slate-50 border border-dashed border-slate-300 rounded-xl text-center text-slate-500 text-xs">
                             <i class="fa-solid fa-users text-slate-400 text-2xl mb-1.5 block"></i>
-                            <p class="font-medium">Belum ada anggota keluarga tambahan.</p>
+                            <p class="font-medium text-slate-700">Belum ada anggota keluarga tambahan.</p>
                             <p class="text-[11px] text-slate-400 mt-0.5">Klik tombol <strong>Tambah Anggota</strong> di atas untuk menambahkan anggota keluarga lain yang tercatat dalam KK.</p>
                         </div>
 
@@ -434,16 +438,16 @@
                     </div>
 
                     <!-- Tombol Simpan & Info Verifikasi -->
-                    <div class="pt-4 border-t border-slate-200 space-y-3">
-                        <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 text-slate-700 text-xs flex items-start gap-2.5">
+                    <div class="pt-4 border-t border-slate-200 space-y-3.5">
+                        <div class="p-3.5 bg-amber-50 rounded-xl border border-amber-200 text-slate-700 text-xs flex items-start gap-2.5">
                             <i class="fa-solid fa-circle-info text-amber-600 mt-0.5 shrink-0 text-sm"></i>
                             <div class="text-[11px] leading-relaxed">
                                 <strong>Perhatian:</strong> Perubahan data profil dan penyesuaian anggota keluarga akan dikirimkan sebagai <strong>permohonan perubahan data</strong> kepada petugas kelurahan dan akan aktif setelah diverifikasi oleh admin.
                             </div>
                         </div>
 
-                        <div class="flex items-center justify-end gap-3">
-                            <button type="submit" class="bg-[#095b8c] hover:bg-[#059cb8] active:bg-[#074a73] text-white font-bold text-xs py-3 px-6 rounded-xl shadow-xs hover:shadow transition flex items-center justify-center cursor-pointer">
+                        <div class="flex items-center justify-end">
+                            <button type="submit" class="w-full sm:w-auto bg-[#095b8c] hover:bg-[#059cb8] active:bg-[#074a73] text-white font-bold text-xs py-3 px-6 rounded-xl shadow-xs hover:shadow transition flex items-center justify-center cursor-pointer whitespace-nowrap">
                                 <span>Kirim Permohonan Perubahan Data ke Admin</span>
                             </button>
                         </div>
@@ -453,30 +457,30 @@
             </div>
         </div>
 
-        <!-- Kolom Kanan: Form Ganti Kata Sandi & Anggota Keluarga Tercatat (5 Col) -->
-        <div class="lg:col-span-5 space-y-6">
+        <!-- Kolom Kanan: Form Ganti Kata Sandi & Anggota Keluarga Tercatat (4 Col) -->
+        <div class="lg:col-span-4 space-y-6">
             
             <!-- Card Ganti Password -->
             <div class="bg-white rounded-xl shadow-xs border border-slate-200 overflow-hidden">
-                <div class="bg-slate-50 px-5 py-3.5 border-b border-slate-200">
+                <div class="bg-slate-50 px-4 sm:px-5 py-3.5 border-b border-slate-200">
                     <h2 class="font-bold text-xs uppercase tracking-wider text-slate-700 flex items-center gap-2">
-                        <i class="fa-solid fa-key text-amber-500"></i> Ganti Kata Sandi Akun
+                        <i class="fa-solid fa-key text-amber-500"></i> <span class="whitespace-nowrap">Ganti Kata Sandi Akun</span>
                     </h2>
                 </div>
 
-                <form action="{{ route('profile.password') }}" method="POST" class="p-5 space-y-3.5 text-xs">
+                <form action="{{ route('profile.password') }}" method="POST" class="p-4 sm:p-5 space-y-3.5 text-xs">
                     @csrf
                     @method('PUT')
 
                     <div>
-                        <label for="current_password" class="block font-bold text-slate-700 mb-1">
+                        <label for="current_password" class="block font-bold text-slate-700 mb-1 whitespace-nowrap">
                             Kata Sandi Saat Ini <span class="text-rose-500">*</span>
                         </label>
-                        <div class="relative" style="position: relative;">
-                            <input type="password" name="current_password" id="current_password" required
+                        <div class="relative">
+                            <input type="password" name="current_password" id="current_password" required placeholder="Masukkan kata sandi lama"
                                 class="w-full text-xs rounded-lg border {{ $errors->has('current_password') ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300' }} focus:outline-none focus:ring-2 focus:ring-[#059cb8]/20 focus:border-[#059cb8] transition"
                                 style="padding-left: 0.875rem; padding-right: 2.75rem; padding-top: 0.625rem; padding-bottom: 0.625rem;">
-                            <span class="text-slate-400 pointer-events-none flex items-center justify-center" style="position: absolute; right: 0.85rem; top: 50%; transform: translateY(-50%);">
+                            <span class="text-slate-400 pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center justify-center">
                                 <i class="fa-solid fa-lock text-xs"></i>
                             </span>
                         </div>
@@ -486,14 +490,14 @@
                     </div>
 
                     <div>
-                        <label for="new_password" class="block font-bold text-slate-700 mb-1">
+                        <label for="new_password" class="block font-bold text-slate-700 mb-1 whitespace-nowrap">
                             Kata Sandi Baru <span class="text-rose-500">*</span>
                         </label>
-                        <div class="relative" style="position: relative;">
+                        <div class="relative">
                             <input type="password" name="password" id="new_password" required minlength="6" placeholder="Minimal 6 karakter"
                                 class="w-full text-xs rounded-lg border {{ $errors->has('password') ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300' }} focus:outline-none focus:ring-2 focus:ring-[#059cb8]/20 focus:border-[#059cb8] transition"
                                 style="padding-left: 0.875rem; padding-right: 2.75rem; padding-top: 0.625rem; padding-bottom: 0.625rem;">
-                            <span class="text-slate-400 pointer-events-none flex items-center justify-center" style="position: absolute; right: 0.85rem; top: 50%; transform: translateY(-50%);">
+                            <span class="text-slate-400 pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center justify-center">
                                 <i class="fa-solid fa-key text-xs"></i>
                             </span>
                         </div>
@@ -503,21 +507,21 @@
                     </div>
 
                     <div>
-                        <label for="password_confirmation" class="block font-bold text-slate-700 mb-1">
+                        <label for="password_confirmation" class="block font-bold text-slate-700 mb-1 whitespace-nowrap">
                             Ulangi Kata Sandi Baru <span class="text-rose-500">*</span>
                         </label>
-                        <div class="relative" style="position: relative;">
+                        <div class="relative">
                             <input type="password" name="password_confirmation" id="password_confirmation" required minlength="6" placeholder="Ketik ulang kata sandi baru"
                                 class="w-full text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#059cb8]/20 focus:border-[#059cb8] transition"
                                 style="padding-left: 0.875rem; padding-right: 2.75rem; padding-top: 0.625rem; padding-bottom: 0.625rem;">
-                            <span class="text-slate-400 pointer-events-none flex items-center justify-center" style="position: absolute; right: 0.85rem; top: 50%; transform: translateY(-50%);">
+                            <span class="text-slate-400 pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center justify-center">
                                 <i class="fa-solid fa-shield-check text-xs"></i>
                             </span>
                         </div>
                     </div>
 
                     <div class="pt-2">
-                        <button type="submit" class="w-full bg-slate-800 hover:bg-slate-900 active:bg-black text-white font-bold text-xs py-2.5 px-4 rounded-lg shadow-xs hover:shadow transition flex items-center justify-center gap-2 cursor-pointer">
+                        <button type="submit" class="w-full bg-slate-800 hover:bg-slate-900 active:bg-black text-white font-bold text-xs py-2.5 px-4 rounded-lg shadow-xs hover:shadow transition flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap">
                             <i class="fa-solid fa-shield-halved"></i>
                             <span>Perbarui Kata Sandi</span>
                         </button>
@@ -527,40 +531,38 @@
 
             <!-- Card Anggota Keluarga Tercatat Saat Ini (Live Data) -->
             <div class="bg-white rounded-xl shadow-xs border border-slate-200 overflow-hidden">
-                <div class="bg-slate-50 px-5 py-3.5 border-b border-slate-200 flex items-center justify-between">
+                <div class="bg-slate-50 px-4 sm:px-5 py-3.5 border-b border-slate-200 flex items-center justify-between gap-2 flex-wrap">
                     <h2 class="font-bold text-xs uppercase tracking-wider text-slate-700 flex items-center gap-2">
-                        <i class="fa-solid fa-people-roof text-[#095b8c]"></i> Data KK Aktif Saat Ini
+                        <i class="fa-solid fa-people-roof text-[#095b8c]"></i> <span class="whitespace-nowrap">Data KK Aktif</span>
                     </h2>
-                    <span class="text-[10px] font-mono bg-teal-100/70 text-[#095b8c] font-bold px-2 py-0.5 rounded">
+                    <span class="text-[10px] font-mono bg-teal-100/70 text-[#095b8c] font-bold px-2 py-0.5 rounded shrink-0 whitespace-nowrap">
                         KK: {{ $warga->family_card_no }}
                     </span>
                 </div>
 
-                <div class="p-5 space-y-3 text-xs">
+                <div class="p-4 sm:p-5 space-y-4 text-xs">
                     @if($warga->familyMembers->count() > 0)
                         <div>
-                            <p class="font-bold text-slate-700 text-[11px] mb-1.5 flex items-center justify-between">
-                                <span>Anggota Keluarga Tercatat di Sistem:</span>
-                                <span class="text-[10px] font-bold text-[#095b8c] bg-teal-50 px-2 py-0.5 rounded border border-teal-200">
+                            <div class="flex items-center justify-between gap-2 mb-2">
+                                <p class="font-bold text-slate-700 text-[11px]">Anggota Keluarga di KK:</p>
+                                <span class="text-[10px] font-bold text-[#095b8c] bg-teal-50 px-2 py-0.5 rounded border border-teal-200 shrink-0 whitespace-nowrap">
                                     {{ $warga->familyMembers->count() }} Orang
                                 </span>
-                            </p>
-                            <div class="space-y-1.5">
+                            </div>
+                            <div class="space-y-2">
                                 @foreach($warga->familyMembers as $fm)
-                                    <div class="p-2.5 bg-teal-50/40 rounded-lg border border-teal-200/70 flex items-center justify-between">
-                                        <div>
-                                            <div class="flex items-center gap-1.5">
-                                                <p class="font-bold text-slate-800">{{ $fm->name }}</p>
-                                                <span class="text-[9px] font-bold text-[#095b8c] bg-teal-100 px-1.5 py-0.5 rounded">
-                                                    {{ $fm->family_relationship ?: 'Anggota' }}
-                                                </span>
-                                            </div>
-                                            <p class="text-[10px] text-slate-500 font-mono mt-0.5">
-                                                NIK: {{ $fm->nik ?: '-' }} &bull; {{ $fm->gender === 'L' ? 'Laki-laki' : ($fm->gender === 'P' ? 'Perempuan' : '-') }}
-                                                @if($fm->birth_place || $fm->birth_date)
-                                                    &bull; {{ $fm->birth_place }}, {{ $fm->birth_date ? $fm->birth_date->format('d/m/Y') : '' }}
-                                                @endif
-                                            </p>
+                                    <div class="p-2.5 bg-slate-50 hover:bg-teal-50/40 rounded-lg border border-slate-200/80 hover:border-teal-200 transition">
+                                        <div class="flex items-center justify-between gap-2">
+                                            <p class="font-bold text-slate-800 text-xs truncate">{{ $fm->name }}</p>
+                                            <span class="text-[9px] font-bold text-[#095b8c] bg-teal-100 px-1.5 py-0.5 rounded shrink-0 whitespace-nowrap">
+                                                {{ $fm->family_relationship ?: 'Anggota' }}
+                                            </span>
+                                        </div>
+                                        <div class="text-[10px] text-slate-500 font-mono mt-1 space-y-0.5">
+                                            <p class="truncate"><span class="text-slate-400">NIK:</span> {{ $fm->nik ?: '-' }} &bull; {{ $fm->gender === 'L' ? 'Laki-laki' : ($fm->gender === 'P' ? 'Perempuan' : '-') }}</p>
+                                            @if($fm->birth_place || $fm->birth_date)
+                                                <p class="truncate text-[10px]"><span class="text-slate-400">Lahir:</span> {{ $fm->birth_place }}{{ ($fm->birth_place && $fm->birth_date) ? ', ' : '' }}{{ $fm->birth_date ? $fm->birth_date->format('d/m/Y') : '' }}</p>
+                                            @endif
                                         </div>
                                     </div>
                                 @endforeach
@@ -572,20 +574,20 @@
                         </div>
                     @endif
 
-                    <div class="pt-2">
-                        <p class="text-slate-500 text-[11px] leading-relaxed mb-2">
-                            Akun warga lain yang terdaftar dalam satu Nomor Kartu Keluarga (KK):
+                    <div class="pt-3 border-t border-slate-100">
+                        <p class="text-slate-500 text-[11px] leading-relaxed mb-2 font-medium">
+                            Akun warga lain yang terdaftar dalam satu KK:
                         </p>
 
                         @if($familyMembers->count() > 0)
                             <div class="space-y-2">
                                 @foreach($familyMembers as $member)
-                                    <div class="p-3 bg-slate-50 rounded-lg border border-slate-200/80 flex items-center justify-between">
-                                        <div>
-                                            <p class="font-bold text-slate-800">{{ $member->name }}</p>
-                                            <p class="text-[10px] text-slate-500 font-mono mt-0.5">NIK: {{ $member->nik }}</p>
+                                    <div class="p-2.5 bg-slate-50 rounded-lg border border-slate-200/80 flex items-center justify-between gap-2">
+                                        <div class="min-w-0 flex-1">
+                                            <p class="font-bold text-slate-800 truncate text-xs">{{ $member->name }}</p>
+                                            <p class="text-[10px] text-slate-500 font-mono mt-0.5 truncate">NIK: {{ $member->nik }}</p>
                                         </div>
-                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border {{ $member->status_badge_class }}">
+                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border shrink-0 whitespace-nowrap {{ $member->status_badge_class }}">
                                             {{ $member->status_label }}
                                         </span>
                                     </div>
@@ -704,30 +706,30 @@ document.addEventListener('DOMContentLoaded', function() {
         card.dataset.index = index;
 
         card.innerHTML = `
-            <div class="flex items-center justify-between pb-2 border-b border-slate-200/80">
-                <span class="member-badge text-[11px] font-bold text-[#095b8c] bg-teal-50 border border-teal-200 px-2.5 py-0.5 rounded-full">
+            <div class="flex items-center justify-between pb-2.5 border-b border-slate-200/80 gap-2">
+                <span class="member-badge text-[11px] font-bold text-[#095b8c] bg-teal-50 border border-teal-200 px-2.5 py-0.5 rounded-full shrink-0 whitespace-nowrap">
                     <i class="fa-solid fa-user text-[10px] mr-1"></i> Anggota Keluarga #${index}
                 </span>
-                <button type="button" class="btn-remove-member text-xs font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-50 px-2.5 py-1 rounded-lg border border-rose-200 transition flex items-center gap-1 cursor-pointer">
+                <button type="button" class="btn-remove-member text-xs font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-50 px-2.5 py-1 rounded-lg border border-rose-200 transition flex items-center gap-1 cursor-pointer shrink-0 whitespace-nowrap">
                     <i class="fa-solid fa-trash-can text-[11px]"></i> Hapus
                 </button>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <!-- No KK -->
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">
+                    <label class="block text-xs font-bold text-slate-700 mb-1 whitespace-nowrap">
                         No KK <span class="text-rose-600">*</span>
                     </label>
-                    <input type="text" name="family_members[${index}][family_card_no]" value="${memberKk}" maxlength="16" required placeholder="16 digit Nomor KK" class="member-kk-input w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c]/20 bg-white font-mono">
+                    <input type="text" name="family_members[${index}][family_card_no]" value="${memberKk}" maxlength="16" required placeholder="16 digit Nomor KK" class="member-kk-input w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#059cb8]/20 focus:border-[#059cb8] bg-white font-mono" style="padding: 0.625rem 0.875rem;">
                 </div>
 
                 <!-- NIK -->
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">
+                    <label class="block text-xs font-bold text-slate-700 mb-1 whitespace-nowrap">
                         NIK <span class="text-rose-600">*</span>
                     </label>
-                    <input type="text" name="family_members[${index}][nik]" value="${memberNik}" maxlength="16" required placeholder="16 digit NIK anggota" class="member-nik-input w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c]/20 bg-white font-mono">
+                    <input type="text" name="family_members[${index}][nik]" value="${memberNik}" maxlength="16" required placeholder="16 digit NIK anggota" class="member-nik-input w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#059cb8]/20 focus:border-[#059cb8] bg-white font-mono" style="padding: 0.625rem 0.875rem;">
                 </div>
             </div>
 
@@ -736,30 +738,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 <label class="block text-xs font-bold text-slate-700 mb-1">
                     Nama Lengkap Sesuai KK <span class="text-rose-600">*</span>
                 </label>
-                <input type="text" name="family_members[${index}][name]" value="${memberName}" required placeholder="Nama lengkap sesuai KK" class="member-name-input w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c]/20 bg-white">
+                <input type="text" name="family_members[${index}][name]" value="${memberName}" required placeholder="Nama lengkap sesuai KK" class="member-name-input w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#059cb8]/20 focus:border-[#059cb8] bg-white" style="padding: 0.625rem 0.875rem;">
             </div>
 
             <!-- Tempat Lahir, Tanggal Lahir, Jenis Kelamin, Posisi dalam Keluarga -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3.5">
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">
+                    <label class="block text-xs font-bold text-slate-700 mb-1 whitespace-nowrap">
                         Tempat Lahir <span class="text-rose-600">*</span>
                     </label>
-                    <input type="text" name="family_members[${index}][birth_place]" value="${memberBirthPlace}" required placeholder="Kota/Kab. Lahir" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c]/20 bg-white">
+                    <input type="text" name="family_members[${index}][birth_place]" value="${memberBirthPlace}" required placeholder="Kota/Kab. Lahir" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#059cb8]/20 focus:border-[#059cb8] bg-white" style="padding: 0.625rem 0.875rem;">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">
+                    <label class="block text-xs font-bold text-slate-700 mb-1 whitespace-nowrap">
                         Tanggal Lahir <span class="text-rose-600">*</span>
                     </label>
-                    <input type="date" name="family_members[${index}][birth_date]" value="${memberBirthDate}" required class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c]/20 bg-white">
+                    <input type="date" name="family_members[${index}][birth_date]" value="${memberBirthDate}" required class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#059cb8]/20 focus:border-[#059cb8] bg-white" style="padding: 0.625rem 0.875rem;">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">
+                    <label class="block text-xs font-bold text-slate-700 mb-1 whitespace-nowrap">
                         Jenis Kelamin <span class="text-rose-600">*</span>
                     </label>
-                    <select name="family_members[${index}][gender]" required class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c]/20 bg-white">
+                    <select name="family_members[${index}][gender]" required class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#059cb8]/20 focus:border-[#059cb8] bg-white" style="padding: 0.625rem 0.875rem;">
                         <option value="">-- Pilih --</option>
                         <option value="L" ${memberGender === 'L' ? 'selected' : ''}>Laki-laki</option>
                         <option value="P" ${memberGender === 'P' ? 'selected' : ''}>Perempuan</option>
@@ -767,10 +769,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">
-                        Posisi dalam Keluarga <span class="text-rose-600">*</span>
+                    <label class="block text-xs font-bold text-slate-700 mb-1 whitespace-nowrap">
+                        Posisi Keluarga <span class="text-rose-600">*</span>
                     </label>
-                    <select name="family_members[${index}][family_relationship]" required class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c]/20 bg-white">
+                    <select name="family_members[${index}][family_relationship]" required class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#059cb8]/20 focus:border-[#059cb8] bg-white" style="padding: 0.625rem 0.875rem;">
                         <option value="Istri" ${memberRel === 'Istri' ? 'selected' : ''}>Istri</option>
                         <option value="Suami" ${memberRel === 'Suami' ? 'selected' : ''}>Suami</option>
                         <option value="Anak" ${memberRel === 'Anak' ? 'selected' : ''}>Anak</option>
