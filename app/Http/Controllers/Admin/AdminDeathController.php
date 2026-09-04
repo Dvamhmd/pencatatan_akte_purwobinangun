@@ -91,49 +91,53 @@ class AdminDeathController extends Controller
             ? 'Status permohonan Akte Kematian berhasil diperbarui menjadi Sudah Diambil dan telah otomatis masuk ke arsip.'
             : 'Status permohonan Akte Kematian berhasil diperbarui menjadi ' . $death->status_label . '.';
 
-        // Periksa pengaturan saluran notifikasi yang dipilih admin (default aktif jika ada)
+        // Periksa pengaturan saluran notifikasi yang dipilih admin
         $sendEmail = $request->boolean('send_email');
         $sendWhatsApp = $request->boolean('send_whatsapp');
 
         // Cari email warga yang terkait dengan pengajuan
-        $recipientEmail = $death->user?->email;
-        if (!$recipientEmail && $death->applicant_nik) {
-            $recipientEmail = User::where('nik', $death->applicant_nik)->value('email');
-        }
-        if (!$recipientEmail && $death->family_card_no) {
-            $recipientEmail = User::where('family_card_no', $death->family_card_no)->whereNotNull('email')->value('email');
-        }
+        $recipientEmail = $death->applicant_email;
 
-        // Kirim email notifikasi otomatis jika diaktifkan admin dan status adalah siap diambil, revisi, atau dibatalkan
-        if ($sendEmail && $recipientEmail && in_array($validated['status'], ['ready_for_pickup', 'completed', 'revision', 'rejected'])) {
-            try {
-                Mail::to($recipientEmail)->send(new SubmissionStatusNotification(
-                    submission: $death,
-                    type: 'death',
-                    status: $validated['status'],
-                    note: $validated['rejection_note'],
-                    processedBy: Auth::user()->name,
-                    adminEmail: Auth::user()->email
-                ));
-                $message .= ' Notifikasi telah otomatis dikirimkan ke email warga (' . $recipientEmail . ').';
-            } catch (\Throwable $e) {
-                Log::error('Gagal mengirim email notifikasi Akte Kematian: ' . $e->getMessage());
-                $message .= ' (Status tersimpan, namun notifikasi email gagal dikirim. Silakan periksa konfigurasi SMTP).';
+        // Kirim email notifikasi otomatis jika diaktifkan admin
+        if ($sendEmail) {
+            if ($recipientEmail) {
+                try {
+                    Mail::to($recipientEmail)->send(new SubmissionStatusNotification(
+                        submission: $death,
+                        type: 'death',
+                        status: $validated['status'],
+                        note: $validated['rejection_note'],
+                        processedBy: Auth::user()->name,
+                        adminEmail: Auth::user()->email
+                    ));
+                    $message .= ' Notifikasi telah otomatis dikirimkan ke email warga (' . $recipientEmail . ').';
+                } catch (\Throwable $e) {
+                    Log::error('Gagal mengirim email notifikasi Akte Kematian: ' . $e->getMessage());
+                    $message .= ' (Status tersimpan, namun notifikasi email gagal dikirim. Silakan periksa konfigurasi SMTP).';
+                }
+            } else {
+                $message .= ' (Notifikasi email tidak terkirim karena alamat email warga tidak ditemukan).';
             }
         }
 
-        // Kirim WhatsApp notifikasi otomatis jika diaktifkan admin dan status adalah siap diambil, revisi, atau dibatalkan
-        if ($sendWhatsApp && in_array($validated['status'], ['ready_for_pickup', 'completed', 'revision', 'rejected'])) {
-            $waSent = WhatsAppNotificationService::sendSubmissionStatusNotification(
-                submission: $death,
-                type: 'death',
-                status: $validated['status'],
-                note: $validated['rejection_note']
-            );
+        // Kirim WhatsApp notifikasi otomatis jika diaktifkan admin
+        if ($sendWhatsApp) {
+            $recipientPhone = $death->applicant_phone;
+            if ($recipientPhone) {
+                $waSent = WhatsAppNotificationService::sendSubmissionStatusNotification(
+                    submission: $death,
+                    type: 'death',
+                    status: $validated['status'],
+                    note: $validated['rejection_note']
+                );
 
-            $recipientPhone = $death->applicant_phone ?? $death->user?->phone;
-            if ($waSent && $recipientPhone) {
-                $message .= ' Notifikasi WhatsApp berhasil dikirim ke ' . $recipientPhone . '.';
+                if ($waSent) {
+                    $message .= ' Notifikasi WhatsApp berhasil dikirim ke ' . $recipientPhone . '.';
+                } else {
+                    $message .= ' (Status tersimpan, namun pesan WhatsApp gagal terkirim. Periksa token Fonnte atau koneksi).';
+                }
+            } else {
+                $message .= ' (Notifikasi WhatsApp tidak terkirim karena nomor WhatsApp warga tidak ditemukan).';
             }
         }
 

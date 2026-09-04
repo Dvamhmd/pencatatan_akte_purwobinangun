@@ -148,8 +148,8 @@
                     </div>
 
                     <!-- Hidden Inputs untuk Nilai Toggle Notifikasi yang dipilih di Modal -->
-                    <input type="hidden" name="send_email" id="formSendEmail" value="1">
-                    <input type="hidden" name="send_whatsapp" id="formSendWhatsApp" value="1">
+                    <input type="hidden" name="send_email" id="formSendEmail" value="{{ !empty($death->applicant_email) ? '1' : '0' }}">
+                    <input type="hidden" name="send_whatsapp" id="formSendWhatsApp" value="{{ !empty($death->applicant_phone) ? '1' : '0' }}">
 
                     <button type="button" id="openModalSubmitBtn" class="w-full bg-rose-700 hover:bg-rose-800 text-white font-bold text-xs py-2.5 rounded-lg shadow-sm transition flex items-center justify-center gap-1.5 cursor-pointer">
                         <i class="fa-solid fa-floppy-disk"></i> Simpan Perubahan Status
@@ -230,7 +230,7 @@
                     </div>
 
                     <div class="toggle-switch-container pointer-events-none">
-                        <input type="checkbox" id="modalSendEmail" class="sr-only" checked>
+                        <input type="checkbox" id="modalSendEmail" class="sr-only" {{ !empty($death->applicant_email) ? 'checked' : '' }}>
                         <div id="switchBgEmail" class="toggle-switch-track active-email">
                             <div id="switchDotEmail" class="toggle-switch-thumb active"></div>
                         </div>
@@ -251,7 +251,7 @@
                     </div>
 
                     <div class="toggle-switch-container pointer-events-none">
-                        <input type="checkbox" id="modalSendWhatsApp" class="sr-only" checked>
+                        <input type="checkbox" id="modalSendWhatsApp" class="sr-only" {{ !empty($death->applicant_phone) ? 'checked' : '' }}>
                         <div id="switchBgWhatsApp" class="toggle-switch-track active-whatsapp">
                             <div id="switchDotWhatsApp" class="toggle-switch-thumb active"></div>
                         </div>
@@ -369,6 +369,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Inisialisasi tampilan awal status toggle sesuai data
+    updateEmailToggleUi();
+    updateWhatsAppToggleUi();
 
     function validateNoteChange() {
         const currentStatus = statusSelect.value;

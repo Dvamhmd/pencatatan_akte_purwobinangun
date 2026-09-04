@@ -47,11 +47,14 @@
                         $isReady = in_array($status, ['ready_for_pickup', 'completed']);
                         $isRevision = ($status === 'revision');
                         $isRejected = ($status === 'rejected');
+                        $isInProcess = in_array($status, ['in_process', 'verified']);
+                        $isPickedUp = in_array($status, ['picked_up', 'archived']);
+                        $isPending = ($status === 'pending');
 
-                        $statusBg = $isReady ? '#ecfdf5' : ($isRevision ? '#fff7ed' : ($isRejected ? '#fff1f2' : '#f0fdf4'));
-                        $statusBorder = $isReady ? '#10b981' : ($isRevision ? '#f97316' : ($isRejected ? '#f43f5e' : '#0b7c89'));
-                        $statusTextColor = $isReady ? '#065f46' : ($isRevision ? '#9a3412' : ($isRejected ? '#9f1239' : '#065b65'));
-                        $statusBadgeBg = $isReady ? '#10b981' : ($isRevision ? '#f97316' : ($isRejected ? '#f43f5e' : '#0b7c89'));
+                        $statusBg = $isReady ? '#ecfdf5' : ($isRevision ? '#fff7ed' : ($isRejected ? '#fff1f2' : ($isInProcess ? '#eff6ff' : ($isPickedUp ? '#f8fafc' : '#f0fdf4'))));
+                        $statusBorder = $isReady ? '#10b981' : ($isRevision ? '#f97316' : ($isRejected ? '#f43f5e' : ($isInProcess ? '#3b82f6' : ($isPickedUp ? '#64748b' : '#0b7c89'))));
+                        $statusTextColor = $isReady ? '#065f46' : ($isRevision ? '#9a3412' : ($isRejected ? '#9f1239' : ($isInProcess ? '#1e40af' : ($isPickedUp ? '#334155' : '#065b65'))));
+                        $statusBadgeBg = $isReady ? '#10b981' : ($isRevision ? '#f97316' : ($isRejected ? '#f43f5e' : ($isInProcess ? '#3b82f6' : ($isPickedUp ? '#64748b' : '#0b7c89'))));
                     @endphp
 
                     <tr>
@@ -70,6 +73,12 @@
                                         Terdapat catatan atau berkas persyaratan yang perlu diperbaiki sebelum permohonan dapat diproses lebih lanjut.
                                     @elseif($isRejected)
                                         Mohon maaf, permohonan dokumen {{ $typeLabel }} Anda tidak dapat diproses / dibatalkan oleh petugas.
+                                    @elseif($isInProcess)
+                                        Permohonan dokumen {{ $typeLabel }} Anda sedang dalam tahap verifikasi dan pemrosesan oleh petugas Kalurahan.
+                                    @elseif($isPickedUp)
+                                        Dokumen fisik {{ $typeLabel }} Anda telah berhasil diserahkan kepada pemohon. Pelayanan permohonan ini telah selesai dan diarsipkan.
+                                    @elseif($isPending)
+                                        Permohonan dokumen {{ $typeLabel }} Anda telah diterima dalam antrean dan menunggu proses verifikasi petugas.
                                     @else
                                         Status permohonan {{ $typeLabel }} Anda telah diperbarui oleh petugas pelayanan.
                                     @endif
@@ -151,8 +160,20 @@
                                     <li>Silakan baca catatan verifikator di atas untuk mengetahui alasan pembatalan.</li>
                                     <li>Jika terdapat pertanyaan atau ingin berkonsultasi, Anda dapat menghubungi petugas pelayanan Kalurahan.</li>
                                 </ul>
+                                @elseif($isInProcess)
+                                <p style="margin: 0; font-size: 12px; color: #475569; line-height: 1.6;">
+                                    Petugas kami sedang memeriksa dan memproses berkas pengajuan Anda. Anda akan menerima notifikasi otomatis selanjutnya ketika dokumen selesai diproses atau jika dibutuhkan revisi berkas.
+                                </p>
+                                @elseif($isPickedUp)
+                                <p style="margin: 0; font-size: 12px; color: #475569; line-height: 1.6;">
+                                    Terima kasih telah menggunakan layanan kependudukan Kalurahan Purwobinangun. Dokumen fisik telah berhasil diserahkan kepada Anda. Simpan berkas dokumen Anda dengan baik.
+                                </p>
+                                @elseif($isPending)
+                                <p style="margin: 0; font-size: 12px; color: #475569; line-height: 1.6;">
+                                    Berkas pengajuan Anda telah tercatat dalam sistem dan akan segera diperiksa oleh petugas verifikator sesuai antrean.
+                                </p>
                                 @else
-                                <p style="margin: 0; font-size: 12px; color: #475569;">
+                                <p style="margin: 0; font-size: 12px; color: #475569; line-height: 1.6;">
                                     Anda dapat memantau perkembangan berkas secara berkala melalui menu Lacak Permohonan di website.
                                 </p>
                                 @endif

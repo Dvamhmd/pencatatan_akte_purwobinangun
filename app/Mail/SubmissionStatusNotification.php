@@ -52,6 +52,9 @@ class SubmissionStatusNotification extends Mailable
             'revision' => 'Memerlukan Revisi Berkas',
             'rejected' => 'Dibatalkan / Tidak Disetujui',
             'in_process', 'verified' => 'Sedang Diproses',
+            'picked_up' => 'Sudah Diambil',
+            'archived' => 'Diarsipkan',
+            'pending' => 'Menunggu Verifikasi',
             default => 'Pembaruan Status Pengajuan',
         };
     }

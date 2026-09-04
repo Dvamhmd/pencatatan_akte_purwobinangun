@@ -31,6 +31,13 @@ LANGKAH SELANJUTNYA:
 @elseif($status === 'rejected')
 - Silakan baca catatan verifikator di atas untuk mengetahui alasan pembatalan.
 - Anda dapat berkonsultasi langsung dengan petugas pelayanan Kalurahan jika memerlukan informasi lebih lanjut.
+@elseif(in_array($status, ['in_process', 'verified']))
+- Berkas pengajuan Anda sedang dalam proses verifikasi dan pengerjaan oleh petugas.
+- Anda akan menerima pemberitahuan berikutnya saat dokumen siap diambil atau jika ada perbaikan berkas.
+@elseif(in_array($status, ['picked_up', 'archived']))
+- Dokumen fisik telah berhasil diserahkan kepada pemohon. Pelayanan permohonan ini telah selesai dan diarsipkan.
+@elseif($status === 'pending')
+- Berkas pengajuan Anda telah diterima dan masuk dalam antrean verifikasi petugas.
 @else
 - Pantau perkembangan berkas secara berkala melalui website pelayanan.
 @endif

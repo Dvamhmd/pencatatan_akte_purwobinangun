@@ -120,11 +120,17 @@ class WhatsAppNotificationService
             'revision' => 'Memerlukan Revisi Berkas',
             'rejected' => 'Dibatalkan / Tidak Disetujui',
             'in_process', 'verified' => 'Sedang Diproses',
+            'picked_up' => 'Sudah Diambil',
+            'archived' => 'Diarsipkan',
+            'pending' => 'Menunggu Verifikasi',
             default => 'Pembaruan Status Pengajuan',
         };
 
-        // Buat tracking URL jika tersedia
-        $trackingUrl = url('/tracking/' . ($type === 'birth' ? 'kelahiran' : 'kematian') . '/' . $submission->registration_no);
+        // Buat tracking URL menggunakan named route tracking.show
+        $trackingUrl = route('tracking.show', [
+            'type' => ($type === 'birth' ? 'kelahiran' : 'kematian'),
+            'registrationNo' => $submission->registration_no,
+        ]);
 
         // Format pesan WhatsApp dengan Markdown
         $message = "🏛️ *PEMBERITAHUAN STATUS PENGAJUAN*\n";
@@ -148,6 +154,15 @@ class WhatsAppNotificationService
         } elseif ($status === 'revision') {
             $message .= "\n⚠️ *Tindakan Diperlukan:*\n";
             $message .= "Silakan login ke website untuk memperbaiki dan mengunggah kembali dokumen yang diminta.\n";
+        } elseif (in_array($status, ['in_process', 'verified'])) {
+            $message .= "\nℹ️ *Informasi:*\n";
+            $message .= "Berkas permohonan Anda sedang dalam tahap verifikasi dan pemrosesan oleh petugas kalurahan.\n";
+        } elseif (in_array($status, ['picked_up', 'archived'])) {
+            $message .= "\n✅ *Informasi:*\n";
+            $message .= "Dokumen fisik telah diserahkan kepada pemohon. Proses pelayanan telah selesai dan berkas diarsipkan.\n";
+        } elseif ($status === 'pending') {
+            $message .= "\nℹ️ *Informasi:*\n";
+            $message .= "Berkas permohonan Anda telah diterima dalam antrean dan menunggu verifikasi petugas.\n";
         }
 
         $message .= "\n🔍 *Cek Status & Detail:* \n{$trackingUrl}\n";

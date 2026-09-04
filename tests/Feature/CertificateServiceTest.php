@@ -2,11 +2,14 @@
 
 namespace Tests\Feature;
 
+use App\Mail\SubmissionStatusNotification;
 use App\Models\BirthCertificate;
 use App\Models\DeathCertificate;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -82,7 +85,7 @@ class CertificateServiceTest extends TestCase
             'password' => bcrypt('password123'),
         ]);
 
-        $response = $this->actingAs($warga)->get('/akte-kelahiran/daftar-pengajuan');
+        $response = $this->actingAs($warga)->followingRedirects()->get('/akte-kelahiran/daftar-pengajuan');
         $response->assertStatus(200);
         $response->assertSee('DAFTAR PENGAJUAN PERMOHONAN AKTA');
     }
@@ -407,5 +410,146 @@ class CertificateServiceTest extends TestCase
         $responseArchive->assertStatus(200);
         $responseArchive->assertSee('AKM-20260903-0001');
         $responseArchive->assertSee('Almarhum Uji Coba');
+    }
+
+    public function test_status_updates_trigger_email_and_whatsapp_notifications_based_on_toggles(): void
+    {
+        Mail::fake();
+        Http::fake([
+            'api.fonnte.com/*' => Http::response(['status' => true, 'detail' => 'Pesan terkirim'], 200),
+        ]);
+
+        $admin = User::create([
+            'name' => 'Petugas Validasi',
+            'email' => 'petugas@purwobinangun.desa.id',
+            'role' => 'admin',
+            'password' => bcrypt('password123'),
+        ]);
+
+        $warga = User::create([
+            'name' => 'Warga Notifikasi',
+            'email' => 'warga.notif@example.com',
+            'phone' => '081234567890',
+            'nik' => '3404051111222233',
+            'family_card_no' => '3404059999888877',
+            'role' => 'warga',
+            'status' => 'active',
+            'password' => bcrypt('password123'),
+        ]);
+
+        $birth = BirthCertificate::create([
+            'user_id' => $warga->id,
+            'registration_no' => 'AKL-20260904-7777',
+            'child_name' => 'Anak Validasi',
+            'gender' => 'L',
+            'birth_place' => 'Sleman',
+            'birth_date' => '2026-08-01',
+            'applicant_nik' => $warga->nik,
+            'applicant_name' => $warga->name,
+            'applicant_phone' => $warga->phone,
+            'padukuhan' => 'Kadilobo',
+            'status' => 'pending',
+        ]);
+
+        // 1. Akte Kelahiran: Ubah status ke 'in_process' dengan toggle email dan WA aktif
+        $resBirthInProcess = $this->actingAs($admin)->put('/admin/akte-kelahiran/' . $birth->id . '/status', [
+            'status' => 'in_process',
+            'rejection_note' => 'Berkas pendaftaran sedang diverifikasi oleh staf pelayanan.',
+            'send_email' => '1',
+            'send_whatsapp' => '1',
+        ]);
+
+        $resBirthInProcess->assertRedirect(route('admin.birth.show', $birth));
+        $resBirthInProcess->assertSessionHas('success');
+        $this->assertEquals('Sedang Diproses', $birth->fresh()->status_label);
+
+        // Pastikan Mailable terkirim untuk status in_process
+        Mail::assertSent(SubmissionStatusNotification::class, function ($mail) use ($warga, $birth) {
+            return $mail->hasTo($warga->email)
+                && $mail->status === 'in_process'
+                && $mail->submission->id === $birth->id;
+        });
+
+        // Pastikan WhatsApp Fonnte dipanggil
+        Http::assertSent(function ($request) use ($warga) {
+            return str_contains($request->url(), 'api.fonnte.com/send')
+                && str_contains($request['message'], 'Sedang Diproses')
+                && $request['target'] === '6281234567890';
+        });
+
+        // 2. Akte Kelahiran: Ubah status ke 'revision' dengan hanya WA aktif (email nonaktif)
+        Mail::fake();
+        Http::fake([
+            'api.fonnte.com/*' => Http::response(['status' => true], 200),
+        ]);
+
+        $resBirthRevision = $this->actingAs($admin)->put('/admin/akte-kelahiran/' . $birth->id . '/status', [
+            'status' => 'revision',
+            'rejection_note' => 'Harap unggah ulang KTP orang tua.',
+            'send_email' => '0',
+            'send_whatsapp' => '1',
+        ]);
+
+        $resBirthRevision->assertRedirect(route('admin.birth.show', $birth));
+        $this->assertEquals('Revisi Berkas', $birth->fresh()->status_label);
+        Mail::assertNothingSent();
+        Http::assertSent(function ($request) {
+            return str_contains($request['message'], 'Revisi Berkas');
+        });
+
+        // 3. Akte Kematian: Buat pengajuan dan ubah ke 'ready_for_pickup' dengan email aktif dan WA nonaktif
+        $death = DeathCertificate::create([
+            'user_id' => $warga->id,
+            'registration_no' => 'AKM-20260904-8888',
+            'deceased_nik' => '3404051111999900',
+            'deceased_name' => 'Jenazah Validasi',
+            'gender' => 'L',
+            'birth_date' => '1950-01-01',
+            'death_date' => '2026-09-01',
+            'applicant_nik' => $warga->nik,
+            'applicant_name' => $warga->name,
+            'applicant_phone' => $warga->phone,
+            'applicant_relation' => 'Anak Kandung',
+            'padukuhan' => 'Kadilobo',
+            'status' => 'pending',
+        ]);
+
+        Mail::fake();
+        Http::fake([
+            'api.fonnte.com/*' => Http::response(['status' => true], 200),
+        ]);
+
+        $resDeathReady = $this->actingAs($admin)->put('/admin/akte-kematian/' . $death->id . '/status', [
+            'status' => 'ready_for_pickup',
+            'rejection_note' => 'Akte kematian sudah dicetak dan siap diambil.',
+            'send_email' => '1',
+            'send_whatsapp' => '0',
+        ]);
+
+        $resDeathReady->assertRedirect(route('admin.death.show', $death));
+        $this->assertEquals('Siap Diambil', $death->fresh()->status_label);
+
+        Mail::assertSent(SubmissionStatusNotification::class, function ($mail) use ($warga, $death) {
+            return $mail->hasTo($warga->email)
+                && $mail->status === 'ready_for_pickup'
+                && $mail->submission->id === $death->id;
+        });
+        Http::assertNothingSent();
+
+        // 4. Akte Kematian: Ubah status ke 'picked_up' dengan kedua toggle nonaktif
+        Mail::fake();
+        Http::fake();
+
+        $resDeathPickedUp = $this->actingAs($admin)->put('/admin/akte-kematian/' . $death->id . '/status', [
+            'status' => 'picked_up',
+            'rejection_note' => 'Dokumen telah diserahkan kepada keluarga pelapor.',
+            'send_email' => '0',
+            'send_whatsapp' => '0',
+        ]);
+
+        $resDeathPickedUp->assertRedirect(route('admin.death.show', $death));
+        $this->assertEquals('Sudah Diambil', $death->fresh()->status_label);
+        Mail::assertNothingSent();
+        Http::assertNothingSent();
     }
 }

@@ -91,49 +91,53 @@ class AdminBirthController extends Controller
             ? 'Status permohonan Akte Kelahiran berhasil diperbarui menjadi Sudah diambil dan telah otomatis masuk ke arsip.'
             : 'Status permohonan Akte Kelahiran berhasil diperbarui menjadi ' . $birth->status_label . '.';
 
-        // Periksa pengaturan saluran notifikasi yang dipilih admin (default aktif jika ada)
+        // Periksa pengaturan saluran notifikasi yang dipilih admin
         $sendEmail = $request->boolean('send_email');
         $sendWhatsApp = $request->boolean('send_whatsapp');
 
         // Cari email warga yang terkait dengan pengajuan
-        $recipientEmail = $birth->user?->email;
-        if (!$recipientEmail && $birth->applicant_nik) {
-            $recipientEmail = User::where('nik', $birth->applicant_nik)->value('email');
-        }
-        if (!$recipientEmail && $birth->family_card_no) {
-            $recipientEmail = User::where('family_card_no', $birth->family_card_no)->whereNotNull('email')->value('email');
-        }
+        $recipientEmail = $birth->applicant_email;
 
-        // Kirim email notifikasi otomatis jika diaktifkan admin dan status adalah siap diambil, revisi, atau dibatalkan
-        if ($sendEmail && $recipientEmail && in_array($validated['status'], ['ready_for_pickup', 'completed', 'revision', 'rejected'])) {
-            try {
-                Mail::to($recipientEmail)->send(new SubmissionStatusNotification(
-                    submission: $birth,
-                    type: 'birth',
-                    status: $validated['status'],
-                    note: $validated['rejection_note'],
-                    processedBy: Auth::user()->name,
-                    adminEmail: Auth::user()->email
-                ));
-                $message .= ' Notifikasi telah otomatis dikirimkan ke email warga (' . $recipientEmail . ').';
-            } catch (\Throwable $e) {
-                Log::error('Gagal mengirim email notifikasi Akte Kelahiran: ' . $e->getMessage());
-                $message .= ' (Status tersimpan, namun notifikasi email gagal dikirim. Silakan periksa konfigurasi SMTP).';
+        // Kirim email notifikasi otomatis jika diaktifkan admin
+        if ($sendEmail) {
+            if ($recipientEmail) {
+                try {
+                    Mail::to($recipientEmail)->send(new SubmissionStatusNotification(
+                        submission: $birth,
+                        type: 'birth',
+                        status: $validated['status'],
+                        note: $validated['rejection_note'],
+                        processedBy: Auth::user()->name,
+                        adminEmail: Auth::user()->email
+                    ));
+                    $message .= ' Notifikasi telah otomatis dikirimkan ke email warga (' . $recipientEmail . ').';
+                } catch (\Throwable $e) {
+                    Log::error('Gagal mengirim email notifikasi Akte Kelahiran: ' . $e->getMessage());
+                    $message .= ' (Status tersimpan, namun notifikasi email gagal dikirim. Silakan periksa konfigurasi SMTP).';
+                }
+            } else {
+                $message .= ' (Notifikasi email tidak terkirim karena alamat email warga tidak ditemukan).';
             }
         }
 
-        // Kirim WhatsApp notifikasi otomatis jika diaktifkan admin dan status adalah siap diambil, revisi, atau dibatalkan
-        if ($sendWhatsApp && in_array($validated['status'], ['ready_for_pickup', 'completed', 'revision', 'rejected'])) {
-            $waSent = WhatsAppNotificationService::sendSubmissionStatusNotification(
-                submission: $birth,
-                type: 'birth',
-                status: $validated['status'],
-                note: $validated['rejection_note']
-            );
+        // Kirim WhatsApp notifikasi otomatis jika diaktifkan admin
+        if ($sendWhatsApp) {
+            $recipientPhone = $birth->applicant_phone;
+            if ($recipientPhone) {
+                $waSent = WhatsAppNotificationService::sendSubmissionStatusNotification(
+                    submission: $birth,
+                    type: 'birth',
+                    status: $validated['status'],
+                    note: $validated['rejection_note']
+                );
 
-            $recipientPhone = $birth->applicant_phone ?? $birth->user?->phone;
-            if ($waSent && $recipientPhone) {
-                $message .= ' Notifikasi WhatsApp berhasil dikirim ke ' . $recipientPhone . '.';
+                if ($waSent) {
+                    $message .= ' Notifikasi WhatsApp berhasil dikirim ke ' . $recipientPhone . '.';
+                } else {
+                    $message .= ' (Status tersimpan, namun pesan WhatsApp gagal terkirim. Periksa token Fonnte atau koneksi).';
+                }
+            } else {
+                $message .= ' (Notifikasi WhatsApp tidak terkirim karena nomor WhatsApp warga tidak ditemukan).';
             }
         }
 
