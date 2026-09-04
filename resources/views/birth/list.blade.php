@@ -25,14 +25,6 @@
                     </p>
                 </div>
             </div>
-            <div class="flex items-center gap-2">
-                <a href="{{ route('birth.create') }}" class="bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold text-xs px-3 py-2 rounded-lg transition shadow-xs flex items-center gap-1.5">
-                    <i class="fa-solid fa-baby"></i> Buat Akte Kelahiran
-                </a>
-                <a href="{{ route('death.create') }}" class="bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs px-3 py-2 rounded-lg transition shadow-xs flex items-center gap-1.5 border border-rose-500/80">
-                    <i class="fa-solid fa-book-skull"></i> Buat Akte Kematian
-                </a>
-            </div>
         </div>
 
         <!-- Banner Ringkasan Statistik -->
