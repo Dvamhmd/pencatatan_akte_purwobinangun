@@ -229,8 +229,8 @@
                     <a href="{{ route('home') }}" class="text-xs font-semibold text-slate-600 hover:text-slate-900 transition">
                         <i class="fa-solid fa-arrow-left mr-1"></i> Kembali ke Beranda
                     </a>
-                    <button type="submit" class="bg-rose-700 hover:bg-rose-800 text-white font-bold text-xs md:text-sm px-6 py-3 rounded-lg shadow-sm transition flex items-center gap-2">
-                        <i class="fa-solid fa-paper-plane"></i> Kirim Permohonan Akte Kematian
+                    <button type="submit" class="bg-rose-700 hover:bg-rose-800 text-white font-bold text-xs md:text-sm px-6 py-3 rounded-lg shadow-sm transition">
+                        Kirim Permohonan Akte Kematian
                     </button>
                 </div>
             </div>
