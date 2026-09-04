@@ -58,6 +58,100 @@ class WargaAuthAndAccessTest extends TestCase
         ]);
     }
 
+    public function test_warga_can_register_with_uploaded_doc_family_card()
+    {
+        \Illuminate\Support\Facades\Storage::fake('public');
+
+        $file = \Illuminate\Http\UploadedFile::fake()->create('kartu_keluarga_terbaru.jpg', 500, 'image/jpeg');
+
+        $response = $this->post('/warga/daftar', [
+            'nik' => '3404051122334455',
+            'family_card_no' => '3404055544332211',
+            'doc_family_card' => $file,
+            'name' => 'Warga Berkas KK',
+            'birth_place' => 'Sleman',
+            'birth_date' => '1995-08-17',
+            'gender' => 'L',
+            'address' => 'Plosokuning, Minomartani',
+            'rt' => '01',
+            'rw' => '02',
+            'phone' => '081233445566',
+            'email' => 'berkaskk@example.com',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+        ]);
+
+        $response->assertRedirect('/warga/login');
+        $response->assertSessionHas('registration_success');
+
+        $user = User::where('nik', '3404051122334455')->first();
+        $this->assertNotNull($user);
+        $this->assertNotNull($user->doc_family_card);
+        \Illuminate\Support\Facades\Storage::disk('public')->assertExists($user->doc_family_card);
+    }
+
+    public function test_warga_can_register_with_family_relationship_and_family_members()
+    {
+        $response = $this->post('/warga/daftar', [
+            'family_card_no' => '3404057777777777',
+            'nik' => '3404058888888888',
+            'name' => 'Kepala Keluarga Purwobinangun',
+            'birth_place' => 'Sleman',
+            'birth_date' => '1985-05-15',
+            'gender' => 'L',
+            'family_relationship' => 'Kepala Keluarga',
+            'address' => 'Kadilobo, Purwobinangun, Pakem',
+            'rt' => '03',
+            'rw' => '05',
+            'phone' => '081234567899',
+            'email' => 'kk.purwo@example.com',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+            'family_members' => [
+                [
+                    'family_card_no' => '3404057777777777',
+                    'nik' => '3404058888888889',
+                    'name' => 'Istri Purwobinangun',
+                    'birth_place' => 'Sleman',
+                    'birth_date' => '1987-07-20',
+                    'gender' => 'P',
+                    'family_relationship' => 'Istri',
+                ],
+                [
+                    'family_card_no' => '3404057777777777',
+                    'nik' => '3404058888888890',
+                    'name' => 'Anak Purwobinangun',
+                    'birth_place' => 'Sleman',
+                    'birth_date' => '2015-10-10',
+                    'gender' => 'L',
+                    'family_relationship' => 'Anak',
+                ]
+            ]
+        ]);
+
+        $response->assertRedirect('/warga/login');
+        $response->assertSessionHas('registration_success');
+
+        $this->assertDatabaseHas('users', [
+            'nik' => '3404058888888888',
+            'family_card_no' => '3404057777777777',
+            'name' => 'Kepala Keluarga Purwobinangun',
+            'family_relationship' => 'Kepala Keluarga',
+        ]);
+
+        $this->assertDatabaseHas('family_members', [
+            'nik' => '3404058888888889',
+            'name' => 'Istri Purwobinangun',
+            'family_relationship' => 'Istri',
+        ]);
+
+        $this->assertDatabaseHas('family_members', [
+            'nik' => '3404058888888890',
+            'name' => 'Anak Purwobinangun',
+            'family_relationship' => 'Anak',
+        ]);
+    }
+
     public function test_warga_registration_fails_if_email_already_exists()
     {
         // Buat user pertama dengan email tertentu

@@ -26,6 +26,7 @@ class User extends Authenticatable
         'role',
         'nik',
         'family_card_no',
+        'doc_family_card',
         'birth_place',
         'birth_date',
         'gender',
@@ -33,6 +34,7 @@ class User extends Authenticatable
         'rt',
         'rw',
         'phone',
+        'family_relationship',
         'status',
         'rejection_reason',
         'verified_at',
@@ -124,5 +126,10 @@ class User extends Authenticatable
     public function deathCertificates(): HasMany
     {
         return $this->hasMany(DeathCertificate::class, 'user_id');
+    }
+
+    public function familyMembers(): HasMany
+    {
+        return $this->hasMany(FamilyMember::class, 'user_id');
     }
 }

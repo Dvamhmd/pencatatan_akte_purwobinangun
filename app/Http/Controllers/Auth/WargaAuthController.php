@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\FamilyMember;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -88,7 +89,7 @@ class WargaAuthController extends Controller
 
         $prefill = null;
         if ($request->filled('reapply_nik')) {
-            $prefill = User::where('nik', $request->query('reapply_nik'))->whereIn('status', ['rejected', 'archived'])->first();
+            $prefill = User::with('familyMembers')->where('nik', $request->query('reapply_nik'))->whereIn('status', ['rejected', 'archived'])->first();
         }
 
         return view('warga.auth.register', compact('prefill'));
@@ -106,10 +107,12 @@ class WargaAuthController extends Controller
                 $existingRejected ? 'nullable' : 'unique:users,nik',
             ],
             'family_card_no' => 'required|digits:16',
+            'doc_family_card' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:3072',
             'name' => 'required|string|max:255',
             'birth_place' => 'required|string|max:150',
             'birth_date' => 'required|date',
             'gender' => 'required|in:L,P',
+            'family_relationship' => 'nullable|string|max:100',
             'address' => 'required|string|max:500',
             'rt' => 'required|string|max:5',
             'rw' => 'required|string|max:5',
@@ -121,6 +124,14 @@ class WargaAuthController extends Controller
                 $existingRejected ? Rule::unique('users', 'email')->ignore($existingRejected->id) : 'unique:users,email',
             ],
             'password' => 'required|string|min:6|confirmed',
+            'family_members' => 'nullable|array',
+            'family_members.*.family_card_no' => 'nullable|digits:16',
+            'family_members.*.nik' => 'nullable|digits:16',
+            'family_members.*.name' => 'nullable|string|max:255',
+            'family_members.*.birth_place' => 'nullable|string|max:150',
+            'family_members.*.birth_date' => 'nullable|date',
+            'family_members.*.gender' => 'nullable|in:L,P',
+            'family_members.*.family_relationship' => 'nullable|string|max:100',
         ];
 
         $validated = $request->validate($rules, [
@@ -134,13 +145,18 @@ class WargaAuthController extends Controller
             'email.unique' => 'Alamat email sudah terdaftar dalam sistem.',
             'email' => 'Format email tidak valid.',
             'in' => 'Pilihan :attribute tidak valid.',
+            'doc_family_card.file' => 'Berkas Kartu Keluarga harus berupa file yang valid.',
+            'doc_family_card.mimes' => 'Format berkas Kartu Keluarga harus berupa JPG, JPEG, PNG, atau PDF.',
+            'doc_family_card.max' => 'Ukuran berkas Kartu Keluarga maksimal 3MB.',
         ], [
             'nik' => 'Nomor Induk Kependudukan (NIK)',
             'family_card_no' => 'Nomor Kartu Keluarga (KK)',
+            'doc_family_card' => 'Dokumen Kartu Keluarga (KK)',
             'name' => 'Nama Lengkap Sesuai KTP/KK',
             'birth_place' => 'Tempat Lahir',
             'birth_date' => 'Tanggal Lahir',
             'gender' => 'Jenis Kelamin',
+            'family_relationship' => 'Posisi dalam Keluarga',
             'address' => 'Alamat Lengkap',
             'rt' => 'RT',
             'rw' => 'RW',
@@ -148,16 +164,32 @@ class WargaAuthController extends Controller
             'email' => 'Email',
             'password' => 'Kata Sandi',
             'password_confirmation' => 'Konfirmasi Kata Sandi',
+            'family_members.*.family_card_no' => 'Nomor KK Anggota Keluarga',
+            'family_members.*.nik' => 'NIK Anggota Keluarga',
+            'family_members.*.name' => 'Nama Anggota Keluarga',
+            'family_members.*.birth_place' => 'Tempat Lahir Anggota Keluarga',
+            'family_members.*.birth_date' => 'Tanggal Lahir Anggota Keluarga',
+            'family_members.*.gender' => 'Jenis Kelamin Anggota Keluarga',
+            'family_members.*.family_relationship' => 'Posisi dalam Keluarga Anggota',
         ]);
+
+        $familyRelationship = !empty($validated['family_relationship']) ? $validated['family_relationship'] : 'Kepala Keluarga';
+
+        // Simpan File Dokumen KK jika diunggah
+        $docFamilyCardPath = null;
+        if ($request->hasFile('doc_family_card')) {
+            $docFamilyCardPath = $request->file('doc_family_card')->store('uploads/warga_docs', 'public');
+        }
 
         if ($existingRejected) {
             // Perbarui data akun yang ditolak dan kembalikan ke status pending
-            $existingRejected->update([
+            $updateData = [
                 'family_card_no' => $validated['family_card_no'],
                 'name' => $validated['name'],
                 'birth_place' => $validated['birth_place'],
                 'birth_date' => $validated['birth_date'],
                 'gender' => $validated['gender'],
+                'family_relationship' => $familyRelationship,
                 'address' => $validated['address'],
                 'rt' => $validated['rt'],
                 'rw' => $validated['rw'],
@@ -168,17 +200,27 @@ class WargaAuthController extends Controller
                 'rejection_reason' => null,
                 'verified_at' => null,
                 'verified_by' => null,
-            ]);
+            ];
+
+            if ($docFamilyCardPath) {
+                $updateData['doc_family_card'] = $docFamilyCardPath;
+            }
+
+            $existingRejected->update($updateData);
+            $user = $existingRejected;
+            $user->familyMembers()->delete();
         } else {
             // Buat akun baru
-            User::create([
+            $user = User::create([
                 'role' => 'warga',
                 'nik' => $validated['nik'],
                 'family_card_no' => $validated['family_card_no'],
+                'doc_family_card' => $docFamilyCardPath,
                 'name' => $validated['name'],
                 'birth_place' => $validated['birth_place'],
                 'birth_date' => $validated['birth_date'],
                 'gender' => $validated['gender'],
+                'family_relationship' => $familyRelationship,
                 'address' => $validated['address'],
                 'rt' => $validated['rt'],
                 'rw' => $validated['rw'],
@@ -187,6 +229,25 @@ class WargaAuthController extends Controller
                 'password' => Hash::make($validated['password']),
                 'status' => 'pending',
             ]);
+        }
+
+        // Simpan Anggota Keluarga jika ada
+        if (!empty($request->family_members) && is_array($request->family_members)) {
+            foreach ($request->family_members as $memberData) {
+                if (empty(trim($memberData['name'] ?? '')) && empty(trim($memberData['nik'] ?? ''))) {
+                    continue;
+                }
+                FamilyMember::create([
+                    'user_id' => $user->id,
+                    'family_card_no' => !empty($memberData['family_card_no']) ? $memberData['family_card_no'] : $user->family_card_no,
+                    'nik' => !empty($memberData['nik']) ? $memberData['nik'] : null,
+                    'name' => $memberData['name'] ?? '',
+                    'birth_place' => $memberData['birth_place'] ?? null,
+                    'birth_date' => !empty($memberData['birth_date']) ? $memberData['birth_date'] : null,
+                    'gender' => !empty($memberData['gender']) ? $memberData['gender'] : null,
+                    'family_relationship' => !empty($memberData['family_relationship']) ? $memberData['family_relationship'] : 'Anggota Keluarga',
+                ]);
+            }
         }
 
         // Pastikan sesi aktif lama (jika ada) dikeluarkan agar berstatus belum login (guest)

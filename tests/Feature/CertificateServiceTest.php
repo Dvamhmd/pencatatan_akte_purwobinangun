@@ -59,8 +59,17 @@ class CertificateServiceTest extends TestCase
             'applicant_name' => 'Bapak Joko',
             'address' => 'Padukuhan Kadilobo RT 01 / RW 02',
             'applicant_phone' => '081234567890',
+            'father_name' => 'Bapak Joko',
+            'father_nik' => '3404051205900001',
+            'father_birth_date' => '1990-05-12',
+            'father_job' => 'Wiraswasta',
+            'mother_name' => 'Ibu Siti',
+            'mother_nik' => '3404051205900002',
+            'mother_birth_date' => '1992-06-15',
+            'mother_job' => 'PNS',
             'doc_birth_cert' => UploadedFile::fake()->create('surat_lahir.pdf', 100),
             'doc_family_card' => UploadedFile::fake()->create('kk.jpg', 100),
+            'doc_marriage_cert' => UploadedFile::fake()->create('buku_nikah.pdf', 100),
             'doc_parents_ktp' => UploadedFile::fake()->create('ktp.jpg', 100),
         ]);
 

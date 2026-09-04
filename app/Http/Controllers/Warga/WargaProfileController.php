@@ -27,6 +27,8 @@ class WargaProfileController extends Controller
             ->where('id', '!=', $warga->id)
             ->get();
 
+        $warga->load('familyMembers');
+
         return view('warga.profile.index', compact('warga', 'familyMembers'));
     }
 

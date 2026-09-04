@@ -67,6 +67,8 @@ class AdminCitizenController extends Controller
             ->where('id', '!=', $citizen->id)
             ->get();
 
+        $citizen->load('familyMembers');
+
         return view('admin.citizens.show', compact('citizen', 'birthSubmissions', 'deathSubmissions', 'familyMembers'));
     }
 

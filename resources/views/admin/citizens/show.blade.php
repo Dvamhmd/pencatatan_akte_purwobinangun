@@ -61,6 +61,11 @@
                         <div>
                             <span class="text-slate-500 font-medium block">Nama Lengkap:</span>
                             <span class="text-sm font-bold text-slate-900">{{ $citizen->name }}</span>
+                            @if($citizen->family_relationship)
+                                <span class="inline-block text-[10px] font-bold text-[#0b7c89] bg-teal-50 border border-teal-200 px-2 py-0.5 rounded-full mt-1">
+                                    <i class="fa-solid fa-user-tag text-[9px] mr-0.5"></i> {{ $citizen->family_relationship }}
+                                </span>
+                            @endif
                         </div>
                         <div>
                             <span class="text-slate-500 font-medium block">Jenis Kelamin:</span>
@@ -111,6 +116,36 @@
                         </div>
                     </div>
 
+                    <!-- Dokumen KK yang Diunggah -->
+                    <div class="pt-3 border-t border-slate-100">
+                        <span class="text-slate-500 font-medium block mb-1.5">Dokumen Kartu Keluarga (KK) Fisik:</span>
+                        @if($citizen->doc_family_card)
+                            <div class="p-3 bg-teal-50/60 rounded-xl border border-teal-200 flex items-center justify-between">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-9 h-9 rounded-lg bg-teal-100 text-[#0b7c89] flex items-center justify-center font-bold">
+                                        @if(Str::endsWith(strtolower($citizen->doc_family_card), '.pdf'))
+                                            <i class="fa-solid fa-file-pdf text-rose-600 text-lg"></i>
+                                        @else
+                                            <i class="fa-solid fa-file-image text-teal-700 text-lg"></i>
+                                        @endif
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-slate-800 text-xs">Dokumen KK Terlampir</p>
+                                        <p class="text-[10px] text-slate-500">{{ basename($citizen->doc_family_card) }}</p>
+                                    </div>
+                                </div>
+                                <a href="{{ asset('storage/' . $citizen->doc_family_card) }}" target="_blank" class="bg-[#0b7c89] hover:bg-[#065b65] text-white font-bold text-xs px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 shadow-2xs">
+                                    <i class="fa-solid fa-eye"></i> Lihat Dokumen KK
+                                </a>
+                            </div>
+                        @else
+                            <div class="p-3 bg-slate-50 rounded-xl border border-dashed border-slate-200 text-slate-400 italic text-[11px] flex items-center gap-2">
+                                <i class="fa-solid fa-circle-exclamation text-slate-300 text-base"></i>
+                                Warga belum melampirkan berkas fisik Kartu Keluarga (KK).
+                            </div>
+                        @endif
+                    </div>
+
                 </div>
             </div>
 
@@ -124,9 +159,41 @@
 
                 <div class="p-5 space-y-4 text-xs">
                     
+                    <!-- Anggota Keluarga Tercatat dalam KK -->
+                    @if($citizen->familyMembers->count() > 0)
+                        <div>
+                            <h4 class="font-bold text-slate-800 mb-2 flex items-center justify-between">
+                                <span>Anggota Keluarga Tercatat (KK):</span>
+                                <span class="text-[10px] font-bold text-[#0b7c89] bg-teal-50 px-2 py-0.5 rounded border border-teal-200">
+                                    {{ $citizen->familyMembers->count() }} Orang
+                                </span>
+                            </h4>
+                            <div class="space-y-1.5">
+                                @foreach($citizen->familyMembers as $fm)
+                                    <div class="p-2.5 bg-slate-50 rounded-lg border border-slate-200/80 flex items-center justify-between">
+                                        <div>
+                                            <div class="flex items-center gap-2">
+                                                <span class="font-bold text-slate-900">{{ $fm->name }}</span>
+                                                <span class="text-[10px] font-semibold text-[#0b7c89] bg-teal-50 px-1.5 py-0.5 rounded">
+                                                    {{ $fm->family_relationship ?: 'Anggota' }}
+                                                </span>
+                                            </div>
+                                            <span class="text-[10px] text-slate-500 font-mono block mt-0.5">
+                                                NIK: {{ $fm->nik ?: '-' }} &bull; {{ $fm->gender === 'L' ? 'Laki-laki' : ($fm->gender === 'P' ? 'Perempuan' : '-') }}
+                                                @if($fm->birth_place || $fm->birth_date)
+                                                    &bull; {{ $fm->birth_place }}, {{ $fm->birth_date ? $fm->birth_date->format('d/m/Y') : '' }}
+                                                @endif
+                                            </span>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
                     <!-- Anggota Keluarga Lain Terdaftar -->
                     <div>
-                        <h4 class="font-bold text-slate-800 mb-2">Anggota Keluarga Terdaftar Lainnya:</h4>
+                        <h4 class="font-bold text-slate-800 mb-2">Akun Terdaftar Lain dalam KK:</h4>
                         @if($familyMembers->count() > 0)
                             <div class="space-y-1.5">
                                 @foreach($familyMembers as $member)

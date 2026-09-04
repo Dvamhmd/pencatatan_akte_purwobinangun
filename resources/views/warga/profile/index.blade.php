@@ -330,29 +330,62 @@
                 </div>
 
                 <div class="p-5 space-y-3 text-xs">
-                    <p class="text-slate-500 text-[11px] leading-relaxed">
-                        Akun warga lain yang terdaftar dalam satu Nomor Kartu Keluarga (KK):
-                    </p>
-
-                    @if($familyMembers->count() > 0)
-                        <div class="space-y-2">
-                            @foreach($familyMembers as $member)
-                                <div class="p-3 bg-slate-50 rounded-lg border border-slate-200/80 flex items-center justify-between">
-                                    <div>
-                                        <p class="font-bold text-slate-800">{{ $member->name }}</p>
-                                        <p class="text-[10px] text-slate-500 font-mono mt-0.5">NIK: {{ $member->nik }}</p>
+                    @if($warga->familyMembers->count() > 0)
+                        <div>
+                            <p class="font-bold text-slate-700 text-[11px] mb-1.5 flex items-center justify-between">
+                                <span>Anggota Keluarga Tercatat (KK):</span>
+                                <span class="text-[10px] font-bold text-[#095b8c] bg-teal-50 px-2 py-0.5 rounded border border-teal-200">
+                                    {{ $warga->familyMembers->count() }} Orang
+                                </span>
+                            </p>
+                            <div class="space-y-1.5">
+                                @foreach($warga->familyMembers as $fm)
+                                    <div class="p-2.5 bg-teal-50/40 rounded-lg border border-teal-200/70 flex items-center justify-between">
+                                        <div>
+                                            <div class="flex items-center gap-1.5">
+                                                <p class="font-bold text-slate-800">{{ $fm->name }}</p>
+                                                <span class="text-[9px] font-bold text-[#095b8c] bg-teal-100 px-1.5 py-0.5 rounded">
+                                                    {{ $fm->family_relationship ?: 'Anggota' }}
+                                                </span>
+                                            </div>
+                                            <p class="text-[10px] text-slate-500 font-mono mt-0.5">
+                                                NIK: {{ $fm->nik ?: '-' }} &bull; {{ $fm->gender === 'L' ? 'Laki-laki' : ($fm->gender === 'P' ? 'Perempuan' : '-') }}
+                                                @if($fm->birth_place || $fm->birth_date)
+                                                    &bull; {{ $fm->birth_place }}, {{ $fm->birth_date ? $fm->birth_date->format('d/m/Y') : '' }}
+                                                @endif
+                                            </p>
+                                        </div>
                                     </div>
-                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border {{ $member->status_badge_class }}">
-                                        {{ $member->status_label }}
-                                    </span>
-                                </div>
-                            @endforeach
-                        </div>
-                    @else
-                        <div class="p-3 bg-slate-50 rounded-lg border border-dashed border-slate-200 text-center text-slate-400 italic text-[11px]">
-                            Belum ada anggota keluarga lain yang terdaftar di akun ini.
+                                @endforeach
+                            </div>
                         </div>
                     @endif
+
+                    <div class="pt-2">
+                        <p class="text-slate-500 text-[11px] leading-relaxed mb-2">
+                            Akun warga lain yang terdaftar dalam satu Nomor Kartu Keluarga (KK):
+                        </p>
+
+                        @if($familyMembers->count() > 0)
+                            <div class="space-y-2">
+                                @foreach($familyMembers as $member)
+                                    <div class="p-3 bg-slate-50 rounded-lg border border-slate-200/80 flex items-center justify-between">
+                                        <div>
+                                            <p class="font-bold text-slate-800">{{ $member->name }}</p>
+                                            <p class="text-[10px] text-slate-500 font-mono mt-0.5">NIK: {{ $member->nik }}</p>
+                                        </div>
+                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border {{ $member->status_badge_class }}">
+                                            {{ $member->status_label }}
+                                        </span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="p-3 bg-slate-50 rounded-lg border border-dashed border-slate-200 text-center text-slate-400 italic text-[11px]">
+                                Belum ada akun warga lain yang terdaftar dalam KK ini.
+                            </div>
+                        @endif
+                    </div>
                 </div>
             </div>
 
