@@ -22,6 +22,31 @@
         </div>
     </div>
 
+    <!-- Alert Permohonan Perubahan Data yang Sedang Menunggu Verifikasi -->
+    @if($pendingProfileRequest)
+        <div class="bg-gradient-to-r from-amber-50 to-orange-50 border-l-4 border-amber-500 p-4 rounded-r-xl shadow-xs flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 border border-amber-300 text-base">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                </div>
+                <div>
+                    <h4 class="font-bold text-sm text-slate-900 flex items-center gap-2">
+                        Warga Mengajukan Permohonan Perubahan Data Profil & Keluarga
+                        <span class="bg-amber-200 text-amber-900 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
+                            Menunggu Verifikasi
+                        </span>
+                    </h4>
+                    <p class="text-xs text-slate-600 mt-0.5">
+                        Diajukan pada {{ $pendingProfileRequest->created_at->translatedFormat('d F Y, H:i') }} WIB. Terdapat perubahan data profil atau anggota keluarga yang memerlukan persetujuan admin.
+                    </p>
+                </div>
+            </div>
+            <a href="{{ route('admin.profile_requests.show', $pendingProfileRequest) }}" class="inline-flex items-center gap-1.5 bg-[#0b7c89] hover:bg-[#065b65] text-white text-xs font-bold px-4 py-2.5 rounded-lg transition shrink-0 shadow-2xs">
+                <i class="fa-solid fa-code-compare"></i> Periksa & Verifikasi Perubahan
+            </a>
+        </div>
+    @endif
+
     <!-- Grid 2 Kolom: Detail Akun & Form Verifikasi -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         

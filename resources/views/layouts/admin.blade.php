@@ -93,6 +93,21 @@
                 @endif
             </a>
 
+            <a href="{{ route('admin.profile_requests.index') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl transition {{ request()->routeIs('admin.profile_requests.*') ? 'bg-[#0b7c89] text-white shadow-sm font-bold' : 'text-teal-100 hover:bg-teal-800/50 hover:text-white' }}">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-user-pen w-5 text-center text-teal-300 text-base"></i>
+                    <span>Perubahan Data</span>
+                </div>
+                @php
+                    $pendingProfileRequestCount = \App\Models\ProfileUpdateRequest::where('status', 'pending')->count();
+                @endphp
+                @if($pendingProfileRequestCount > 0)
+                    <span class="bg-amber-400 text-slate-950 font-bold text-xs px-2 py-0.5 rounded-full shadow-xs">
+                        {{ $pendingProfileRequestCount }}
+                    </span>
+                @endif
+            </a>
+
             <div class="pt-4 pb-1.5 px-3 text-[11px] uppercase font-bold tracking-wider text-teal-300/80">
                 Arsip & Penonaktifan
             </div>

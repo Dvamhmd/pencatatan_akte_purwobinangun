@@ -132,4 +132,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(FamilyMember::class, 'user_id');
     }
+
+    public function profileUpdateRequests(): HasMany
+    {
+        return $this->hasMany(ProfileUpdateRequest::class, 'user_id');
+    }
+
+    public function latestPendingProfileRequest(): ?ProfileUpdateRequest
+    {
+        return $this->profileUpdateRequests()->where('status', 'pending')->latest()->first();
+    }
 }

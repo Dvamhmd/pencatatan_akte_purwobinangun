@@ -68,8 +68,9 @@ class AdminCitizenController extends Controller
             ->get();
 
         $citizen->load('familyMembers');
+        $pendingProfileRequest = $citizen->latestPendingProfileRequest();
 
-        return view('admin.citizens.show', compact('citizen', 'birthSubmissions', 'deathSubmissions', 'familyMembers'));
+        return view('admin.citizens.show', compact('citizen', 'birthSubmissions', 'deathSubmissions', 'familyMembers', 'pendingProfileRequest'));
     }
 
     public function edit(User $citizen)

@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminDeathController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\AdminProfileController;
+use App\Http\Controllers\Admin\AdminProfileRequestController;
 use App\Http\Controllers\Auth\WargaAuthController;
 use App\Http\Controllers\BirthCertificateController;
 use App\Http\Controllers\DeathCertificateController;
@@ -54,6 +55,7 @@ Route::middleware('auth.warga')->group(function () {
     Route::prefix('profil')->name('profile.')->group(function () {
         Route::get('/', [WargaProfileController::class, 'index'])->name('index');
         Route::put('/', [WargaProfileController::class, 'updateProfile'])->name('update');
+        Route::delete('/batal/{profileRequest}', [WargaProfileController::class, 'cancelRequest'])->name('cancel');
         Route::put('/password', [WargaProfileController::class, 'updatePassword'])->name('password');
     });
 
@@ -117,6 +119,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('/{citizen}/edit', [AdminCitizenController::class, 'edit'])->name('edit');
             Route::put('/{citizen}', [AdminCitizenController::class, 'update'])->name('update');
             Route::post('/{citizen}/verify', [AdminCitizenController::class, 'verify'])->name('verify');
+        });
+
+        // Kelola & Verifikasi Permohonan Perubahan Data Profil & Keluarga Warga
+        Route::prefix('perubahan-data-warga')->name('profile_requests.')->group(function () {
+            Route::get('/', [AdminProfileRequestController::class, 'index'])->name('index');
+            Route::get('/{profileRequest}', [AdminProfileRequestController::class, 'show'])->name('show');
+            Route::post('/{profileRequest}/verify', [AdminProfileRequestController::class, 'verify'])->name('verify');
         });
 
         // Arsip Pengajuan & Akun Ditolak / Dinonaktifkan

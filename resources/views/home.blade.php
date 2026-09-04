@@ -33,22 +33,7 @@
                     Selamat datang di menu pelayanan kependudukan Pemerintah Kalurahan Purwobinangun. Warga dapat mengajukan permohonan penerbitan surat pengantar pembuatan akta secara online, mengunggah berkas persyaratan, dan memantau proses verifikasi secara transparan.
                 </p>
 
-                @if(Auth::check() && Auth::user()->isWarga())
-                    <div class="mt-4 p-3.5 bg-white rounded-xl border border-teal-200 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-teal-100 text-[#095b8c] flex items-center justify-center text-lg font-bold shrink-0">
-                                <i class="fa-solid fa-circle-user"></i>
-                            </div>
-                            <div>
-                                <p class="text-xs font-bold text-slate-800">Halo, {{ Auth::user()->name }} (NIK: {{ Auth::user()->nik }})</p>
-                                <p class="text-[11px] text-slate-500">Anda masuk dengan akun warga terdaftar. Data profil & kontak dapat diperbarui kapan saja.</p>
-                            </div>
-                        </div>
-                        <a href="{{ route('profile.index') }}" class="inline-flex items-center justify-center gap-1.5 bg-teal-50 hover:bg-[#095b8c] text-[#095b8c] hover:text-white border border-teal-200 font-bold text-xs px-3.5 py-2 rounded-lg transition shrink-0 shadow-2xs">
-                            <i class="fa-solid fa-user-pen"></i> Ubah Profil & Data Warga
-                        </a>
-                    </div>
-                @endif
+
             </div>
         </div>
 

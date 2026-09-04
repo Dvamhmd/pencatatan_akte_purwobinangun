@@ -88,7 +88,6 @@
                             'Kartu Keluarga (KK)' => $birth->doc_family_card,
                             'Buku Nikah / Akta Perkawinan' => $birth->doc_marriage_cert,
                             'KTP Kedua Orang Tua' => $birth->doc_parents_ktp,
-                            'KTP Saksi Kelahiran' => $birth->doc_witness_ktp,
                         ];
                     @endphp
 
