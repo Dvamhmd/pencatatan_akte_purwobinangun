@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\BirthCertificate;
+use App\Models\DeathCertificate;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -132,7 +134,7 @@ class BirthCertificateController extends Controller
                 ],
                 'receipt_url' => route('tracking.print_receipt', ['type' => 'birth', 'registrationNo' => $birth->registration_no]),
                 'tracking_url' => route('tracking.show', ['type' => 'birth', 'registrationNo' => $birth->registration_no]),
-                'list_url' => route('birth.list'),
+                'list_url' => route('submissions.index'),
             ]);
         }
 
@@ -159,16 +161,26 @@ class BirthCertificateController extends Controller
     {
         $status = $request->input('status');
         $search = $request->input('search');
+        $type = $request->input('type');
         $user = Auth::user();
 
-        // STRICT SCOPING: Hanya tampilkan pengajuan dari Nomor KK akun warga yang login
-        $query = BirthCertificate::query();
+        // Default type logic: jika dibuka dari route death.list tanpa parameter type eksplisit, set 'death', selain itu 'all'
+        if (!$type) {
+            if ($request->routeIs('death.list')) {
+                $type = 'death';
+            } else {
+                $type = 'all';
+            }
+        }
+
+        // 1. Query Akte Kelahiran (STRICT SCOPING: KK Warga yang Login)
+        $birthQuery = BirthCertificate::query();
         if ($user && $user->isWarga()) {
-            $query->where('family_card_no', $user->family_card_no);
+            $birthQuery->where('family_card_no', $user->family_card_no);
         }
 
         if ($search) {
-            $query->where(function ($q) use ($search) {
+            $birthQuery->where(function ($q) use ($search) {
                 $q->where('registration_no', 'like', "%{$search}%")
                   ->orWhere('applicant_nik', 'like', "%{$search}%")
                   ->orWhere('applicant_name', 'like', "%{$search}%")
@@ -179,35 +191,100 @@ class BirthCertificateController extends Controller
 
         if ($status && in_array($status, ['pending', 'in_process', 'revision', 'rejected', 'ready_for_pickup', 'picked_up', 'verified', 'completed', 'archived'])) {
             if ($status === 'in_process') {
-                $query->whereIn('status', ['in_process', 'verified']);
+                $birthQuery->whereIn('status', ['in_process', 'verified']);
             } elseif ($status === 'ready_for_pickup') {
-                $query->whereIn('status', ['ready_for_pickup', 'completed']);
+                $birthQuery->whereIn('status', ['ready_for_pickup', 'completed']);
             } elseif ($status === 'picked_up') {
-                $query->whereIn('status', ['picked_up', 'archived']);
+                $birthQuery->whereIn('status', ['picked_up', 'archived']);
             } else {
-                $query->where('status', $status);
+                $birthQuery->where('status', $status);
             }
         }
 
-        $submissions = $query->latest()->paginate(10)->withQueryString();
-        
-        // Statistik Dihitung Khusus Berdasarkan KK Warga yang Login
-        $baseStatsQuery = BirthCertificate::query();
+        // 2. Query Akte Kematian (STRICT SCOPING: KK Warga yang Login)
+        $deathQuery = DeathCertificate::query();
         if ($user && $user->isWarga()) {
-            $baseStatsQuery->where('family_card_no', $user->family_card_no);
+            $deathQuery->where('family_card_no', $user->family_card_no);
         }
 
-        $totalCount = (clone $baseStatsQuery)->count();
-        $pendingCount = (clone $baseStatsQuery)->where('status', 'pending')->count();
-        $inProcessCount = (clone $baseStatsQuery)->whereIn('status', ['in_process', 'verified'])->count();
-        $readyCount = (clone $baseStatsQuery)->whereIn('status', ['ready_for_pickup', 'completed'])->count();
-        $pickedUpCount = (clone $baseStatsQuery)->whereIn('status', ['picked_up', 'archived'])->count();
+        if ($search) {
+            $deathQuery->where(function ($q) use ($search) {
+                $q->where('registration_no', 'like', "%{$search}%")
+                  ->orWhere('applicant_nik', 'like', "%{$search}%")
+                  ->orWhere('applicant_name', 'like', "%{$search}%")
+                  ->orWhere('deceased_name', 'like', "%{$search}%")
+                  ->orWhere('deceased_nik', 'like', "%{$search}%")
+                  ->orWhere('applicant_phone', 'like', "%{$search}%");
+            });
+        }
+
+        if ($status && in_array($status, ['pending', 'in_process', 'revision', 'rejected', 'ready_for_pickup', 'picked_up', 'verified', 'completed', 'archived'])) {
+            if ($status === 'in_process') {
+                $deathQuery->whereIn('status', ['in_process', 'verified']);
+            } elseif ($status === 'ready_for_pickup') {
+                $deathQuery->whereIn('status', ['ready_for_pickup', 'completed']);
+            } elseif ($status === 'picked_up') {
+                $deathQuery->whereIn('status', ['picked_up', 'archived']);
+            } else {
+                $deathQuery->where('status', $status);
+            }
+        }
+
+        // 3. Pagination & Hasil Sesuai Filter Type
+        $perPage = 10;
+        if ($type === 'birth') {
+            $submissions = $birthQuery->latest()->paginate($perPage)->withQueryString();
+        } elseif ($type === 'death') {
+            $submissions = $deathQuery->latest()->paginate($perPage)->withQueryString();
+        } else {
+            $births = $birthQuery->latest()->get();
+            $deaths = $deathQuery->latest()->get();
+            $merged = $births->concat($deaths)->sortByDesc('created_at')->values();
+
+            $page = LengthAwarePaginator::resolveCurrentPage();
+            $currentItems = $merged->slice(($page - 1) * $perPage, $perPage)->values();
+
+            $submissions = new LengthAwarePaginator(
+                $currentItems,
+                $merged->count(),
+                $perPage,
+                $page,
+                ['path' => LengthAwarePaginator::resolveCurrentPath(), 'query' => $request->query()]
+            );
+        }
+
+        // 4. Statistik Dihitung Khusus Berdasarkan KK Warga yang Login
+        $baseBirthStats = BirthCertificate::query();
+        $baseDeathStats = DeathCertificate::query();
+        if ($user && $user->isWarga()) {
+            $baseBirthStats->where('family_card_no', $user->family_card_no);
+            $baseDeathStats->where('family_card_no', $user->family_card_no);
+        }
+
+        $birthCount = (clone $baseBirthStats)->count();
+        $deathCount = (clone $baseDeathStats)->count();
+        $totalCount = $birthCount + $deathCount;
+
+        $pendingCount = (clone $baseBirthStats)->where('status', 'pending')->count()
+                      + (clone $baseDeathStats)->where('status', 'pending')->count();
+
+        $inProcessCount = (clone $baseBirthStats)->whereIn('status', ['in_process', 'verified'])->count()
+                        + (clone $baseDeathStats)->whereIn('status', ['in_process', 'verified'])->count();
+
+        $readyCount = (clone $baseBirthStats)->whereIn('status', ['ready_for_pickup', 'completed'])->count()
+                    + (clone $baseDeathStats)->whereIn('status', ['ready_for_pickup', 'completed'])->count();
+
+        $pickedUpCount = (clone $baseBirthStats)->whereIn('status', ['picked_up', 'archived'])->count()
+                       + (clone $baseDeathStats)->whereIn('status', ['picked_up', 'archived'])->count();
 
         return view('birth.list', compact(
             'submissions',
             'status',
             'search',
+            'type',
             'totalCount',
+            'birthCount',
+            'deathCount',
             'pendingCount',
             'inProcessCount',
             'readyCount',

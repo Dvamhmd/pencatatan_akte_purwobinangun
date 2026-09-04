@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Daftar Pengajuan Permohonan Akte')
+@section('title', 'Daftar Pengajuan Permohonan Akta')
 
 @section('content')
 <div class="space-y-6">
@@ -25,9 +25,14 @@
                     </p>
                 </div>
             </div>
-            <a href="{{ route('birth.create') }}" class="bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold text-xs px-3.5 py-2 rounded-lg transition shadow-xs flex items-center gap-1.5">
-                <i class="fa-solid fa-plus"></i> Buat Pengajuan Baru
-            </a>
+            <div class="flex items-center gap-2">
+                <a href="{{ route('birth.create') }}" class="bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold text-xs px-3 py-2 rounded-lg transition shadow-xs flex items-center gap-1.5">
+                    <i class="fa-solid fa-baby"></i> Buat Akte Kelahiran
+                </a>
+                <a href="{{ route('death.create') }}" class="bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs px-3 py-2 rounded-lg transition shadow-xs flex items-center gap-1.5 border border-rose-500/80">
+                    <i class="fa-solid fa-book-skull"></i> Buat Akte Kematian
+                </a>
+            </div>
         </div>
 
         <!-- Banner Ringkasan Statistik -->
@@ -39,6 +44,11 @@
                         <i class="fa-solid fa-folder-open text-[#095b8c]"></i>
                     </div>
                     <p class="text-xl font-extrabold text-slate-800">{{ $totalCount }}</p>
+                    <div class="flex items-center gap-1.5 mt-1 text-[10px] text-slate-500 font-medium">
+                        <span class="text-teal-700 font-semibold"><i class="fa-solid fa-baby text-[9px]"></i> {{ $birthCount }} Lahir</span>
+                        <span>•</span>
+                        <span class="text-rose-700 font-semibold"><i class="fa-solid fa-book-skull text-[9px]"></i> {{ $deathCount }} Mati</span>
+                    </div>
                 </div>
 
                 <div class="bg-white p-3.5 rounded-xl border border-amber-200 shadow-2xs">
@@ -47,6 +57,7 @@
                         <i class="fa-solid fa-clock"></i>
                     </div>
                     <p class="text-xl font-extrabold text-amber-700">{{ $pendingCount }}</p>
+                    <span class="text-[10px] text-amber-600/80 mt-1 block">Antrean petugas</span>
                 </div>
 
                 <div class="bg-white p-3.5 rounded-xl border border-blue-200 shadow-2xs">
@@ -55,6 +66,7 @@
                         <i class="fa-solid fa-spinner"></i>
                     </div>
                     <p class="text-xl font-extrabold text-blue-700">{{ $inProcessCount }}</p>
+                    <span class="text-[10px] text-blue-600/80 mt-1 block">Validasi & penyiapan</span>
                 </div>
 
                 <div class="bg-white p-3.5 rounded-xl border border-emerald-200 shadow-2xs">
@@ -63,18 +75,46 @@
                         <i class="fa-solid fa-circle-check"></i>
                     </div>
                     <p class="text-xl font-extrabold text-emerald-700">{{ $readyCount + $pickedUpCount }}</p>
+                    <span class="text-[10px] text-emerald-600/80 mt-1 block">Dapat diambil di kantor</span>
                 </div>
             </div>
         </div>
 
-        <!-- Filter & Search Bar -->
-        <div class="p-5 bg-white border-b border-slate-200/70">
-            <form action="{{ route('birth.list') }}" method="GET" class="flex flex-col md:flex-row items-center gap-3">
-                
+        <!-- Tab Navigation Berdasarkan Jenis Akta & Filter Bar -->
+        <div class="p-5 bg-white border-b border-slate-200/70 space-y-3.5">
+            
+            <!-- Tab Pills Jenis Akta -->
+            <div class="flex flex-wrap items-center gap-2 pb-2 border-b border-slate-100">
+                <a href="{{ route('submissions.index', array_merge(request()->except(['page']), ['type' => 'all'])) }}" 
+                   class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 {{ $type === 'all' || empty($type) ? 'bg-[#095b8c] text-white shadow-xs font-bold' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}">
+                    <i class="fa-solid fa-layer-group text-[11px]"></i>
+                    <span>Semua Pengajuan</span>
+                    <span class="text-[10px] px-1.5 py-0.2 rounded-full {{ $type === 'all' || empty($type) ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700 font-bold' }}">{{ $totalCount }}</span>
+                </a>
+
+                <a href="{{ route('submissions.index', array_merge(request()->except(['page']), ['type' => 'birth'])) }}" 
+                   class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 {{ $type === 'birth' ? 'bg-[#059cb8] text-white shadow-xs font-bold' : 'bg-teal-50/70 text-teal-800 hover:bg-teal-100 border border-teal-200/60' }}">
+                    <i class="fa-solid fa-baby text-[11px]"></i>
+                    <span>Akte Kelahiran</span>
+                    <span class="text-[10px] px-1.5 py-0.2 rounded-full {{ $type === 'birth' ? 'bg-white/20 text-white' : 'bg-teal-100 text-teal-800 font-bold' }}">{{ $birthCount }}</span>
+                </a>
+
+                <a href="{{ route('submissions.index', array_merge(request()->except(['page']), ['type' => 'death'])) }}" 
+                   class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 {{ $type === 'death' ? 'bg-rose-700 text-white shadow-xs font-bold' : 'bg-rose-50/70 text-rose-800 hover:bg-rose-100 border border-rose-200/60' }}">
+                    <i class="fa-solid fa-book-skull text-[11px]"></i>
+                    <span>Akte Kematian</span>
+                    <span class="text-[10px] px-1.5 py-0.2 rounded-full {{ $type === 'death' ? 'bg-white/20 text-white' : 'bg-rose-100 text-rose-800 font-bold' }}">{{ $deathCount }}</span>
+                </a>
+            </div>
+
+            <!-- Form Filter & Pencarian -->
+            <form action="{{ route('submissions.index') }}" method="GET" class="flex flex-col md:flex-row items-center gap-3">
+                <input type="hidden" name="type" value="{{ $type }}">
+
                 <!-- Search Input -->
                 <div class="relative flex-1 w-full">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                    <input type="text" name="search" value="{{ $search }}" placeholder="Masukkan No. Registrasi, NIK, Nama Pemohon, atau Nama Anak..." class="w-full text-xs pl-9 pr-4 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] bg-white">
+                    <input type="text" name="search" value="{{ $search }}" placeholder="Cari No. Registrasi, NIK, Nama Anak, Nama Almarhum/ah, Pemohon..." class="w-full text-xs pl-9 pr-4 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] bg-white">
                 </div>
 
                 <!-- Status Filter -->
@@ -94,8 +134,8 @@
                     <button type="submit" class="flex-1 md:flex-initial bg-[#095b8c] hover:bg-[#059cb8] text-white font-bold text-xs px-5 py-2.5 rounded-lg shadow-xs transition flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-filter"></i> Filter
                     </button>
-                    @if($status || $search)
-                        <a href="{{ route('birth.list') }}" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-2.5 rounded-lg transition" title="Reset Filter">
+                    @if($status || $search || ($type && $type !== 'all'))
+                        <a href="{{ route('submissions.index') }}" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-2.5 rounded-lg transition" title="Reset Filter">
                             <i class="fa-solid fa-rotate-left"></i>
                         </a>
                     @endif
@@ -111,10 +151,10 @@
                     <table class="w-full text-left text-xs">
                         <thead class="bg-slate-100 text-slate-700 uppercase font-bold text-[11px] border-b border-slate-200">
                             <tr>
-                                <th class="px-4 py-3">No. Registrasi</th>
-                                <th class="px-4 py-3">Nama Anak</th>
+                                <th class="px-4 py-3">Jenis & No. Registrasi</th>
+                                <th class="px-4 py-3">Nama Yang Dimohonkan</th>
                                 <th class="px-4 py-3">Data Pemohon</th>
-                                <th class="px-4 py-3">Tgl Lahir / Tempat</th>
+                                <th class="px-4 py-3">Peristiwa (Tgl / Tempat)</th>
                                 <th class="px-4 py-3">Tanggal Pengajuan</th>
                                 <th class="px-4 py-3 text-center">Status</th>
                                 <th class="px-4 py-3 text-center">Aksi</th>
@@ -122,44 +162,73 @@
                         </thead>
                         <tbody class="divide-y divide-slate-200 bg-white">
                             @foreach($submissions as $sub)
-                                <tr class="hover:bg-teal-50/30 transition">
+                                <tr class="hover:bg-teal-50/20 transition">
+                                    <!-- Kolom 1: Jenis & No. Registrasi -->
                                     <td class="px-4 py-3.5">
-                                        <div class="font-extrabold text-[#095b8c] flex items-center gap-1.5">
+                                        <div class="font-extrabold flex items-center gap-1.5 {{ $sub->certificate_type === 'birth' ? 'text-[#095b8c]' : 'text-rose-700' }}">
                                             <i class="fa-solid fa-receipt text-slate-400"></i>
                                             <span>{{ $sub->registration_no }}</span>
                                         </div>
-                                        <span class="text-[10px] text-slate-400">Akte Kelahiran</span>
+                                        <span class="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full mt-1 {{ $sub->certificate_type === 'birth' ? 'bg-teal-50 text-teal-700 border border-teal-200' : 'bg-rose-50 text-rose-700 border border-rose-200' }}">
+                                            <i class="fa-solid {{ $sub->certificate_type === 'birth' ? 'fa-baby' : 'fa-book-skull' }} text-[9px]"></i>
+                                            {{ $sub->certificate_type_name }}
+                                        </span>
                                     </td>
+
+                                    <!-- Kolom 2: Nama Yang Dimohonkan (Subjek) -->
                                     <td class="px-4 py-3.5">
-                                        <p class="font-bold text-slate-900">{{ $sub->child_name }}</p>
-                                        <span class="text-[10px] inline-flex items-center gap-1 {{ $sub->gender === 'L' ? 'text-blue-600 bg-blue-50' : 'text-pink-600 bg-pink-50' }} px-1.5 py-0.5 rounded font-semibold">
+                                        <p class="text-[10px] uppercase font-semibold text-slate-400">
+                                            {{ $sub->certificate_type === 'birth' ? 'Nama Anak' : 'Almarhum/ah' }}
+                                        </p>
+                                        <p class="font-bold text-slate-900">{{ $sub->subject_name }}</p>
+                                        <span class="text-[10px] inline-flex items-center gap-1 {{ $sub->gender === 'L' ? 'text-blue-600 bg-blue-50' : 'text-pink-600 bg-pink-50' }} px-1.5 py-0.5 rounded font-semibold mt-0.5">
                                             <i class="fa-solid {{ $sub->gender === 'L' ? 'fa-mars' : 'fa-venus' }}"></i>
                                             {{ $sub->gender === 'L' ? 'Laki-laki' : 'Perempuan' }}
                                         </span>
                                     </td>
+
+                                    <!-- Kolom 3: Data Pemohon / Pelapor -->
                                     <td class="px-4 py-3.5">
-                                        <p class="font-semibold text-slate-800">{{ $sub->applicant_name }}</p>
+                                        <p class="font-semibold text-slate-800">
+                                            {{ $sub->applicant_name }}
+                                            @if($sub->applicant_relation)
+                                                <span class="text-slate-500 font-normal text-[11px]">({{ $sub->applicant_relation }})</span>
+                                            @endif
+                                        </p>
                                         <p class="text-[10px] text-slate-500">NIK: {{ substr($sub->applicant_nik, 0, 6) }}******{{ substr($sub->applicant_nik, -4) }}</p>
                                         <p class="text-[10px] text-slate-500"><i class="fa-brands fa-whatsapp text-emerald-600"></i> {{ $sub->applicant_phone }}</p>
                                     </td>
+
+                                    <!-- Kolom 4: Peristiwa (Tgl / Tempat) -->
                                     <td class="px-4 py-3.5">
-                                        <p class="font-medium text-slate-800">{{ $sub->birth_date ? $sub->birth_date->translatedFormat('d M Y') : '-' }}</p>
-                                        <p class="text-[10px] text-slate-500">{{ $sub->birth_place_type ?? $sub->birth_place }}</p>
+                                        <span class="text-[10px] font-semibold flex items-center gap-1 {{ $sub->certificate_type === 'birth' ? 'text-teal-700' : 'text-rose-700' }}">
+                                            <i class="fa-solid {{ $sub->certificate_type === 'birth' ? 'fa-cake-candles' : 'fa-cross' }} text-[9px]"></i>
+                                            {{ $sub->certificate_type === 'birth' ? 'Tgl Lahir:' : 'Tgl Wafat:' }}
+                                        </span>
+                                        <p class="font-medium text-slate-800">{{ $sub->event_date ? $sub->event_date->translatedFormat('d M Y') : '-' }}</p>
+                                        <p class="text-[10px] text-slate-500">{{ $sub->event_place ?: '-' }}</p>
                                     </td>
+
+                                    <!-- Kolom 5: Tanggal Pengajuan -->
                                     <td class="px-4 py-3.5">
                                         <p class="text-slate-700 font-medium">{{ $sub->created_at->translatedFormat('d M Y') }}</p>
+                                        <span class="text-[10px] text-slate-400 block">{{ $sub->created_at->diffForHumans() }}</span>
                                     </td>
+
+                                    <!-- Kolom 6: Status -->
                                     <td class="px-4 py-3.5 text-center">
                                         <span class="inline-block text-[10px] font-bold px-2.5 py-1 rounded-full border {{ $sub->status_badge_class }}">
                                             {{ $sub->status_label }}
                                         </span>
                                     </td>
+
+                                    <!-- Kolom 7: Aksi -->
                                     <td class="px-4 py-3.5 text-center">
                                         <div class="flex items-center justify-center gap-1.5">
-                                            <a href="{{ route('tracking.show', ['type' => 'birth', 'registrationNo' => $sub->registration_no]) }}" class="p-1.5 bg-teal-50 hover:bg-[#095b8c] text-[#095b8c] hover:text-white rounded-lg transition border border-teal-200" title="Detail Timeline">
+                                            <a href="{{ route('tracking.show', ['type' => $sub->certificate_type, 'registrationNo' => $sub->registration_no]) }}" class="p-1.5 bg-teal-50 hover:bg-[#095b8c] text-[#095b8c] hover:text-white rounded-lg transition border border-teal-200" title="Detail Timeline & Status">
                                                 <i class="fa-solid fa-eye text-xs"></i>
                                             </a>
-                                            <a href="{{ route('tracking.print_receipt', ['type' => 'birth', 'registrationNo' => $sub->registration_no]) }}" target="_blank" class="p-1.5 bg-slate-100 hover:bg-slate-800 text-slate-700 hover:text-white rounded-lg transition border border-slate-200" title="Cetak Bukti">
+                                            <a href="{{ route('tracking.print_receipt', ['type' => $sub->certificate_type, 'registrationNo' => $sub->registration_no]) }}" target="_blank" class="p-1.5 bg-slate-100 hover:bg-slate-800 text-slate-700 hover:text-white rounded-lg transition border border-slate-200" title="Cetak Bukti Pendaftaran">
                                                 <i class="fa-solid fa-print text-xs"></i>
                                             </a>
                                         </div>
@@ -181,15 +250,20 @@
                     </div>
                     <h3 class="font-bold text-sm text-slate-700">Belum Ada Data Pengajuan</h3>
                     <p class="text-xs text-slate-500 max-w-sm mx-auto mt-1 mb-4">
-                        @if($search || $status)
+                        @if($search || $status || ($type && $type !== 'all'))
                             Tidak ada pengajuan yang sesuai dengan kriteria filter pencarian Anda.
                         @else
-                            Belum ada permohonan akte kelahiran yang terdaftar dalam sistem.
+                            Belum ada permohonan akte kelahiran maupun akte kematian yang terdaftar untuk Nomor KK Anda.
                         @endif
                     </p>
-                    <a href="{{ route('birth.create') }}" class="inline-flex items-center gap-1.5 bg-[#095b8c] hover:bg-[#059cb8] text-white font-bold text-xs px-4 py-2 rounded-lg transition shadow-xs">
-                        <i class="fa-solid fa-plus"></i> Ajukan Akte Kelahiran Sekarang
-                    </a>
+                    <div class="flex flex-wrap items-center justify-center gap-2.5">
+                        <a href="{{ route('birth.create') }}" class="inline-flex items-center gap-1.5 bg-[#095b8c] hover:bg-[#059cb8] text-white font-bold text-xs px-4 py-2 rounded-lg transition shadow-xs">
+                            <i class="fa-solid fa-baby"></i> Ajukan Akte Kelahiran
+                        </a>
+                        <a href="{{ route('death.create') }}" class="inline-flex items-center gap-1.5 bg-rose-700 hover:bg-rose-800 text-white font-bold text-xs px-4 py-2 rounded-lg transition shadow-xs">
+                            <i class="fa-solid fa-book-skull"></i> Ajukan Akte Kematian
+                        </a>
+                    </div>
                 </div>
             @endif
 

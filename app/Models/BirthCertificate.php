@@ -178,4 +178,29 @@ class BirthCertificate extends Model
 
         return $this->attributes['applicant_phone'] ?? null;
     }
+
+    public function getCertificateTypeAttribute(): string
+    {
+        return 'birth';
+    }
+
+    public function getCertificateTypeNameAttribute(): string
+    {
+        return 'Akte Kelahiran';
+    }
+
+    public function getSubjectNameAttribute(): string
+    {
+        return $this->child_name ?? '-';
+    }
+
+    public function getEventDateAttribute()
+    {
+        return $this->birth_date;
+    }
+
+    public function getEventPlaceAttribute(): ?string
+    {
+        return $this->birth_place_type ?? $this->birth_place;
+    }
 }

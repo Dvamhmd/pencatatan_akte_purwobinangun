@@ -14,7 +14,7 @@ class WargaAuthController extends Controller
     public function showLoginForm()
     {
         if (Auth::check() && Auth::user()->isWarga()) {
-            return redirect()->route('birth.list');
+            return redirect()->route('submissions.index');
         }
 
         return view('warga.auth.login');
@@ -76,14 +76,14 @@ class WargaAuthController extends Controller
         Auth::login($user, $request->boolean('remember'));
         $request->session()->regenerate();
 
-        return redirect()->intended(route('birth.list'))
+        return redirect()->intended(route('submissions.index'))
             ->with('success', 'Selamat datang kembali, ' . $user->name . '! Anda berhasil masuk.');
     }
 
     public function showRegisterForm(Request $request)
     {
         if (Auth::check() && Auth::user()->isWarga()) {
-            return redirect()->route('birth.list');
+            return redirect()->route('submissions.index');
         }
 
         $prefill = null;

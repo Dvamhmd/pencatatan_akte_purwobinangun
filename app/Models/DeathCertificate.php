@@ -168,4 +168,29 @@ class DeathCertificate extends Model
 
         return $this->attributes['applicant_phone'] ?? null;
     }
+
+    public function getCertificateTypeAttribute(): string
+    {
+        return 'death';
+    }
+
+    public function getCertificateTypeNameAttribute(): string
+    {
+        return 'Akte Kematian';
+    }
+
+    public function getSubjectNameAttribute(): string
+    {
+        return $this->deceased_name ?? '-';
+    }
+
+    public function getEventDateAttribute()
+    {
+        return $this->death_date;
+    }
+
+    public function getEventPlaceAttribute(): ?string
+    {
+        return $this->death_place;
+    }
 }

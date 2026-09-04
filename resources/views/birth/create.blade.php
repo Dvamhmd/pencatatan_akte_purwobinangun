@@ -102,7 +102,7 @@
                     <p class="text-[11px] text-teal-100 font-normal">Pemerintah Kalurahan Purwobinangun, Kapanewon Pakem, Kabupaten Sleman</p>
                 </div>
             </div>
-            <a href="{{ route('birth.list') }}" class="bg-white/15 hover:bg-white/25 text-white border border-white/20 text-xs font-semibold px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 shadow-xs">
+            <a href="{{ route('submissions.index') }}" class="bg-white/15 hover:bg-white/25 text-white border border-white/20 text-xs font-semibold px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 shadow-xs">
                 <i class="fa-solid fa-list-check text-teal-200"></i> Daftar Pengajuan
             </a>
         </div>
@@ -795,8 +795,8 @@
                         <i class="fa-solid fa-magnifying-glass"></i> Lacak Status Berkas
                     </a>
                 </div>
-                <a id="modal-btn-list" href="{{ route('birth.list') }}" class="w-full block bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs py-2.5 px-3 rounded-lg text-center transition border border-slate-300">
-                    <i class="fa-solid fa-list-check mr-1"></i> Buka Daftar Pengajuan Akte Kelahiran
+                <a id="modal-btn-list" href="{{ route('submissions.index') }}" class="w-full block bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs py-2.5 px-3 rounded-lg text-center transition border border-slate-300">
+                    <i class="fa-solid fa-list-check mr-1"></i> Buka Daftar Pengajuan Permohonan Akta
                 </a>
             </div>
 

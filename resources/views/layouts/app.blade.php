@@ -118,7 +118,7 @@
                     <a href="{{ route('death.create') }}" class="px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 {{ request()->routeIs('death.*') ? 'text-rose-700 bg-rose-50 border border-rose-200 font-bold' : 'hover:text-rose-700 hover:bg-slate-50' }}">
                         <i class="fa-solid fa-book-skull text-rose-600"></i> Akte Kematian
                     </a>
-                    <a href="{{ route('birth.list') }}" class="px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 {{ request()->routeIs('birth.list') || request()->routeIs('submissions.index') ? 'text-[#095b8c] bg-teal-50 border border-teal-200 font-bold' : 'hover:text-[#095b8c] hover:bg-slate-50' }}">
+                    <a href="{{ route('submissions.index') }}" class="px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 {{ request()->routeIs('submissions.index') || request()->routeIs('birth.list') ? 'text-[#095b8c] bg-teal-50 border border-teal-200 font-bold' : 'hover:text-[#095b8c] hover:bg-slate-50' }}">
                         <i class="fa-solid fa-list-check text-[#059cb8]"></i> Daftar Pengajuan
                     </a>
                     @if(Auth::check() && Auth::user()->isWarga())
@@ -231,7 +231,7 @@
                             <span class="text-[10px] font-semibold text-slate-700 leading-tight">Akte Lahir</span>
                         </a>
 
-                        <a href="{{ route('birth.list') }}" class="flex flex-col items-center justify-center p-2 rounded-lg bg-slate-50 hover:bg-teal-50 border border-slate-200 hover:border-[#059cb8] transition text-center group">
+                        <a href="{{ route('submissions.index') }}" class="flex flex-col items-center justify-center p-2 rounded-lg bg-slate-50 hover:bg-teal-50 border border-slate-200 hover:border-[#059cb8] transition text-center group">
                             <div class="w-8 h-8 rounded-lg bg-teal-100 text-[#095b8c] flex items-center justify-center mb-1 group-hover:scale-110 transition">
                                 <i class="fa-solid fa-list-check text-xs"></i>
                             </div>

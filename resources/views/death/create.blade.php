@@ -7,11 +7,16 @@
 
     <!-- Card Header -->
     <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        <div class="bg-rose-700 text-white px-4 py-3 flex items-center justify-between">
+        <div class="bg-rose-700 text-white px-4 py-3 flex flex-wrap items-center justify-between gap-2">
             <h2 class="font-bold text-xs md:text-sm tracking-wide uppercase flex items-center gap-2">
                 <i class="fa-solid fa-book-skull text-amber-300"></i> FORMULIR PENGAJUAN SURAT PENGANTAR AKTE KEMATIAN
             </h2>
-            <span class="text-[11px] bg-rose-900/80 px-2 py-0.5 rounded text-rose-100 font-medium">Kalurahan Purwobinangun</span>
+            <div class="flex items-center gap-2">
+                <span class="hidden sm:inline-block text-[11px] bg-rose-900/80 px-2 py-0.5 rounded text-rose-100 font-medium">Kalurahan Purwobinangun</span>
+                <a href="{{ route('submissions.index') }}" class="bg-white/15 hover:bg-white/25 text-white border border-white/20 text-xs font-semibold px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 shadow-xs">
+                    <i class="fa-solid fa-list-check text-rose-200"></i> Daftar Pengajuan
+                </a>
+            </div>
         </div>
 
         <div class="p-5 md:p-6 bg-slate-50 border-b border-slate-200/60">

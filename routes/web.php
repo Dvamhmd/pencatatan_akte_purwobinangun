@@ -62,18 +62,23 @@ Route::middleware('auth.warga')->group(function () {
         Route::get('/buat', [BirthCertificateController::class, 'create'])->name('create');
         Route::post('/buat', [BirthCertificateController::class, 'store'])->name('store');
         Route::get('/sukses', [BirthCertificateController::class, 'success'])->name('success');
-        Route::get('/daftar-pengajuan', [BirthCertificateController::class, 'list'])->name('list');
+        Route::get('/daftar-pengajuan', function () {
+            return redirect()->route('submissions.index', request()->query());
+        })->name('list');
     });
-
-    // Shortcut Route Daftar Pengajuan Warga
-    Route::get('/daftar-pengajuan', [BirthCertificateController::class, 'list'])->name('submissions.index');
 
     // Layanan Akte Kematian
     Route::prefix('akte-kematian')->name('death.')->group(function () {
         Route::get('/buat', [DeathCertificateController::class, 'create'])->name('create');
         Route::post('/buat', [DeathCertificateController::class, 'store'])->name('store');
         Route::get('/sukses', [DeathCertificateController::class, 'success'])->name('success');
+        Route::get('/daftar-pengajuan', function () {
+            return redirect()->route('submissions.index', array_merge(['type' => 'death'], request()->query()));
+        })->name('list');
     });
+
+    // Daftar Pengajuan Utama Warga (Akte Kelahiran & Akte Kematian)
+    Route::get('/daftar-pengajuan', [BirthCertificateController::class, 'list'])->name('submissions.index');
 });
 
 /*
