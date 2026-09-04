@@ -120,9 +120,9 @@
                 <div class="bg-teal-50 p-4 rounded-xl border border-teal-100 flex items-start gap-3">
                     <i class="fa-solid fa-circle-info text-[#095b8c] text-lg mt-0.5 shrink-0"></i>
                     <div>
-                        <h3 class="text-xs md:text-sm font-bold text-[#095b8c]">Langkah 1: Identitas Pemohon & Dokumen Persyaratan</h3>
+                        <h3 class="text-xs md:text-sm font-bold text-[#095b8c]">Langkah 1: Identitas Pemohon, Data Orang Tua & Dokumen Persyaratan</h3>
                         <p class="text-xs text-slate-600 mt-0.5 leading-relaxed">
-                            Silakan isi data diri pemohon (orang tua / pelapor) serta unggah berkas KTP, Kartu Keluarga, dan Surat Kelahiran dari Rumah Sakit atau Bidan. Setelah klik <strong>Kirim</strong>, pratinjau data akan muncul sebagai pop-up di tengah layar untuk dikonfirmasi sebelum mengisi biodata bayi.
+                            Silakan isi data diri pemohon (pelapor), data kedua orang tua (ayah & ibu), serta unggah berkas KTP, Kartu Keluarga, Surat Kelahiran, dan Buku Nikah / Akta Perkawinan. Setelah klik <strong>Kirim</strong>, pratinjau data akan muncul sebagai pop-up di tengah layar untuk dikonfirmasi sebelum mengisi biodata bayi.
                         </p>
                     </div>
                 </div>
@@ -206,7 +206,114 @@
                     </div>
                 </div>
 
-                <!-- Sub-bagian B: Upload Dokumen Persyaratan -->
+                <!-- Sub-bagian B: Data Kedua Orang Tua -->
+                <div class="space-y-4 pt-4 border-t border-slate-200">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-[#095b8c] flex items-center gap-2 pb-2 border-b border-teal-100">
+                        <i class="fa-solid fa-users text-amber-500"></i> Data Kedua Orang Tua
+                    </h4>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                        
+                        <!-- Data Ayah Kandung -->
+                        <div class="bg-slate-50/70 p-4 rounded-xl border border-slate-200 space-y-3.5">
+                            <div class="flex items-center gap-2 pb-2 border-b border-slate-200/80">
+                                <div class="w-6 h-6 rounded-md bg-blue-100 text-blue-700 flex items-center justify-center text-xs">
+                                    <i class="fa-solid fa-user-tie"></i>
+                                </div>
+                                <h5 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Data Ayah Kandung</h5>
+                            </div>
+
+                            <div class="space-y-3">
+                                <!-- NIK Ayah -->
+                                <div>
+                                    <label for="father_nik" class="block text-xs font-semibold text-slate-700 mb-1">
+                                        NIK Ayah (16 Digit) <span class="text-rose-500">*</span>
+                                    </label>
+                                    <input type="text" id="father_nik" name="father_nik" value="{{ old('father_nik') }}" maxlength="16" required placeholder="Masukkan NIK Ayah (16 Angka)" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition font-mono">
+                                    <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-father_nik">NIK Ayah wajib 16 digit angka.</span>
+                                </div>
+
+                                <!-- Nama Lengkap Ayah -->
+                                <div>
+                                    <label for="father_name" class="block text-xs font-semibold text-slate-700 mb-1">
+                                        Nama Lengkap Ayah <span class="text-rose-500">*</span>
+                                    </label>
+                                    <input type="text" id="father_name" name="father_name" value="{{ old('father_name') }}" required placeholder="Masukkan Nama Lengkap Ayah" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition">
+                                    <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-father_name">Nama lengkap ayah wajib diisi.</span>
+                                </div>
+
+                                <!-- Tanggal Lahir Ayah -->
+                                <div>
+                                    <label for="father_birth_date" class="block text-xs font-semibold text-slate-700 mb-1">
+                                        Tanggal Lahir Ayah <span class="text-rose-500">*</span>
+                                    </label>
+                                    <input type="date" id="father_birth_date" name="father_birth_date" value="{{ old('father_birth_date') }}" required class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition bg-white">
+                                    <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-father_birth_date">Tanggal lahir ayah wajib diisi.</span>
+                                </div>
+
+                                <!-- Pekerjaan Ayah -->
+                                <div>
+                                    <label for="father_job" class="block text-xs font-semibold text-slate-700 mb-1">
+                                        Pekerjaan Ayah <span class="text-rose-500">*</span>
+                                    </label>
+                                    <input type="text" id="father_job" name="father_job" value="{{ old('father_job') }}" required placeholder="Contoh: Karyawan Swasta / Wiraswasta" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition">
+                                    <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-father_job">Pekerjaan ayah wajib diisi.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Data Ibu Kandung -->
+                        <div class="bg-slate-50/70 p-4 rounded-xl border border-slate-200 space-y-3.5">
+                            <div class="flex items-center gap-2 pb-2 border-b border-slate-200/80">
+                                <div class="w-6 h-6 rounded-md bg-pink-100 text-pink-700 flex items-center justify-center text-xs">
+                                    <i class="fa-solid fa-user-nurse"></i>
+                                </div>
+                                <h5 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Data Ibu Kandung</h5>
+                            </div>
+
+                            <div class="space-y-3">
+                                <!-- NIK Ibu -->
+                                <div>
+                                    <label for="mother_nik" class="block text-xs font-semibold text-slate-700 mb-1">
+                                        NIK Ibu (16 Digit) <span class="text-rose-500">*</span>
+                                    </label>
+                                    <input type="text" id="mother_nik" name="mother_nik" value="{{ old('mother_nik') }}" maxlength="16" required placeholder="Masukkan NIK Ibu (16 Angka)" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition font-mono">
+                                    <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-mother_nik">NIK Ibu wajib 16 digit angka.</span>
+                                </div>
+
+                                <!-- Nama Lengkap Ibu -->
+                                <div>
+                                    <label for="mother_name" class="block text-xs font-semibold text-slate-700 mb-1">
+                                        Nama Lengkap Ibu <span class="text-rose-500">*</span>
+                                    </label>
+                                    <input type="text" id="mother_name" name="mother_name" value="{{ old('mother_name') }}" required placeholder="Masukkan Nama Lengkap Ibu" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition">
+                                    <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-mother_name">Nama lengkap ibu wajib diisi.</span>
+                                </div>
+
+                                <!-- Tanggal Lahir Ibu -->
+                                <div>
+                                    <label for="mother_birth_date" class="block text-xs font-semibold text-slate-700 mb-1">
+                                        Tanggal Lahir Ibu <span class="text-rose-500">*</span>
+                                    </label>
+                                    <input type="date" id="mother_birth_date" name="mother_birth_date" value="{{ old('mother_birth_date') }}" required class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition bg-white">
+                                    <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-mother_birth_date">Tanggal lahir ibu wajib diisi.</span>
+                                </div>
+
+                                <!-- Pekerjaan Ibu -->
+                                <div>
+                                    <label for="mother_job" class="block text-xs font-semibold text-slate-700 mb-1">
+                                        Pekerjaan Ibu <span class="text-rose-500">*</span>
+                                    </label>
+                                    <input type="text" id="mother_job" name="mother_job" value="{{ old('mother_job') }}" required placeholder="Contoh: Ibu Rumah Tangga / PNS" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition">
+                                    <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-mother_job">Pekerjaan ibu wajib diisi.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Sub-bagian C: Upload Dokumen Persyaratan -->
                 <div class="space-y-4 pt-4 border-t border-slate-200">
                     <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-teal-100">
                         <h4 class="text-xs font-bold uppercase tracking-wider text-[#095b8c] flex items-center gap-2">
@@ -215,7 +322,7 @@
                         <span class="text-[10px] text-slate-500 bg-slate-100 px-2 py-0.5 rounded font-medium">Format: PDF, JPG, PNG (Maks. 3MB)</span>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         
                         <!-- 1. Dokumen KTP -->
                         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col justify-between hover:border-[#095b8c] transition h-full" style="min-height: 270px;">
@@ -364,6 +471,56 @@
                                 </div>
 
                                 <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-doc_birth_cert">Surat Kelahiran RS/Bidan wajib diunggah.</span>
+                            </div>
+                        </div>
+
+                        <!-- 4. Dokumen Buku Nikah / Akta Perkawinan -->
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col justify-between hover:border-[#095b8c] transition h-full" style="min-height: 270px;">
+                            <div class="h-14 mb-2 flex flex-col justify-start shrink-0" style="height: 48px; min-height: 48px;">
+                                <label class="block text-xs font-bold text-slate-800 mb-0.5 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-book-bookmark text-[#095b8c]"></i> 4. Buku Nikah / Akta Perkawinan <span class="text-rose-500">*</span>
+                                </label>
+                                <p class="text-[11px] text-slate-500 leading-tight">Foto / Scan Buku Nikah orang tua atau Akta Perkawinan</p>
+                            </div>
+
+                            <div class="mt-auto w-full">
+                                <input type="file" id="doc_marriage_cert" name="doc_marriage_cert" accept=".jpg,.jpeg,.png,.pdf" required class="hidden file-input" data-card="nikah">
+                                
+                                <!-- Box Upload Standar -->
+                                <label for="doc_marriage_cert" id="placeholder-nikah" class="cursor-pointer flex flex-col items-center justify-center text-center bg-white hover:bg-teal-50 text-[#095b8c] border-2 border-dashed border-teal-300 hover:border-[#095b8c] rounded-xl w-full p-3 transition shadow-2xs" style="height: 175px; min-height: 175px; max-height: 175px; box-sizing: border-box;">
+                                    <div class="w-10 h-10 rounded-full bg-teal-50 text-[#095b8c] flex items-center justify-center mb-2 border border-teal-200">
+                                        <i class="fa-solid fa-cloud-arrow-up text-base"></i>
+                                    </div>
+                                    <span class="block text-xs font-bold">Pilih Berkas Buku Nikah</span>
+                                    <span class="block text-[10px] text-slate-400 mt-1">JPG, PNG, PDF (Maks. 3MB)</span>
+                                </label>
+
+                                <!-- Box Preview Dokumen (Ukuran Fixed) -->
+                                <div id="preview-box-nikah" class="hidden bg-white border border-teal-200 rounded-xl p-2.5 shadow-xs w-full flex flex-col justify-between" style="height: 175px; min-height: 175px; max-height: 175px; box-sizing: border-box; overflow: hidden;">
+                                    <div id="img-preview-wrap-nikah" class="w-full bg-slate-100 rounded-lg overflow-hidden border border-slate-200 relative group hidden shrink-0" style="height: 115px; min-height: 115px; max-height: 115px; width: 100%; position: relative; overflow: hidden;">
+                                        <img id="img-preview-nikah" src="" alt="Preview Buku Nikah" class="w-full h-full object-cover object-center block" style="width: 100%; height: 115px; min-height: 115px; max-height: 115px; object-fit: cover; object-position: center; display: block;">
+                                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center" style="position: absolute; inset: 0;">
+                                            <label for="doc_marriage_cert" class="cursor-pointer bg-white text-slate-800 text-[11px] font-bold px-3 py-1.5 rounded-md shadow-sm hover:bg-slate-100">
+                                                <i class="fa-solid fa-arrow-rotate-right"></i> Ganti Berkas
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div id="pdf-preview-wrap-nikah" class="w-full bg-rose-50 rounded-lg flex flex-col items-center justify-center border border-rose-200 text-rose-700 hidden shrink-0" style="height: 115px; min-height: 115px; max-height: 115px; width: 100%;">
+                                        <i class="fa-solid fa-file-pdf text-3xl mb-1.5"></i>
+                                        <span class="text-[11px] font-bold uppercase tracking-wider">Dokumen PDF</span>
+                                    </div>
+                                    <div class="flex items-center justify-between gap-2 pt-1 border-t border-slate-100 shrink-0" style="height: 35px; min-height: 35px; max-height: 35px; box-sizing: border-box;">
+                                        <div class="truncate flex-1 min-w-0">
+                                            <p id="file-name-nikah" class="text-xs font-bold text-slate-800 truncate"></p>
+                                            <p id="file-size-nikah" class="text-[10px] text-slate-500"></p>
+                                        </div>
+                                        <label for="doc_marriage_cert" class="shrink-0 text-[11px] font-bold text-[#095b8c] hover:text-[#04869e] cursor-pointer bg-teal-50 px-2 py-1 rounded border border-teal-200 transition">
+                                            <i class="fa-solid fa-pen-to-square"></i> Ganti
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-doc_marriage_cert">Buku Nikah / Akta Perkawinan wajib diunggah.</span>
                             </div>
                         </div>
 
@@ -628,13 +785,76 @@
                 </div>
             </div>
 
+            <!-- Rincian Data Kedua Orang Tua -->
+            <div class="bg-slate-50/90 p-4 rounded-xl border border-slate-200 space-y-3">
+                <div class="flex items-center justify-between pb-2 border-b border-slate-200/80">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-[#095b8c] flex items-center gap-2">
+                        <i class="fa-solid fa-users text-amber-500"></i> Data Kedua Orang Tua
+                    </h4>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <!-- Ayah -->
+                    <div class="bg-white p-3 rounded-lg border border-slate-200/70 shadow-2xs space-y-1.5">
+                        <div class="flex items-center gap-1.5 text-blue-700 font-bold pb-1 border-b border-slate-100">
+                            <i class="fa-solid fa-user-tie text-xs"></i>
+                            <span class="uppercase text-[11px] tracking-wide">Ayah Kandung</span>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">Nama Lengkap</span>
+                            <span id="modal-father-name-val" class="font-bold text-slate-900 text-xs block break-words">-</span>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">NIK Ayah</span>
+                            <span id="modal-father-nik-val" class="font-bold text-slate-900 text-xs font-mono block">-</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-1 pt-0.5">
+                            <div>
+                                <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">Tgl Lahir</span>
+                                <span id="modal-father-birth-date-val" class="font-medium text-slate-800 text-xs block">-</span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">Pekerjaan</span>
+                                <span id="modal-father-job-val" class="font-medium text-slate-800 text-xs block break-words">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ibu -->
+                    <div class="bg-white p-3 rounded-lg border border-slate-200/70 shadow-2xs space-y-1.5">
+                        <div class="flex items-center gap-1.5 text-pink-700 font-bold pb-1 border-b border-slate-100">
+                            <i class="fa-solid fa-user-nurse text-xs"></i>
+                            <span class="uppercase text-[11px] tracking-wide">Ibu Kandung</span>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">Nama Lengkap</span>
+                            <span id="modal-mother-name-val" class="font-bold text-slate-900 text-xs block break-words">-</span>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">NIK Ibu</span>
+                            <span id="modal-mother-nik-val" class="font-bold text-slate-900 text-xs font-mono block">-</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-1 pt-0.5">
+                            <div>
+                                <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">Tgl Lahir</span>
+                                <span id="modal-mother-birth-date-val" class="font-medium text-slate-800 text-xs block">-</span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">Pekerjaan</span>
+                                <span id="modal-mother-job-val" class="font-medium text-slate-800 text-xs block break-words">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Rincian Dokumen Terlampir -->
             <div class="space-y-3">
                 <div class="flex items-center justify-between">
                     <h4 class="text-xs font-bold uppercase tracking-wider text-[#095b8c] flex items-center gap-2">
                         <i class="fa-solid fa-paperclip text-amber-500"></i> Berkas Dokumen Terlampir
                     </h4>
-                    <span class="text-[10px] font-semibold text-slate-500">3 Dokumen Wajib</span>
+                    <span class="text-[10px] font-semibold text-slate-500">4 Dokumen Wajib</span>
                 </div>
                 
                 <div class="space-y-2.5">
@@ -698,6 +918,29 @@
                             <p id="modal-file-lahir" class="text-xs font-medium text-slate-700 truncate mt-0.5">-</p>
                         </div>
                     </div>
+
+                    <!-- 4. Buku Nikah Card Modal -->
+                    <div class="flex items-center gap-3.5 p-3 bg-slate-50/80 hover:bg-slate-50 rounded-xl border border-slate-200 transition">
+                        <div class="w-13 h-13 rounded-lg overflow-hidden border border-slate-200 shrink-0 bg-slate-100 flex items-center justify-center shadow-2xs" style="width: 52px; height: 52px; min-width: 52px; min-height: 52px;">
+                            <img id="modal-thumb-nikah" src="" alt="Thumbnail Buku Nikah" class="w-full h-full object-cover object-center block hidden" style="width: 52px; height: 52px; min-width: 52px; min-height: 52px; max-width: 52px; max-height: 52px; object-fit: cover; object-position: center;">
+                            <div id="modal-pdf-nikah" class="w-full h-full bg-rose-50 flex flex-col items-center justify-center text-rose-600 hidden" style="width: 52px; height: 52px; min-width: 52px; min-height: 52px;">
+                                <i class="fa-solid fa-file-pdf text-xl mb-0.5"></i>
+                                <span class="text-[8px] font-bold uppercase">PDF</span>
+                            </div>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-[11px] font-bold text-[#095b8c] uppercase tracking-wide">4. Buku Nikah / Akta Perkawinan</span>
+                                <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 shrink-0">
+                                    <i class="fa-solid fa-check text-[9px]"></i> Terlampir
+                                </span>
+                            </div>
+                            <p id="modal-file-nikah" class="text-xs font-medium text-slate-700 truncate mt-0.5">-</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
 
                 </div>
             </div>
@@ -838,9 +1081,21 @@ document.addEventListener('DOMContentLoaded', function () {
     const rt = document.getElementById('rt');
     const rw = document.getElementById('rw');
 
+    // Input elements Step 1 - Data Kedua Orang Tua
+    const fatherNik = document.getElementById('father_nik');
+    const fatherName = document.getElementById('father_name');
+    const fatherBirthDate = document.getElementById('father_birth_date');
+    const fatherJob = document.getElementById('father_job');
+
+    const motherNik = document.getElementById('mother_nik');
+    const motherName = document.getElementById('mother_name');
+    const motherBirthDate = document.getElementById('mother_birth_date');
+    const motherJob = document.getElementById('mother_job');
+
     const docKtp = document.getElementById('doc_parents_ktp');
     const docKk = document.getElementById('doc_family_card');
     const docLahir = document.getElementById('doc_birth_cert');
+    const docNikah = document.getElementById('doc_marriage_cert');
     
     // Input elements Step 2
     const childName = document.getElementById('child_name');
@@ -1071,6 +1326,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 rt: rt ? rt.value : '',
                 rw: rw ? rw.value : '',
                 address: address ? address.value : '',
+                father_nik: fatherNik ? fatherNik.value : '',
+                father_name: fatherName ? fatherName.value : '',
+                father_birth_date: fatherBirthDate ? fatherBirthDate.value : '',
+                father_job: fatherJob ? fatherJob.value : '',
+                mother_nik: motherNik ? motherNik.value : '',
+                mother_name: motherName ? motherName.value : '',
+                mother_birth_date: motherBirthDate ? motherBirthDate.value : '',
+                mother_job: motherJob ? motherJob.value : '',
                 child_name: childName ? childName.value : '',
                 gender: form.querySelector('input[name="gender"]:checked')?.value || 'L',
                 birth_place: birthPlace ? birthPlace.value : '',
@@ -1118,6 +1381,16 @@ document.addEventListener('DOMContentLoaded', function () {
             if (rt && draft.rt !== undefined) rt.value = draft.rt;
             if (rw && draft.rw !== undefined) rw.value = draft.rw;
             if (address && draft.address !== undefined) address.value = draft.address;
+
+            if (fatherNik && draft.father_nik !== undefined) fatherNik.value = draft.father_nik;
+            if (fatherName && draft.father_name !== undefined) fatherName.value = draft.father_name;
+            if (fatherBirthDate && draft.father_birth_date !== undefined) fatherBirthDate.value = draft.father_birth_date;
+            if (fatherJob && draft.father_job !== undefined) fatherJob.value = draft.father_job;
+
+            if (motherNik && draft.mother_nik !== undefined) motherNik.value = draft.mother_nik;
+            if (motherName && draft.mother_name !== undefined) motherName.value = draft.mother_name;
+            if (motherBirthDate && draft.mother_birth_date !== undefined) motherBirthDate.value = draft.mother_birth_date;
+            if (motherJob && draft.mother_job !== undefined) motherJob.value = draft.mother_job;
 
             if (childName && draft.child_name !== undefined) childName.value = draft.child_name;
             if (draft.gender) {
@@ -1171,7 +1444,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     async function restoreDraftFiles() {
-        const fileInputIds = ['doc_parents_ktp', 'doc_family_card', 'doc_birth_cert'];
+        const fileInputIds = ['doc_parents_ktp', 'doc_family_card', 'doc_birth_cert', 'doc_marriage_cert'];
         for (const inputId of fileInputIds) {
             const input = document.getElementById(inputId);
             if (!input) continue;
@@ -1217,15 +1490,28 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         document.getElementById('modal-applicant-address-val').textContent = fullAddress;
 
+        // Data Orang Tua
+        document.getElementById('modal-father-name-val').textContent = fatherName ? fatherName.value.trim() || '-' : '-';
+        document.getElementById('modal-father-nik-val').textContent = fatherNik ? fatherNik.value.trim() || '-' : '-';
+        document.getElementById('modal-father-birth-date-val').textContent = fatherBirthDate ? fatherBirthDate.value || '-' : '-';
+        document.getElementById('modal-father-job-val').textContent = fatherJob ? fatherJob.value.trim() || '-' : '-';
+
+        document.getElementById('modal-mother-name-val').textContent = motherName ? motherName.value.trim() || '-' : '-';
+        document.getElementById('modal-mother-nik-val').textContent = motherNik ? motherNik.value.trim() || '-' : '-';
+        document.getElementById('modal-mother-birth-date-val').textContent = motherBirthDate ? motherBirthDate.value || '-' : '-';
+        document.getElementById('modal-mother-job-val').textContent = motherJob ? motherJob.value.trim() || '-' : '-';
+
         document.getElementById('modal-file-ktp').textContent = docKtp.files[0]?.name || '-';
         document.getElementById('modal-file-kk').textContent = docKk.files[0]?.name || '-';
         document.getElementById('modal-file-lahir').textContent = docLahir.files[0]?.name || '-';
+        document.getElementById('modal-file-nikah').textContent = docNikah.files[0]?.name || '-';
 
         // Populate thumbnails in modal
         const docKeys = [
             { key: 'ktp', input: docKtp },
             { key: 'kk', input: docKk },
-            { key: 'lahir', input: docLahir }
+            { key: 'lahir', input: docLahir },
+            { key: 'nikah', input: docNikah }
         ];
 
         docKeys.forEach(item => {
@@ -1280,6 +1566,59 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!firstInvalid) firstInvalid = applicantPhone;
         }
 
+        // Validasi Data Ayah
+        const fatherNikVal = fatherNik.value.trim();
+        if (!fatherNikVal || fatherNikVal.length !== 16 || isNaN(fatherNikVal)) {
+            document.getElementById('error-father_nik').classList.remove('hidden');
+            valid = false;
+            if (!firstInvalid) firstInvalid = fatherNik;
+        }
+
+        if (!fatherName.value.trim()) {
+            document.getElementById('error-father_name').classList.remove('hidden');
+            valid = false;
+            if (!firstInvalid) firstInvalid = fatherName;
+        }
+
+        if (!fatherBirthDate.value) {
+            document.getElementById('error-father_birth_date').classList.remove('hidden');
+            valid = false;
+            if (!firstInvalid) firstInvalid = fatherBirthDate;
+        }
+
+        if (!fatherJob.value.trim()) {
+            document.getElementById('error-father_job').classList.remove('hidden');
+            valid = false;
+            if (!firstInvalid) firstInvalid = fatherJob;
+        }
+
+        // Validasi Data Ibu
+        const motherNikVal = motherNik.value.trim();
+        if (!motherNikVal || motherNikVal.length !== 16 || isNaN(motherNikVal)) {
+            document.getElementById('error-mother_nik').classList.remove('hidden');
+            valid = false;
+            if (!firstInvalid) firstInvalid = motherNik;
+        }
+
+        if (!motherName.value.trim()) {
+            document.getElementById('error-mother_name').classList.remove('hidden');
+            valid = false;
+            if (!firstInvalid) firstInvalid = motherName;
+        }
+
+        if (!motherBirthDate.value) {
+            document.getElementById('error-mother_birth_date').classList.remove('hidden');
+            valid = false;
+            if (!firstInvalid) firstInvalid = motherBirthDate;
+        }
+
+        if (!motherJob.value.trim()) {
+            document.getElementById('error-mother_job').classList.remove('hidden');
+            valid = false;
+            if (!firstInvalid) firstInvalid = motherJob;
+        }
+
+        // Validasi Berkas Dokumen
         if (!docKtp.files || docKtp.files.length === 0) {
             document.getElementById('error-doc_parents_ktp').classList.remove('hidden');
             valid = false;
@@ -1296,6 +1635,12 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('error-doc_birth_cert').classList.remove('hidden');
             valid = false;
             if (!firstInvalid) firstInvalid = document.getElementById('placeholder-lahir');
+        }
+
+        if (!docNikah.files || docNikah.files.length === 0) {
+            document.getElementById('error-doc_marriage_cert').classList.remove('hidden');
+            valid = false;
+            if (!firstInvalid) firstInvalid = document.getElementById('placeholder-nikah');
         }
 
         if (!valid) {
@@ -1410,7 +1755,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     clearDraftFilesFromDB();
 
                     // Reset File Preview cards to initial empty state
-                    ['ktp', 'kk', 'lahir'].forEach(key => {
+                    ['ktp', 'kk', 'lahir', 'nikah'].forEach(key => {
                         const ph = document.getElementById(`placeholder-${key}`);
                         const pb = document.getElementById(`preview-box-${key}`);
                         if (ph) ph.classList.remove('hidden');

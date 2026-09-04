@@ -39,11 +39,21 @@ class BirthCertificateController extends Controller
             'rt' => 'nullable|string|max:5',
             'rw' => 'nullable|string|max:5',
 
+            // Data Orang Tua
+            'father_name' => 'required|string|max:255',
+            'father_nik' => 'required|digits:16',
+            'father_birth_date' => 'required|date',
+            'father_job' => 'required|string|max:100',
+            'mother_name' => 'required|string|max:255',
+            'mother_nik' => 'required|digits:16',
+            'mother_birth_date' => 'required|date',
+            'mother_job' => 'required|string|max:100',
+
             // Dokumen Unggahan
             'doc_parents_ktp' => 'required|file|mimes:jpg,jpeg,png,pdf|max:3072',
             'doc_family_card' => 'required|file|mimes:jpg,jpeg,png,pdf|max:3072',
             'doc_birth_cert' => 'required|file|mimes:jpg,jpeg,png,pdf|max:3072',
-            'doc_marriage_cert' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:3072',
+            'doc_marriage_cert' => 'required|file|mimes:jpg,jpeg,png,pdf|max:3072',
             'doc_witness_ktp' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:3072',
 
             // Biodata Bayi
@@ -70,9 +80,18 @@ class BirthCertificateController extends Controller
             'applicant_nik' => 'NIK Pemohon',
             'address' => 'Alamat',
             'applicant_phone' => 'No. HP / WhatsApp',
+            'father_name' => 'Nama Lengkap Ayah',
+            'father_nik' => 'NIK Ayah',
+            'father_birth_date' => 'Tanggal Lahir Ayah',
+            'father_job' => 'Pekerjaan Ayah',
+            'mother_name' => 'Nama Lengkap Ibu',
+            'mother_nik' => 'NIK Ibu',
+            'mother_birth_date' => 'Tanggal Lahir Ibu',
+            'mother_job' => 'Pekerjaan Ibu',
             'doc_parents_ktp' => 'Dokumen KTP',
             'doc_family_card' => 'Dokumen Kartu Keluarga',
             'doc_birth_cert' => 'Surat Kelahiran RS/Bidan',
+            'doc_marriage_cert' => 'Buku Nikah / Akta Perkawinan',
             'child_name' => 'Nama Lengkap Anak',
             'gender' => 'Jenis Kelamin',
             'birth_place' => 'Tempat Kelahiran',
