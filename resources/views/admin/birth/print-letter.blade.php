@@ -118,23 +118,12 @@
         </div>
 
         <!-- Tanda Tangan Lurah Purwobinangun -->
-        <div class="pt-8 flex justify-between items-end text-xs">
-            <div class="text-center w-36">
-                <div class="w-20 h-20 mx-auto border border-slate-400 p-1 rounded flex flex-col items-center justify-center bg-slate-50">
-                    <i class="fa-solid fa-qrcode text-4xl text-slate-800"></i>
-                </div>
-                <p class="text-[9px] text-slate-500 mt-1">ID: {{ $birth->registration_no }}</p>
-            </div>
-
-            <div class="text-center">
+        <div class="pt-8 flex justify-end text-xs">
+            <div class="text-center w-64">
                 <p class="text-slate-700">Purwobinangun, {{ date('d F Y') }}</p>
                 <p class="font-bold text-slate-900 mt-0.5">Lurah Purwobinangun</p>
                 
-                <div class="h-20 flex items-center justify-center">
-                    <span class="text-[10px] font-bold text-teal-900 bg-teal-50 px-3 py-1 rounded border border-teal-300">
-                        [ TANDATANGAN ELEKTRONIK DISAHKAN ]
-                    </span>
-                </div>
+                <div class="h-24"></div>
 
                 <p class="font-bold text-slate-900 underline uppercase">H. R. GOSTOMBO</p>
                 <p class="text-[11px] text-slate-600">Pemerintah Kalurahan Purwobinangun</p>
