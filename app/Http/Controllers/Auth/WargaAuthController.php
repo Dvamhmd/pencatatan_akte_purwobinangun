@@ -76,9 +76,21 @@ class WargaAuthController extends Controller
 
         // Akun Aktif: Lakukan Login
         Auth::login($user, $request->boolean('remember'));
+
+        $intended = $request->session()->pull('url.intended', null);
         $request->session()->regenerate();
 
-        return redirect()->intended(route('submissions.index'))
+        $adminBaseUrl = url('/admin');
+        $wargaLoginUrl = route('warga.login');
+        $wargaRegisterUrl = route('warga.register');
+
+        // Jika URL intended mengarah ke portal admin atau auth warga, arahkan ke daftar pengajuan
+        if ($intended && !\Illuminate\Support\Str::startsWith($intended, $adminBaseUrl) && $intended !== $wargaLoginUrl && $intended !== $wargaRegisterUrl && $intended !== url('/login') && $intended !== url('/daftar')) {
+            return redirect()->to($intended)
+                ->with('success', 'Selamat datang kembali, ' . $user->name . '! Anda berhasil masuk.');
+        }
+
+        return redirect()->route('submissions.index')
             ->with('success', 'Selamat datang kembali, ' . $user->name . '! Anda berhasil masuk.');
     }
 

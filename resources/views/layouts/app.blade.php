@@ -57,6 +57,20 @@
                             <i class="fa-solid fa-right-from-bracket"></i> <span class="hidden sm:inline">Keluar</span>
                         </button>
                     </form>
+                @elseif(Auth::check() && Auth::user()->isAdmin())
+                    <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center gap-1.5 bg-black/25 hover:bg-black/35 px-2.5 py-1 rounded text-teal-100 hover:text-white font-semibold border border-white/10 transition" title="Buka Dashboard Petugas">
+                        <i class="fa-solid fa-user-shield text-amber-300"></i>
+                        <span class="truncate max-w-[120px] sm:max-w-[160px]">{{ Auth::user()->name }}</span>
+                        <span class="bg-amber-500/30 text-amber-200 text-[9px] px-1.5 py-0.5 rounded ml-0.5 border border-amber-400/30">
+                            Admin
+                        </span>
+                    </a>
+                    <form action="{{ route('admin.logout') }}" method="POST" class="inline">
+                        @csrf
+                        <button type="submit" class="bg-rose-600/80 hover:bg-rose-700 text-white px-2 py-1 rounded transition inline-flex items-center gap-1 cursor-pointer" title="Keluar dari Akun Petugas">
+                            <i class="fa-solid fa-right-from-bracket"></i> <span class="hidden sm:inline">Keluar</span>
+                        </button>
+                    </form>
                 @else
                     <a href="{{ route('warga.login') }}" class="bg-teal-50 hover:bg-white text-[#095b8c] font-extrabold px-2.5 py-1 rounded transition inline-flex items-center gap-1 shadow-xs">
                         <i class="fa-solid fa-user-lock text-amber-600"></i> Masuk / Daftar Warga
@@ -64,7 +78,7 @@
                 @endif
 
                 <span class="text-teal-400/60">|</span>
-                <a href="{{ route('admin.login') }}" class="bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold px-2.5 py-1 rounded transition inline-flex items-center gap-1 shadow-xs">
+                <a href="{{ Auth::check() && Auth::user()->isAdmin() ? route('admin.dashboard') : route('admin.login') }}" class="bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold px-2.5 py-1 rounded transition inline-flex items-center gap-1 shadow-xs">
                     <i class="fa-solid fa-user-shield"></i> Portal Petugas
                 </a>
             </div>

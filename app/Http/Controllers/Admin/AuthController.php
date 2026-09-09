@@ -41,8 +41,20 @@ class AuthController extends Controller
                 ])->onlyInput('email');
             }
 
+            $intended = $request->session()->pull('url.intended', null);
             $request->session()->regenerate();
-            return redirect()->intended(route('admin.dashboard'))
+
+            // Pastikan URL intended hanya digunakan jika mengarah ke rute admin dan bukan halaman auth admin
+            $adminBaseUrl = url('/admin');
+            $adminLoginUrl = route('admin.login');
+            $adminLogoutUrl = route('admin.logout');
+
+            if ($intended && \Illuminate\Support\Str::startsWith($intended, $adminBaseUrl) && $intended !== $adminLoginUrl && $intended !== $adminLogoutUrl) {
+                return redirect()->to($intended)
+                    ->with('success', 'Selamat datang di Panel Pelayanan Kalurahan Purwobinangun.');
+            }
+
+            return redirect()->route('admin.dashboard')
                 ->with('success', 'Selamat datang di Panel Pelayanan Kalurahan Purwobinangun.');
         }
 
