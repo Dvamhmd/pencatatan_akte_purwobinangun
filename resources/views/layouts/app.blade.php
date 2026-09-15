@@ -135,11 +135,7 @@
                     <a href="{{ route('submissions.index') }}" class="px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 {{ request()->routeIs('submissions.index') || request()->routeIs('birth.list') ? 'text-[#095b8c] bg-teal-50 border border-teal-200 font-bold' : 'hover:text-[#095b8c] hover:bg-slate-50' }}">
                         <i class="fa-solid fa-list-check text-[#059cb8]"></i> Daftar Pengajuan
                     </a>
-                    @if(Auth::check() && Auth::user()->isWarga())
-                        <a href="{{ route('profile.index') }}" class="px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 {{ request()->routeIs('profile.*') ? 'text-[#095b8c] bg-teal-50 border border-teal-200 font-bold' : 'hover:text-[#095b8c] hover:bg-slate-50' }}">
-                            <i class="fa-solid fa-user-pen text-[#059cb8]"></i> Profil Saya
-                        </a>
-                    @endif
+
                     <a href="{{ route('tracking.index') }}" class="px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 {{ request()->routeIs('tracking.*') ? 'text-amber-800 bg-amber-50 border border-amber-200 font-bold' : 'hover:text-amber-700 hover:bg-slate-50' }}">
                         <i class="fa-solid fa-magnifying-glass text-amber-600"></i> Cek Status
                     </a>
