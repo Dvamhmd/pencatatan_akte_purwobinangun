@@ -119,6 +119,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('/{citizen}/edit', [AdminCitizenController::class, 'edit'])->name('edit');
             Route::put('/{citizen}', [AdminCitizenController::class, 'update'])->name('update');
             Route::post('/{citizen}/verify', [AdminCitizenController::class, 'verify'])->name('verify');
+            Route::delete('/{citizen}', [AdminCitizenController::class, 'destroy'])->name('destroy');
         });
 
         // Kelola & Verifikasi Permohonan Perubahan Data Profil & Keluarga Warga

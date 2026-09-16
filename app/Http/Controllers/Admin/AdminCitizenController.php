@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class AdminCitizenController extends Controller
@@ -347,5 +348,42 @@ class AdminCitizenController extends Controller
             return redirect()->route('admin.citizens.show', $citizen)
                 ->with('success', $message);
         }
+    }
+
+    public function destroy(User $citizen)
+    {
+        if (!$citizen->isWarga()) {
+            abort(404);
+        }
+
+        $citizenName = $citizen->name;
+
+        DB::transaction(function () use ($citizen) {
+            // Hapus file dokumen kartu keluarga fisik jika tersimpan di disk
+            if ($citizen->doc_family_card && Storage::disk('public')->exists($citizen->doc_family_card)) {
+                Storage::disk('public')->delete($citizen->doc_family_card);
+            }
+
+            // Hapus berkas pendukung pada permohonan perubahan data jika ada
+            foreach ($citizen->profileUpdateRequests as $req) {
+                if ($req->doc_family_card && Storage::disk('public')->exists($req->doc_family_card)) {
+                    Storage::disk('public')->delete($req->doc_family_card);
+                }
+            }
+
+            // Hapus relasi
+            $citizen->familyMembers()->delete();
+            $citizen->profileUpdateRequests()->delete();
+
+            // Lepaskan relasi user_id pada permohonan akte (tetap simpan data akte dengan user_id null)
+            BirthCertificate::where('user_id', $citizen->id)->update(['user_id' => null]);
+            DeathCertificate::where('user_id', $citizen->id)->update(['user_id' => null]);
+
+            // Hapus akun user
+            $citizen->delete();
+        });
+
+        return redirect()->route('admin.archive.index', ['tab' => 'citizens'])
+            ->with('success', 'Akun warga (' . $citizenName . ') telah berhasil dihapus secara permanen.');
     }
 }

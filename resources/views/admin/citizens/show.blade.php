@@ -8,9 +8,15 @@
 
     <!-- Header & Back Button -->
     <div class="flex items-center justify-between">
-        <a href="{{ route('admin.citizens.index') }}" class="inline-flex items-center gap-2 text-xs font-bold text-[#0b7c89] hover:underline bg-white px-3.5 py-2 rounded-xl border border-slate-200 shadow-2xs">
-            <i class="fa-solid fa-arrow-left"></i> Kembali ke Daftar Akun Warga
-        </a>
+        @if($citizen->isArchived())
+            <a href="{{ route('admin.archive.index', ['tab' => 'citizens']) }}" class="inline-flex items-center gap-2 text-xs font-bold text-[#0b7c89] hover:underline bg-white px-3.5 py-2 rounded-xl border border-slate-200 shadow-2xs">
+                <i class="fa-solid fa-arrow-left"></i> Kembali ke Arsip Akun Warga
+            </a>
+        @else
+            <a href="{{ route('admin.citizens.index') }}" class="inline-flex items-center gap-2 text-xs font-bold text-[#0b7c89] hover:underline bg-white px-3.5 py-2 rounded-xl border border-slate-200 shadow-2xs">
+                <i class="fa-solid fa-arrow-left"></i> Kembali ke Daftar Akun Warga
+            </a>
+        @endif
         <div class="flex items-center gap-2">
             <a href="{{ route('admin.citizens.edit', $citizen) }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-300 px-3 py-1.5 rounded-xl shadow-2xs transition">
                 <i class="fa-solid fa-pen-to-square text-amber-600"></i> Edit / Koreksi Data
@@ -342,6 +348,9 @@
                                     <i class="fa-solid fa-box-archive text-amber-300"></i> Arsipkan Akun Warga
                                 </button>
                             @elseif($citizen->isArchived())
+                                <button type="submit" form="delete-citizen-form" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 px-4 rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer">
+                                    <i class="fa-solid fa-trash-can"></i> Hapus Akun Warga Permanen
+                                </button>
                                 <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center text-slate-500 text-[11px]">
                                     <i class="fa-solid fa-circle-info text-[#0b7c89] mr-1"></i> Akun ini sudah berada di dalam daftar arsip.
                                 </div>
@@ -360,6 +369,13 @@
                         </div>
 
                     </form>
+
+                    @if($citizen->isArchived())
+                        <form id="delete-citizen-form" action="{{ route('admin.citizens.destroy', $citizen) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin MENGHAPUS PERMANEN akun warga ({{ $citizen->name }}) ini? Data akun yang dihapus tidak dapat dipulihkan kembali.');">
+                            @csrf
+                            @method('DELETE')
+                        </form>
+                    @endif
 
                 </div>
             </div>
