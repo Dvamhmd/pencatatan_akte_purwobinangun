@@ -119,18 +119,32 @@
                 </div>
                 <div class="flex-1">
                     <div class="flex items-center gap-2 flex-wrap">
-                        <h3 class="font-bold text-emerald-900 text-sm">Permohonan Perubahan Data Telah Disetujui</h3>
+                        <h3 class="font-bold text-emerald-900 text-sm">
+                            {{ $latestRequest->admin_notes ? 'Data Profil Anda Telah Diperbarui oleh Petugas Kelurahan' : 'Permohonan Perubahan Data Telah Disetujui' }}
+                        </h3>
                         <span class="bg-emerald-200 text-emerald-900 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">
-                            Disetujui
+                            {{ $latestRequest->admin_notes ? 'Diperbarui Petugas' : 'Disetujui' }}
                         </span>
-                        <span class="text-[10px] text-slate-500 font-mono">({{ $latestRequest->updated_at->translatedFormat('d F Y, H:i') }} WIB)</span>
+                        <span class="text-[10px] text-slate-500 font-mono">({{ ($latestRequest->processed_at ?? $latestRequest->updated_at)->translatedFormat('d F Y, H:i') }} WIB)</span>
                     </div>
                     <p class="text-xs text-slate-700 mt-1.5 leading-relaxed">
-                        Permohonan perubahan data akun dan anggota keluarga Anda telah diverifikasi dan disetujui oleh petugas kelurahan <strong>({{ $latestRequest->processed_by ?: 'Petugas Kelurahan' }})</strong>. Seluruh data terbaru Anda telah berhasil diperbarui dan aktif di sistem.
+                        @if($latestRequest->admin_notes)
+                            Data profil kependudukan Anda telah disesuaikan dan diperbarui oleh petugas kelurahan <strong>({{ $latestRequest->processed_by ?: 'Petugas Kelurahan' }})</strong>.
+                        @else
+                            Permohonan perubahan data akun dan anggota keluarga Anda telah diverifikasi dan disetujui oleh petugas kelurahan <strong>({{ $latestRequest->processed_by ?: 'Petugas Kelurahan' }})</strong>. Seluruh data terbaru Anda telah berhasil diperbarui dan aktif di sistem.
+                        @endif
                     </p>
+                    @if($latestRequest->admin_notes)
+                        <div class="mt-2.5 p-3 bg-white/95 rounded-lg border border-emerald-200 text-xs text-emerald-950 shadow-2xs">
+                            <p class="font-bold mb-1 flex items-center gap-1.5 text-[#065b65]">
+                                <i class="fa-solid fa-comment-dots text-[#0b7c89]"></i> Catatan dari Petugas Kelurahan:
+                            </p>
+                            <p class="italic text-[11px] text-slate-700 font-medium leading-relaxed">{{ $latestRequest->admin_notes }}</p>
+                        </div>
+                    @endif
                 </div>
             </div>
-            <button type="button" onclick="dismissProfileNotification('profile-approved-banner-{{ $latestRequest->id }}', 'purwobinangun_dismissed_profile_approved_{{ Auth::id() }}_{{ $latestRequest->id }}')" class="shrink-0 text-emerald-400 hover:text-emerald-700 hover:bg-emerald-100/80 w-8 h-8 rounded-lg transition flex items-center justify-center cursor-pointer -mt-1 -mr-1" title="Tutup Notifikasi" aria-label="Tutup Notifikasi">
+            <button type="button" onclick="dismissProfileNotification('profile-approved-banner-{{ $latestRequest->id }}', 'purwobinangun_dismissed_profile_approved_{{ Auth::id() }}_{{ $latestRequest->id }}')" class="shrink-0 text-emerald-500 hover:text-emerald-800 hover:bg-emerald-100/80 w-8 h-8 rounded-lg transition flex items-center justify-center cursor-pointer -mt-1 -mr-1" title="Tutup Notifikasi" aria-label="Tutup Notifikasi">
                 <i class="fa-solid fa-xmark text-base"></i>
             </button>
         </div>
@@ -773,6 +787,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const CURRENT_USER_ID = '{{ Auth::id() ?? "guest" }}';
+    const CURRENT_USER_UPDATED_AT = '{{ $warga->updated_at?->timestamp ?? 0 }}';
     const PROFILE_DRAFT_KEY = 'purwobinangun_warga_profile_draft_' + CURRENT_USER_ID;
     const PROFILE_KK_KEY = 'profile_doc_family_card_' + CURRENT_USER_ID;
     const DB_NAME = 'PurwobinangunFormDB';
@@ -1088,7 +1103,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // ==========================================
     function saveProfileDraft() {
         try {
-            const draft = {};
+            const draft = {
+                user_updated_at: CURRENT_USER_UPDATED_AT,
+                saved_at: Date.now()
+            };
             let hasContent = false;
 
             profileDraftFields.forEach(function(fieldId) {
@@ -1152,7 +1170,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const rawDraft = localStorage.getItem(PROFILE_DRAFT_KEY);
             if (rawDraft) {
                 const draft = JSON.parse(rawDraft);
-                if (draft && typeof draft === 'object') {
+                if (!draft || !draft.user_updated_at || String(draft.user_updated_at) !== String(CURRENT_USER_UPDATED_AT)) {
+                    // Data pada server telah diperbarui atau draft usang, buang draft lama agar data server terbaru tampil
+                    localStorage.removeItem(PROFILE_DRAFT_KEY);
+                    if (window.indexedDB) {
+                        clearDraftFilesFromDB(PROFILE_KK_KEY);
+                    }
+                } else if (typeof draft === 'object') {
                     profileDraftFields.forEach(function(fieldId) {
                         const el = document.getElementById(fieldId);
                         if (el && draft[fieldId] !== undefined && draft[fieldId] !== null) {
@@ -1192,8 +1216,11 @@ document.addEventListener('DOMContentLoaded', function() {
             updateEmptyState();
         }
 
-        // Pulihkan berkas fisik KK dari IndexedDB
-        restoreProfileDraftFile();
+        // Pulihkan berkas fisik KK dari IndexedDB jika draft masih valid
+        const validDraft = localStorage.getItem(PROFILE_DRAFT_KEY);
+        if (validDraft) {
+            restoreProfileDraftFile();
+        }
     }
 
     // Pasang listeners form input untuk auto-save

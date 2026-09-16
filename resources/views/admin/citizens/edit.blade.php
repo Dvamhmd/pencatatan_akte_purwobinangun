@@ -132,7 +132,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                     <div>
                         <label for="phone" class="block font-bold text-slate-700 mb-1">
                             Nomor HP / WhatsApp <span class="text-rose-500">*</span>
@@ -154,6 +154,28 @@
                             <p class="text-rose-600 text-[11px] mt-1 font-medium">{{ $message }}</p>
                         @enderror
                     </div>
+                </div>
+
+                <div>
+                    <label for="family_relationship" class="block font-bold text-slate-700 mb-1">
+                        Posisi dalam Keluarga <span class="text-rose-500">*</span>
+                    </label>
+                    <select name="family_relationship" id="family_relationship" required
+                        class="w-full text-xs px-3.5 py-2.5 rounded-xl border {{ $errors->has('family_relationship') ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300' }} focus:outline-none focus:ring-2 focus:ring-[#0b7c89]/20 focus:border-[#0b7c89] transition bg-white">
+                        <option value="Kepala Keluarga" {{ old('family_relationship', $citizen->family_relationship) === 'Kepala Keluarga' ? 'selected' : '' }}>Kepala Keluarga</option>
+                        <option value="Suami" {{ old('family_relationship', $citizen->family_relationship) === 'Suami' ? 'selected' : '' }}>Suami</option>
+                        <option value="Istri" {{ old('family_relationship', $citizen->family_relationship) === 'Istri' ? 'selected' : '' }}>Istri</option>
+                        <option value="Anak" {{ old('family_relationship', $citizen->family_relationship) === 'Anak' ? 'selected' : '' }}>Anak</option>
+                        <option value="Menantu" {{ old('family_relationship', $citizen->family_relationship) === 'Menantu' ? 'selected' : '' }}>Menantu</option>
+                        <option value="Cucu" {{ old('family_relationship', $citizen->family_relationship) === 'Cucu' ? 'selected' : '' }}>Cucu</option>
+                        <option value="Orang Tua" {{ old('family_relationship', $citizen->family_relationship) === 'Orang Tua' ? 'selected' : '' }}>Orang Tua</option>
+                        <option value="Mertua" {{ old('family_relationship', $citizen->family_relationship) === 'Mertua' ? 'selected' : '' }}>Mertua</option>
+                        <option value="Famili Lain" {{ old('family_relationship', $citizen->family_relationship) === 'Famili Lain' ? 'selected' : '' }}>Famili Lain</option>
+                        <option value="Lainnya" {{ old('family_relationship', $citizen->family_relationship) === 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
+                    </select>
+                    @error('family_relationship')
+                        <p class="text-rose-600 text-[11px] mt-1 font-medium">{{ $message }}</p>
+                    @enderror
                 </div>
             </div>
 
@@ -199,10 +221,31 @@
                 </div>
             </div>
 
-            <!-- Bagian 4: Status Akun & Opsi Keamanan -->
+            <!-- Bagian 4: Catatan Perubahan Data oleh Admin (Wajib) -->
             <div>
                 <h3 class="font-bold text-slate-800 text-sm uppercase tracking-wider pb-2 border-b border-slate-100 flex items-center gap-2 mb-4">
-                    <i class="fa-solid fa-sliders text-[#0b7c89]"></i> 4. Status Akun & Pengaturan Kata Sandi
+                    <i class="fa-solid fa-clipboard-check text-[#0b7c89]"></i> 4. Catatan Perubahan Data oleh Petugas / Admin
+                </h3>
+
+                <div class="p-4 bg-teal-50/60 rounded-xl border border-teal-200/80">
+                    <label for="admin_note" class="block font-bold text-slate-800 mb-1">
+                        Catatan / Alasan Perubahan Data Warga <span class="text-rose-500">*</span>
+                    </label>
+                    <textarea name="admin_note" id="admin_note" rows="3" required placeholder="Tuliskan catatan penjelasan perubahan data warga (contoh: Koreksi penulisan nama lengkap sesuai KTP/KK asli, pembaruan alamat domisili, dsb)..."
+                        class="w-full text-xs px-3.5 py-2.5 rounded-xl border {{ $errors->has('admin_note') ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300' }} focus:outline-none focus:ring-2 focus:ring-[#0b7c89]/20 focus:border-[#0b7c89] bg-white transition">{{ old('admin_note') }}</textarea>
+                    @error('admin_note')
+                        <p class="text-rose-600 text-[11px] mt-1 font-medium">{{ $message }}</p>
+                    @enderror
+                    <p class="text-[11px] text-slate-500 mt-1.5 flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-info text-[#0b7c89]"></i> Catatan ini wajib diisi oleh admin dan akan otomatis tampil sebagai notifikasi resmi pada profil warga yang bersangkutan.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Bagian 5: Status Akun & Opsi Keamanan -->
+            <div>
+                <h3 class="font-bold text-slate-800 text-sm uppercase tracking-wider pb-2 border-b border-slate-100 flex items-center gap-2 mb-4">
+                    <i class="fa-solid fa-sliders text-[#0b7c89]"></i> 5. Status Akun & Pengaturan Kata Sandi
                 </h3>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">

@@ -6,10 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Mail\CitizenAccountStatusNotification;
 use App\Models\BirthCertificate;
 use App\Models\DeathCertificate;
+use App\Models\ProfileUpdateRequest;
 use App\Models\User;
 use App\Services\WhatsAppNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -99,6 +101,7 @@ class AdminCitizenController extends Controller
             'birth_place' => 'required|string|max:150',
             'birth_date' => 'required|date',
             'gender' => 'required|in:L,P',
+            'family_relationship' => 'nullable|string|max:100',
             'phone' => 'required|string|max:20',
             'email' => [
                 'required',
@@ -110,6 +113,7 @@ class AdminCitizenController extends Controller
             'rt' => 'required|string|max:5',
             'rw' => 'required|string|max:5',
             'status' => 'required|in:active,pending,rejected,archived',
+            'admin_note' => 'required|string|max:1000',
             'rejection_reason' => 'nullable|string|max:1000',
             'password' => 'nullable|string|min:6',
         ], [
@@ -130,8 +134,11 @@ class AdminCitizenController extends Controller
             'rt.required' => 'RT wajib diisi.',
             'rw.required' => 'RW wajib diisi.',
             'status.required' => 'Status akun wajib dipilih.',
+            'admin_note.required' => 'Catatan perubahan data warga wajib diisi oleh admin sebagai penjelasan alasan/rincian perubahan.',
             'password.min' => 'Password minimal terdiri dari 6 karakter jika ingin diubah.',
         ]);
+
+        $adminName = Auth::user()->name;
 
         $updateData = [
             'nik' => $validated['nik'],
@@ -140,6 +147,7 @@ class AdminCitizenController extends Controller
             'birth_place' => $validated['birth_place'],
             'birth_date' => $validated['birth_date'],
             'gender' => $validated['gender'],
+            'family_relationship' => $validated['family_relationship'] ?? ($citizen->family_relationship ?: 'Kepala Keluarga'),
             'phone' => $validated['phone'],
             'email' => $validated['email'],
             'address' => $validated['address'],
@@ -153,7 +161,70 @@ class AdminCitizenController extends Controller
             $updateData['password'] = Hash::make($validated['password']);
         }
 
-        $citizen->update($updateData);
+        DB::transaction(function () use ($citizen, $updateData, $validated, $adminName) {
+            $citizen->update($updateData);
+
+            // Selesaikan/setujui permohonan perubahan data yang masih pending sebelumnya jika ada
+            ProfileUpdateRequest::where('user_id', $citizen->id)
+                ->where('status', 'pending')
+                ->update([
+                    'status' => 'approved',
+                    'admin_notes' => $validated['admin_note'],
+                    'processed_by' => $adminName,
+                    'processed_at' => now(),
+                ]);
+
+            // Buat catatan riwayat perubahan data resmi oleh admin agar notifikasi langsung tampil di profil warga
+            ProfileUpdateRequest::create([
+                'user_id' => $citizen->id,
+                'nik' => $validated['nik'],
+                'family_card_no' => $validated['family_card_no'],
+                'name' => $validated['name'],
+                'birth_place' => $validated['birth_place'],
+                'birth_date' => $validated['birth_date'],
+                'gender' => $validated['gender'],
+                'family_relationship' => $updateData['family_relationship'],
+                'doc_family_card' => $citizen->doc_family_card,
+                'address' => $validated['address'],
+                'rt' => $validated['rt'],
+                'rw' => $validated['rw'],
+                'phone' => $validated['phone'],
+                'email' => $validated['email'],
+                'family_members_data' => $citizen->familyMembers ? $citizen->familyMembers->map(fn($m) => [
+                    'family_card_no' => $m->family_card_no,
+                    'nik' => $m->nik,
+                    'name' => $m->name,
+                    'birth_place' => $m->birth_place,
+                    'birth_date' => $m->birth_date ? $m->birth_date->format('Y-m-d') : null,
+                    'gender' => $m->gender,
+                    'family_relationship' => $m->family_relationship,
+                ])->toArray() : null,
+                'status' => 'approved',
+                'admin_notes' => $validated['admin_note'],
+                'processed_by' => $adminName,
+                'processed_at' => now(),
+            ]);
+
+            // Sinkronisasi nama & kontak pemohon pada pengajuan akte terkait
+            BirthCertificate::where(function ($q) use ($citizen) {
+                $q->where('user_id', $citizen->id)
+                  ->orWhere('applicant_nik', $citizen->nik);
+            })->update([
+                'applicant_phone' => $citizen->phone,
+                'applicant_name' => $citizen->name,
+            ]);
+
+            DeathCertificate::where(function ($q) use ($citizen) {
+                $q->where('user_id', $citizen->id)
+                  ->orWhere('applicant_nik', $citizen->nik);
+            })->update([
+                'applicant_phone' => $citizen->phone,
+                'applicant_name' => $citizen->name,
+            ]);
+
+            // Pastikan timestamp updated_at warga diperbarui
+            $citizen->touch();
+        });
 
         if ($validated['status'] === 'archived') {
             return redirect()->route('admin.citizens.index')
