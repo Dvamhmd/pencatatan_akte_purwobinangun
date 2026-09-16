@@ -159,9 +159,14 @@
                                         <p class="text-[10px] text-slate-500">{{ basename($citizen->doc_family_card) }}</p>
                                     </div>
                                 </div>
-                                <a href="{{ asset('storage/' . $citizen->doc_family_card) }}" target="_blank" class="bg-[#0b7c89] hover:bg-[#065b65] text-white font-bold text-xs px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 shadow-2xs">
-                                    <i class="fa-solid fa-eye"></i> Lihat Dokumen KK
-                                </a>
+                                <div class="flex items-center gap-2 shrink-0">
+                                    <button type="button" onclick="openDocModal();" class="bg-[#0b7c89] hover:bg-[#065b65] text-white font-bold text-xs px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 shadow-2xs cursor-pointer">
+                                        <i class="fa-solid fa-magnifying-glass"></i> Lihat
+                                    </button>
+                                    <a href="{{ asset('storage/' . $citizen->doc_family_card) }}" target="_blank" class="text-xs font-semibold text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-100 border border-slate-300 px-2.5 py-1.5 rounded-lg transition flex items-center gap-1 shadow-2xs" title="Buka di Tab Baru">
+                                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                    </a>
+                                </div>
                             </div>
                         @else
                             <div class="p-3 bg-slate-50 rounded-xl border border-dashed border-slate-200 text-slate-400 italic text-[11px] flex items-center gap-2">
@@ -616,6 +621,292 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Pan & Zoom Preview Modal Logic
+    const modalPreviewKk = document.getElementById('modal-preview-kk');
+    const modalPreviewImg = document.getElementById('modal-preview-img');
+    const modalImgContainer = document.getElementById('modal-img-container');
+    const modalZoomControls = document.getElementById('modal-zoom-controls');
+    const zoomLevelLabel = document.getElementById('zoom-level-label');
+    const btnZoomIn = document.getElementById('btn-zoom-in');
+    const btnZoomOut = document.getElementById('btn-zoom-out');
+    const btnZoomRotate = document.getElementById('btn-zoom-rotate');
+    const btnZoomReset = document.getElementById('btn-zoom-reset');
+
+    const modalPdfContainer = document.getElementById('modal-pdf-container');
+    const modalPdfName = document.getElementById('modal-pdf-name');
+    const modalPdfLink = document.getElementById('modal-pdf-link');
+    const modalFileInfo = document.getElementById('modal-file-info');
+    const modalPreviewSubtitle = document.getElementById('modal-preview-subtitle');
+    const btnCloseModalKk = document.getElementById('btn-close-modal-kk');
+    const btnCloseModalKkFooter = document.getElementById('btn-close-modal-kk-footer');
+
+    @php
+        $hasDocCitizen = !empty($citizen->doc_family_card);
+        $isPdfCitizen = $hasDocCitizen ? \Illuminate\Support\Str::endsWith(strtolower($citizen->doc_family_card), '.pdf') : false;
+        $docCitizenUrl = $hasDocCitizen ? asset('storage/' . $citizen->doc_family_card) : '';
+    @endphp
+
+    const currentFileIsPdf = {{ ($hasDocCitizen && $isPdfCitizen) ? 'true' : 'false' }};
+    const currentDocUrl = "{{ $hasDocCitizen ? $docCitizenUrl : '' }}";
+    const currentFileName = "{{ $hasDocCitizen ? basename($citizen->doc_family_card) : '' }}";
+
+    let zoomScale = 1.0;
+    let panX = 0;
+    let panY = 0;
+    let currentRotation = 0;
+    let isDraggingImg = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
+
+    function applyPanZoomTransform() {
+        if (!modalPreviewImg) return;
+        modalPreviewImg.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomScale}) rotate(${currentRotation}deg)`;
+        if (zoomLevelLabel) {
+            zoomLevelLabel.textContent = Math.round(zoomScale * 100) + '%';
+        }
+    }
+
+    function resetPanZoom() {
+        zoomScale = 1.0;
+        panX = 0;
+        panY = 0;
+        currentRotation = 0;
+        applyPanZoomTransform();
+    }
+
+    function zoomIn() {
+        zoomScale = Math.min(5.0, Number((zoomScale + 0.25).toFixed(2)));
+        applyPanZoomTransform();
+    }
+
+    function zoomOut() {
+        zoomScale = Math.max(0.4, Number((zoomScale - 0.25).toFixed(2)));
+        applyPanZoomTransform();
+    }
+
+    function rotateImage() {
+        currentRotation = (currentRotation + 90) % 360;
+        applyPanZoomTransform();
+    }
+
+    if (btnZoomIn) btnZoomIn.addEventListener('click', zoomIn);
+    if (btnZoomOut) btnZoomOut.addEventListener('click', zoomOut);
+    if (btnZoomReset) btnZoomReset.addEventListener('click', resetPanZoom);
+    if (btnZoomRotate) btnZoomRotate.addEventListener('click', rotateImage);
+
+    if (modalImgContainer) {
+        modalImgContainer.addEventListener('mousedown', function(e) {
+            if (e.button !== 0) return;
+            isDraggingImg = true;
+            dragStartX = e.clientX - panX;
+            dragStartY = e.clientY - panY;
+            modalImgContainer.classList.add('cursor-grabbing');
+            modalImgContainer.classList.remove('cursor-grab');
+            e.preventDefault();
+        });
+
+        window.addEventListener('mousemove', function(e) {
+            if (!isDraggingImg) return;
+            panX = e.clientX - dragStartX;
+            panY = e.clientY - dragStartY;
+            applyPanZoomTransform();
+        });
+
+        window.addEventListener('mouseup', function() {
+            if (isDraggingImg) {
+                isDraggingImg = false;
+                if (modalImgContainer) {
+                    modalImgContainer.classList.remove('cursor-grabbing');
+                    modalImgContainer.classList.add('cursor-grab');
+                }
+            }
+        });
+
+        modalImgContainer.addEventListener('wheel', function(e) {
+            e.preventDefault();
+            const delta = e.deltaY < 0 ? 0.15 : -0.15;
+            zoomScale = Math.min(5.0, Math.max(0.4, Number((zoomScale + delta).toFixed(2))));
+            applyPanZoomTransform();
+        }, { passive: false });
+
+        modalImgContainer.addEventListener('dblclick', function(e) {
+            if (zoomScale > 1.2) {
+                resetPanZoom();
+            } else {
+                zoomScale = 2.0;
+                applyPanZoomTransform();
+            }
+        });
+
+        let initialTouchDistance = null;
+        modalImgContainer.addEventListener('touchstart', function(e) {
+            if (e.touches.length === 1) {
+                isDraggingImg = true;
+                dragStartX = e.touches[0].clientX - panX;
+                dragStartY = e.touches[0].clientY - panY;
+            } else if (e.touches.length === 2) {
+                isDraggingImg = false;
+                initialTouchDistance = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+            }
+        }, { passive: true });
+
+        modalImgContainer.addEventListener('touchmove', function(e) {
+            if (isDraggingImg && e.touches.length === 1) {
+                panX = e.touches[0].clientX - dragStartX;
+                panY = e.touches[0].clientY - dragStartY;
+                applyPanZoomTransform();
+            } else if (e.touches.length === 2 && initialTouchDistance) {
+                const currentDist = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+                const diff = (currentDist - initialTouchDistance) * 0.005;
+                zoomScale = Math.min(5.0, Math.max(0.4, Number((zoomScale + diff).toFixed(2))));
+                initialTouchDistance = currentDist;
+                applyPanZoomTransform();
+            }
+        }, { passive: true });
+
+        modalImgContainer.addEventListener('touchend', function(e) {
+            if (e.touches.length === 0) {
+                isDraggingImg = false;
+                initialTouchDistance = null;
+            }
+        }, { passive: true });
+    }
+
+    window.openDocModal = function() {
+        if (!modalPreviewKk) return;
+        resetPanZoom();
+        if (currentFileIsPdf) {
+            if (modalImgContainer) modalImgContainer.classList.add('hidden');
+            if (modalZoomControls) modalZoomControls.classList.add('hidden');
+            if (modalPdfContainer) modalPdfContainer.classList.remove('hidden');
+            if (modalPdfName) modalPdfName.textContent = currentFileName || 'Dokumen Kartu Keluarga (PDF)';
+            if (modalPreviewSubtitle) modalPreviewSubtitle.textContent = 'Dokumen berformat PDF';
+            if (modalFileInfo) modalFileInfo.textContent = currentFileName ? currentFileName + ' (PDF)' : 'Dokumen PDF';
+            if (modalPdfLink && currentDocUrl) modalPdfLink.href = currentDocUrl;
+        } else if (currentDocUrl) {
+            if (modalImgContainer) modalImgContainer.classList.remove('hidden');
+            if (modalZoomControls) modalZoomControls.classList.remove('hidden');
+            if (modalPdfContainer) modalPdfContainer.classList.add('hidden');
+            if (modalPreviewImg) {
+                modalPreviewImg.src = currentDocUrl;
+                modalPreviewImg.style.display = 'block';
+            }
+            if (modalPreviewSubtitle) modalPreviewSubtitle.textContent = 'Scroll untuk Zoom • Drag untuk Menggeser Posisi';
+            if (modalFileInfo) modalFileInfo.textContent = currentFileName || 'Gambar Kartu Keluarga';
+        } else {
+            return;
+        }
+        modalPreviewKk.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    };
+
+    function closeDocModal() {
+        if (!modalPreviewKk) return;
+        modalPreviewKk.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+
+    if (btnCloseModalKk) btnCloseModalKk.addEventListener('click', closeDocModal);
+    if (btnCloseModalKkFooter) btnCloseModalKkFooter.addEventListener('click', closeDocModal);
+    if (modalPreviewKk) {
+        modalPreviewKk.addEventListener('click', function(e) {
+            if (e.target === modalPreviewKk) closeDocModal();
+        });
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modalPreviewKk && !modalPreviewKk.classList.contains('hidden')) {
+            closeDocModal();
+        }
+    });
 });
 </script>
+
+<!-- MODAL PREVIEW DOKUMEN KK (FULL VIEW, ZOOM & DRAG/GESER) -->
+<div id="modal-preview-kk" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 hidden transition-opacity">
+    <div class="bg-white rounded-2xl shadow-2xl border border-slate-700/50 max-w-5xl w-full overflow-hidden my-auto flex flex-col h-[90vh] max-h-[92vh]">
+        <!-- Header Modal -->
+        <div class="bg-gradient-to-r from-[#0b7c89] to-[#065b65] text-white px-4 sm:px-6 py-3 flex items-center justify-between shrink-0 shadow-md">
+            <div class="flex items-center gap-2.5 min-w-0 mr-2">
+                <div class="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center text-teal-200 shrink-0">
+                    <i class="fa-solid fa-file-shield text-base"></i>
+                </div>
+                <div class="truncate">
+                    <h4 class="text-xs sm:text-sm font-bold truncate">Pratinjau Dokumen Kartu Keluarga (KK)</h4>
+                    <p class="text-[10px] sm:text-[11px] text-teal-100 truncate" id="modal-preview-subtitle">Scroll untuk Zoom • Drag untuk Menggeser Posisi</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 shrink-0">
+                <!-- Toolbar Zoom Gambar -->
+                <div id="modal-zoom-controls" class="flex items-center bg-black/25 backdrop-blur-md rounded-xl p-1 border border-white/20">
+                    <button type="button" id="btn-zoom-out" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg hover:bg-white/20 text-white flex items-center justify-center transition cursor-pointer" title="Perkecil (Zoom Out)">
+                        <i class="fa-solid fa-minus text-xs"></i>
+                    </button>
+                    <span id="zoom-level-label" class="text-xs font-mono font-bold px-2 text-teal-200 min-w-[46px] text-center select-none">100%</span>
+                    <button type="button" id="btn-zoom-in" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg hover:bg-white/20 text-white flex items-center justify-center transition cursor-pointer" title="Perbesar (Zoom In)">
+                        <i class="fa-solid fa-plus text-xs"></i>
+                    </button>
+                    <div class="h-4 w-px bg-white/20 mx-1"></div>
+                    <button type="button" id="btn-zoom-rotate" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg hover:bg-white/20 text-white flex items-center justify-center transition cursor-pointer" title="Putar 90°">
+                        <i class="fa-solid fa-rotate-right text-xs"></i>
+                    </button>
+                    <button type="button" id="btn-zoom-reset" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg hover:bg-white/20 text-white flex items-center justify-center transition cursor-pointer" title="Reset Posisi & Zoom">
+                        <i class="fa-solid fa-arrows-rotate text-xs"></i>
+                    </button>
+                </div>
+
+                <button type="button" id="btn-close-modal-kk" class="w-8 h-8 rounded-lg bg-white/15 hover:bg-white/30 text-teal-100 hover:text-white flex items-center justify-center transition cursor-pointer" title="Tutup">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Body Modal Viewport Interaktif -->
+        <div class="relative flex-1 bg-slate-950 overflow-hidden flex items-center justify-center select-none">
+            <!-- Image Pan & Zoom Stage -->
+            <div id="modal-img-container" class="w-full h-full relative overflow-hidden flex items-center justify-center cursor-grab active:cursor-grabbing bg-slate-900/95" style="touch-action: none; min-height: 250px;">
+                <div class="w-full h-full flex items-center justify-center pointer-events-none p-4">
+                    <img id="modal-preview-img" 
+                         src="{{ ($hasDocCitizen && !$isPdfCitizen) ? $docCitizenUrl : '' }}" 
+                         alt="Pratinjau Dokumen KK" 
+                         class="max-h-[72vh] max-w-[88%] w-auto h-auto rounded-md shadow-2xl object-contain block border border-slate-700 bg-white pointer-events-none select-none transition-transform duration-75 ease-out"
+                         style="transform-origin: center center;">
+                </div>
+            </div>
+
+            <!-- PDF Container -->
+            <div id="modal-pdf-container" class="hidden w-full h-full flex flex-col items-center justify-center p-6 bg-slate-900 text-center">
+                <div class="w-20 h-20 rounded-2xl bg-rose-500/20 text-rose-400 flex items-center justify-center mx-auto mb-4 border border-rose-500/30">
+                    <i class="fa-solid fa-file-pdf text-4xl"></i>
+                </div>
+                <h5 class="text-base font-bold text-white" id="modal-pdf-name">{{ $hasDocCitizen ? basename($citizen->doc_family_card) : 'Dokumen Kartu Keluarga (PDF)' }}</h5>
+                <p class="text-xs text-slate-400 mt-1.5 max-w-sm mx-auto">Dokumen Kartu Keluarga berformat PDF dapat dilihat dan dibuka melalui tautan berikut.</p>
+                <div class="mt-4 flex flex-wrap items-center justify-center gap-2">
+                    <a id="modal-pdf-link" href="{{ ($hasDocCitizen && $isPdfCitizen) ? $docCitizenUrl : '#' }}" target="_blank" class="inline-flex items-center gap-2 text-xs font-bold text-white bg-[#0b7c89] hover:bg-[#065b65] px-4 py-2.5 rounded-xl shadow-md transition">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Buka Dokumen PDF di Tab Baru
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Modal -->
+        <div class="px-5 py-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between shrink-0">
+            <div class="flex items-center gap-2 overflow-hidden mr-3">
+                <i class="fa-solid fa-file-circle-check text-emerald-600 shrink-0"></i>
+                <span class="text-xs text-slate-700 truncate font-medium" id="modal-file-info">{{ $hasDocCitizen ? basename($citizen->doc_family_card) : '-' }}</span>
+            </div>
+            <button type="button" id="btn-close-modal-kk-footer" class="text-xs font-bold bg-[#0b7c89] hover:bg-[#065b65] text-white px-4 py-2 rounded-xl shadow-xs transition cursor-pointer">
+                Tutup Pratinjau
+            </button>
+        </div>
+    </div>
+</div>
 @endsection

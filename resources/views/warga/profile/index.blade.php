@@ -74,7 +74,7 @@
                     </p>
                 </div>
             </div>
-            <form action="{{ route('profile.cancel', $pendingRequest) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan permohonan perubahan data yang sedang menunggu verifikasi ini?');" class="shrink-0 m-0">
+            <form action="{{ route('profile.cancel', $pendingRequest) }}" method="POST" onsubmit="try { localStorage.removeItem('purwobinangun_warga_profile_draft_{{ Auth::id() }}'); if (window.indexedDB) { clearDraftFilesFromDB('profile_doc_family_card_'); } } catch(e){} return confirm('Apakah Anda yakin ingin membatalkan permohonan perubahan data yang sedang menunggu verifikasi ini?');" class="shrink-0 m-0">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-300 px-3.5 py-2 rounded-lg transition flex items-center gap-1.5 cursor-pointer shadow-2xs">
@@ -690,10 +690,31 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    const CURRENT_USER_ID = '{{ Auth::id() ?? "guest" }}';
+    const PROFILE_DRAFT_KEY = 'purwobinangun_warga_profile_draft_' + CURRENT_USER_ID;
+    const PROFILE_KK_KEY = 'profile_doc_family_card_' + CURRENT_USER_ID;
+    const DB_NAME = 'PurwobinangunFormDB';
+    const STORE_NAME = 'draft_files';
+
     const familyContainer = document.getElementById('family-members-container');
     const emptyFamilyState = document.getElementById('empty-family-state');
     const btnAddFamily = document.getElementById('btn-add-family-member');
     const applicantKkInput = document.getElementById('family_card_no');
+    const formProfileUpdate = document.getElementById('form-profile-update');
+
+    const profileDraftFields = [
+        'nik',
+        'family_card_no',
+        'name',
+        'birth_place',
+        'birth_date',
+        'family_relationship',
+        'phone',
+        'email',
+        'address',
+        'rt',
+        'rw'
+    ];
 
     let memberCounter = 0;
     const initialMembers = @json($serverFamilyMembers ?? []);
@@ -822,6 +843,12 @@ document.addEventListener('DOMContentLoaded', function() {
         card.querySelector('.btn-remove-member').addEventListener('click', function() {
             card.remove();
             renumberMembers();
+            saveProfileDraft();
+        });
+
+        card.querySelectorAll('input, select').forEach(function(inp) {
+            inp.addEventListener('input', saveProfileDraft);
+            inp.addEventListener('change', saveProfileDraft);
         });
 
         familyContainer.appendChild(card);
@@ -834,6 +861,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const card = createMemberCard();
             const nameInput = card.querySelector('.member-name-input');
             if (nameInput) nameInput.focus();
+            saveProfileDraft();
         });
     }
 
@@ -846,16 +874,258 @@ document.addEventListener('DOMContentLoaded', function() {
                     input.value = newKk;
                 }
             });
+            saveProfileDraft();
         });
     }
 
-    if (initialMembers && initialMembers.length > 0) {
-        initialMembers.forEach(function(m) {
-            createMemberCard(m);
+    // ==========================================
+    // IndexedDB Helper untuk Penyimpanan Berkas Draft KK
+    // ==========================================
+    function openDraftDB() {
+        return new Promise((resolve, reject) => {
+            if (!window.indexedDB) return reject(new Error('IndexedDB not supported'));
+            const request = indexedDB.open(DB_NAME, 1);
+            request.onupgradeneeded = function (e) {
+                const db = e.target.result;
+                if (!db.objectStoreNames.contains(STORE_NAME)) {
+                    db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+                }
+            };
+            request.onsuccess = function (e) { resolve(e.target.result); };
+            request.onerror = function (e) { reject(e.target.error); };
         });
-    } else {
-        updateEmptyState();
     }
+
+    async function saveFileToDB(key, file) {
+        try {
+            const db = await openDraftDB();
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            const store = tx.objectStore(STORE_NAME);
+            store.put({
+                id: key,
+                file: file,
+                name: file.name,
+                type: file.type,
+                size: file.size,
+                lastModified: file.lastModified
+            });
+            return new Promise((resolve, reject) => {
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => reject(tx.error);
+            });
+        } catch (err) {
+            console.warn('Gagal menyimpan file ke DB:', err);
+        }
+    }
+
+    async function getFileFromDB(key) {
+        try {
+            const db = await openDraftDB();
+            const tx = db.transaction(STORE_NAME, 'readonly');
+            const store = tx.objectStore(STORE_NAME);
+            const req = store.get(key);
+            return new Promise((resolve) => {
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => resolve(null);
+            });
+        } catch (err) {
+            console.warn('Gagal membaca file dari DB:', err);
+            return null;
+        }
+    }
+
+    async function clearDraftFilesFromDB(prefix = '') {
+        try {
+            if (!window.indexedDB) return;
+            const db = await openDraftDB();
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            const store = tx.objectStore(STORE_NAME);
+            if (!prefix) {
+                store.clear();
+            } else {
+                const req = store.openCursor();
+                req.onsuccess = function (e) {
+                    const cursor = e.target.result;
+                    if (cursor) {
+                        if (String(cursor.key).startsWith(prefix)) {
+                            cursor.delete();
+                        }
+                        cursor.continue();
+                    }
+                };
+            }
+        } catch (err) {
+            console.warn('Gagal membersihkan draft DB:', err);
+        }
+    }
+
+    async function restoreProfileDraftFile() {
+        if (!docKkInput) return;
+        const record = await getFileFromDB(PROFILE_KK_KEY);
+        if (record && record.file) {
+            try {
+                const dt = new DataTransfer();
+                const restoredFile = new File([record.file], record.name, {
+                    type: record.type,
+                    lastModified: record.lastModified || Date.now()
+                });
+                dt.items.add(restoredFile);
+                docKkInput.files = dt.files;
+
+                currentFileName = restoredFile.name;
+                if (fileNameKk) fileNameKk.textContent = restoredFile.name;
+                if (fileSizeKk) fileSizeKk.textContent = (restoredFile.size / 1024).toFixed(1) + ' KB (Draft tersimpan - Siap diunggah)';
+
+                if (restoredFile.type === 'application/pdf' || restoredFile.name.toLowerCase().endsWith('.pdf')) {
+                    currentFileIsPdf = true;
+                    currentPreviewUrl = URL.createObjectURL(restoredFile);
+                    if (modalPdfLink) modalPdfLink.href = currentPreviewUrl;
+                    if (imgPreviewWrapKk) imgPreviewWrapKk.classList.add('hidden');
+                    if (pdfPreviewWrapKk) pdfPreviewWrapKk.classList.remove('hidden');
+                } else {
+                    currentFileIsPdf = false;
+                    currentPreviewUrl = URL.createObjectURL(restoredFile);
+                    if (modalPreviewImg) {
+                        modalPreviewImg.src = currentPreviewUrl;
+                        modalPreviewImg.style.display = 'block';
+                    }
+                    if (imgPreviewWrapKk) imgPreviewWrapKk.classList.remove('hidden');
+                    if (pdfPreviewWrapKk) pdfPreviewWrapKk.classList.add('hidden');
+                }
+
+                if (placeholderKk) placeholderKk.classList.add('hidden');
+                if (previewBoxKk) previewBoxKk.classList.remove('hidden');
+            } catch (e) {
+                console.warn('Gagal memulihkan draft KK profil:', e);
+            }
+        }
+    }
+
+    // ==========================================
+    // LocalStorage Draft Management
+    // ==========================================
+    function saveProfileDraft() {
+        try {
+            const draft = {};
+            let hasContent = false;
+
+            profileDraftFields.forEach(function(fieldId) {
+                const el = document.getElementById(fieldId);
+                if (el) {
+                    draft[fieldId] = el.value || '';
+                    if (el.value && el.value.trim() !== '') {
+                        hasContent = true;
+                    }
+                }
+            });
+
+            const checkedGender = document.querySelector('input[name="gender"]:checked');
+            if (checkedGender) {
+                draft['gender'] = checkedGender.value;
+            }
+
+            // Simpan anggota keluarga
+            const members = [];
+            const memberCards = familyContainer.querySelectorAll('.family-member-card');
+            memberCards.forEach(function(card) {
+                const kkInp = card.querySelector('input[name*="[family_card_no]"]');
+                const nikInp = card.querySelector('input[name*="[nik]"]');
+                const nameInp = card.querySelector('input[name*="[name]"]');
+                const birthPlaceInp = card.querySelector('input[name*="[birth_place]"]');
+                const birthDateInp = card.querySelector('input[name*="[birth_date]"]');
+                const genderInp = card.querySelector('select[name*="[gender]"]');
+                const relInp = card.querySelector('select[name*="[family_relationship]"]');
+
+                const mData = {
+                    family_card_no: kkInp ? kkInp.value : '',
+                    nik: nikInp ? nikInp.value : '',
+                    name: nameInp ? nameInp.value : '',
+                    birth_place: birthPlaceInp ? birthPlaceInp.value : '',
+                    birth_date: birthDateInp ? birthDateInp.value : '',
+                    gender: genderInp ? genderInp.value : '',
+                    family_relationship: relInp ? relInp.value : ''
+                };
+
+                if (mData.name || mData.nik) {
+                    hasContent = true;
+                }
+                members.push(mData);
+            });
+
+            draft.family_members = members;
+
+            if (hasContent || members.length > 0) {
+                localStorage.setItem(PROFILE_DRAFT_KEY, JSON.stringify(draft));
+            } else {
+                localStorage.removeItem(PROFILE_DRAFT_KEY);
+            }
+        } catch (e) {
+            console.warn('Gagal menyimpan draft profil ke localStorage:', e);
+        }
+    }
+
+    function loadProfileDraft() {
+        let restoredMembers = false;
+        try {
+            const rawDraft = localStorage.getItem(PROFILE_DRAFT_KEY);
+            if (rawDraft) {
+                const draft = JSON.parse(rawDraft);
+                if (draft && typeof draft === 'object') {
+                    profileDraftFields.forEach(function(fieldId) {
+                        const el = document.getElementById(fieldId);
+                        if (el && draft[fieldId] !== undefined && draft[fieldId] !== null) {
+                            el.value = draft[fieldId];
+                        }
+                    });
+
+                    if (draft.gender) {
+                        const genderRadio = document.querySelector(`input[name="gender"][value="${draft.gender}"]`);
+                        if (genderRadio) genderRadio.checked = true;
+                    }
+
+                    if (Array.isArray(draft.family_members)) {
+                        familyContainer.innerHTML = '';
+                        memberCounter = 0;
+                        draft.family_members.forEach(function(m) {
+                            createMemberCard(m);
+                        });
+                        restoredMembers = true;
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn('Gagal memulihkan draft profil dari localStorage:', e);
+        }
+
+        // Jika tidak dipulihkan dari draft localStorage, muat initial members dari server
+        if (!restoredMembers) {
+            if (initialMembers && initialMembers.length > 0) {
+                initialMembers.forEach(function(m) {
+                    createMemberCard(m);
+                });
+            } else {
+                updateEmptyState();
+            }
+        } else {
+            updateEmptyState();
+        }
+
+        // Pulihkan berkas fisik KK dari IndexedDB
+        restoreProfileDraftFile();
+    }
+
+    // Pasang listeners form input untuk auto-save
+    profileDraftFields.forEach(function(fieldId) {
+        const el = document.getElementById(fieldId);
+        if (el) {
+            el.addEventListener('input', saveProfileDraft);
+            el.addEventListener('change', saveProfileDraft);
+        }
+    });
+
+    document.querySelectorAll('input[name="gender"]').forEach(function(radio) {
+        radio.addEventListener('change', saveProfileDraft);
+    });
 
     // Modal Preview & Interactive Pan/Zoom Dokumen KK
     const docKkInput = document.getElementById('doc_family_card');
@@ -1072,7 +1342,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     if (docKkInput) {
-        docKkInput.addEventListener('change', function() {
+        docKkInput.addEventListener('change', async function() {
             if (!this.files || this.files.length === 0) return;
             const file = this.files[0];
 
@@ -1112,8 +1382,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (placeholderKk) placeholderKk.classList.add('hidden');
             if (previewBoxKk) previewBoxKk.classList.remove('hidden');
+
+            await saveFileToDB(PROFILE_KK_KEY, file);
         });
     }
+
+    // Reset draft ketika form update profil disubmit
+    if (formProfileUpdate) {
+        formProfileUpdate.addEventListener('submit', function () {
+            setTimeout(function () {
+                try {
+                    localStorage.removeItem(PROFILE_DRAFT_KEY);
+                    clearDraftFilesFromDB('profile_doc_family_card_');
+                } catch (e) {}
+            }, 500);
+        });
+    }
+
+    // Restore draft form & file KK pada saat load
+    loadProfileDraft();
 });
 </script>
 @endsection

@@ -695,33 +695,174 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // ==========================================
+    // IndexedDB Helper untuk Penyimpanan Berkas Draft
+    // ==========================================
+    const DB_NAME = 'PurwobinangunFormDB';
+    const STORE_NAME = 'draft_files';
+
+    function openDraftDB() {
+        return new Promise((resolve, reject) => {
+            if (!window.indexedDB) return reject(new Error('IndexedDB not supported'));
+            const request = indexedDB.open(DB_NAME, 1);
+            request.onupgradeneeded = function (e) {
+                const db = e.target.result;
+                if (!db.objectStoreNames.contains(STORE_NAME)) {
+                    db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+                }
+            };
+            request.onsuccess = function (e) { resolve(e.target.result); };
+            request.onerror = function (e) { reject(e.target.error); };
+        });
+    }
+
+    async function saveFileToDB(key, file) {
+        try {
+            const db = await openDraftDB();
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            const store = tx.objectStore(STORE_NAME);
+            store.put({
+                id: key,
+                file: file,
+                name: file.name,
+                type: file.type,
+                size: file.size,
+                lastModified: file.lastModified
+            });
+            return new Promise((resolve, reject) => {
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => reject(tx.error);
+            });
+        } catch (err) {
+            console.warn('Gagal menyimpan file ke DB:', err);
+        }
+    }
+
+    async function getFileFromDB(key) {
+        try {
+            const db = await openDraftDB();
+            const tx = db.transaction(STORE_NAME, 'readonly');
+            const store = tx.objectStore(STORE_NAME);
+            const req = store.get(key);
+            return new Promise((resolve) => {
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => resolve(null);
+            });
+        } catch (err) {
+            console.warn('Gagal membaca file dari DB:', err);
+            return null;
+        }
+    }
+
+    async function removeFileFromDB(key) {
+        try {
+            if (!window.indexedDB) return;
+            const db = await openDraftDB();
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            tx.objectStore(STORE_NAME).delete(key);
+        } catch (err) {
+            console.warn('Gagal menghapus file dari DB:', err);
+        }
+    }
+
+    async function clearDraftFilesFromDB(prefix = '') {
+        try {
+            if (!window.indexedDB) return;
+            const db = await openDraftDB();
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            const store = tx.objectStore(STORE_NAME);
+            if (!prefix) {
+                store.clear();
+            } else {
+                const req = store.openCursor();
+                req.onsuccess = function (e) {
+                    const cursor = e.target.result;
+                    if (cursor) {
+                        if (String(cursor.key).startsWith(prefix)) {
+                            cursor.delete();
+                        }
+                        cursor.continue();
+                    }
+                };
+            }
+        } catch (err) {
+            console.warn('Gagal membersihkan draft DB:', err);
+        }
+    }
+
+    async function restoreRegisterDraftFile() {
+        if (!docKkInput) return;
+        const record = await getFileFromDB('register_doc_family_card');
+        if (record && record.file) {
+            try {
+                const dt = new DataTransfer();
+                const restoredFile = new File([record.file], record.name, {
+                    type: record.type,
+                    lastModified: record.lastModified || Date.now()
+                });
+                dt.items.add(restoredFile);
+                docKkInput.files = dt.files;
+
+                currentFileName = restoredFile.name;
+                if (fileNameKk) fileNameKk.textContent = restoredFile.name;
+                if (fileSizeKk) fileSizeKk.textContent = (restoredFile.size / 1024).toFixed(1) + ' KB (Draft tersimpan)';
+
+                if (restoredFile.type === 'application/pdf' || restoredFile.name.toLowerCase().endsWith('.pdf')) {
+                    currentFileIsPdf = true;
+                    currentPreviewUrl = URL.createObjectURL(restoredFile);
+                    if (modalPdfLink) modalPdfLink.href = currentPreviewUrl;
+                    if (imgPreviewWrapKk) imgPreviewWrapKk.classList.add('hidden');
+                    if (pdfPreviewWrapKk) pdfPreviewWrapKk.classList.remove('hidden');
+                } else {
+                    currentFileIsPdf = false;
+                    currentPreviewUrl = URL.createObjectURL(restoredFile);
+                    if (imgPreviewKk) imgPreviewKk.src = currentPreviewUrl;
+                    if (modalPreviewImg) {
+                        modalPreviewImg.src = currentPreviewUrl;
+                        modalPreviewImg.style.display = 'block';
+                    }
+                    if (imgPreviewWrapKk) imgPreviewWrapKk.classList.remove('hidden');
+                    if (pdfPreviewWrapKk) pdfPreviewWrapKk.classList.add('hidden');
+                }
+
+                if (placeholderKk) placeholderKk.classList.add('hidden');
+                if (previewBoxKk) previewBoxKk.classList.remove('hidden');
+            } catch (e) {
+                console.warn('Gagal memulihkan berkas KK dari draft:', e);
+            }
+        }
+    }
+
     function loadRegisterDraft() {
         try {
             const rawDraft = localStorage.getItem(REGISTER_DRAFT_KEY);
-            if (!rawDraft) return;
+            if (rawDraft) {
+                const draft = JSON.parse(rawDraft);
+                if (draft && typeof draft === 'object') {
+                    draftFields.forEach(function(fieldId) {
+                        const el = document.getElementById(fieldId);
+                        if (el && (!el.value || el.value.trim() === '')) {
+                            if (draft[fieldId] !== undefined && draft[fieldId] !== null) {
+                                el.value = draft[fieldId];
+                            }
+                        }
+                    });
 
-            const draft = JSON.parse(rawDraft);
-            if (!draft || typeof draft !== 'object') return;
-
-            draftFields.forEach(function(fieldId) {
-                const el = document.getElementById(fieldId);
-                if (el && (!el.value || el.value.trim() === '')) {
-                    if (draft[fieldId] !== undefined && draft[fieldId] !== null) {
-                        el.value = draft[fieldId];
+                    // Pulihkan anggota keluarga dari draft jika belum ada dari server
+                    const memberCards = familyContainer.querySelectorAll('.family-member-card');
+                    if (memberCards.length === 0 && Array.isArray(draft.family_members) && draft.family_members.length > 0) {
+                        draft.family_members.forEach(function(m) {
+                            createMemberCard(m);
+                        });
                     }
                 }
-            });
-
-            // Pulihkan anggota keluarga dari draft jika belum ada dari server
-            const memberCards = familyContainer.querySelectorAll('.family-member-card');
-            if (memberCards.length === 0 && Array.isArray(draft.family_members) && draft.family_members.length > 0) {
-                draft.family_members.forEach(function(m) {
-                    createMemberCard(m);
-                });
             }
         } catch (e) {
             console.warn('Gagal memulihkan draft pendaftaran dari localStorage:', e);
         }
+
+        // Pulihkan berkas fisik KK dari IndexedDB
+        restoreRegisterDraftFile();
     }
 
     function saveRegisterDraft() {
@@ -792,6 +933,19 @@ document.addEventListener('DOMContentLoaded', function() {
     if (initialMembers && initialMembers.length > 0) {
         initialMembers.forEach(function(m) {
             createMemberCard(m);
+        });
+    }
+
+    // Reset draft ketika form berhasil disubmit
+    const formRegister = document.getElementById('form-register');
+    if (formRegister) {
+        formRegister.addEventListener('submit', function() {
+            setTimeout(function() {
+                try {
+                    localStorage.removeItem(REGISTER_DRAFT_KEY);
+                    clearDraftFilesFromDB('register_');
+                } catch(e) {}
+            }, 500);
         });
     }
 

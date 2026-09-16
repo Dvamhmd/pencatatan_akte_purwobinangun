@@ -26,7 +26,7 @@
         </div>
 
         <!-- Form Permohonan -->
-        <form action="{{ route('death.store') }}" method="POST" enctype="multipart/form-data" class="p-5 md:p-6 space-y-8">
+        <form id="form-death-application" action="{{ route('death.store') }}" method="POST" enctype="multipart/form-data" class="p-5 md:p-6 space-y-8">
             @csrf
 
             <!-- Bagian 1: Data Almarhum / Almarhumah -->
@@ -419,6 +419,95 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    const CURRENT_USER_ID = '{{ Auth::id() ?? "guest" }}';
+    const DEATH_DRAFT_KEY = 'purwobinangun_death_form_draft_' + CURRENT_USER_ID;
+    const DB_NAME = 'PurwobinangunFormDB';
+    const STORE_NAME = 'draft_files';
+    const deathFileInputIds = ['doc_death_statement', 'doc_family_card', 'doc_deceased_ktp', 'doc_applicant_ktp'];
+
+    const deathForm = document.getElementById('form-death-application');
+
+    // ==========================================
+    // IndexedDB Helper untuk Penyimpanan Berkas
+    // ==========================================
+    function openDraftDB() {
+        return new Promise((resolve, reject) => {
+            if (!window.indexedDB) return reject(new Error('IndexedDB not supported'));
+            const request = indexedDB.open(DB_NAME, 1);
+            request.onupgradeneeded = function (e) {
+                const db = e.target.result;
+                if (!db.objectStoreNames.contains(STORE_NAME)) {
+                    db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+                }
+            };
+            request.onsuccess = function (e) { resolve(e.target.result); };
+            request.onerror = function (e) { reject(e.target.error); };
+        });
+    }
+
+    async function saveFileToDB(key, file) {
+        try {
+            const db = await openDraftDB();
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            const store = tx.objectStore(STORE_NAME);
+            store.put({
+                id: key,
+                file: file,
+                name: file.name,
+                type: file.type,
+                size: file.size,
+                lastModified: file.lastModified
+            });
+            return new Promise((resolve, reject) => {
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => reject(tx.error);
+            });
+        } catch (err) {
+            console.warn('Gagal menyimpan file ke DB:', err);
+        }
+    }
+
+    async function getFileFromDB(key) {
+        try {
+            const db = await openDraftDB();
+            const tx = db.transaction(STORE_NAME, 'readonly');
+            const store = tx.objectStore(STORE_NAME);
+            const req = store.get(key);
+            return new Promise((resolve) => {
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => resolve(null);
+            });
+        } catch (err) {
+            console.warn('Gagal membaca file dari DB:', err);
+            return null;
+        }
+    }
+
+    async function clearDraftFilesFromDB(prefix = '') {
+        try {
+            if (!window.indexedDB) return;
+            const db = await openDraftDB();
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            const store = tx.objectStore(STORE_NAME);
+            if (!prefix) {
+                store.clear();
+            } else {
+                const req = store.openCursor();
+                req.onsuccess = function (e) {
+                    const cursor = e.target.result;
+                    if (cursor) {
+                        if (String(cursor.key).startsWith(prefix)) {
+                            cursor.delete();
+                        }
+                        cursor.continue();
+                    }
+                };
+            }
+        } catch (err) {
+            console.warn('Gagal membersihkan draft DB:', err);
+        }
+    }
+
     function updateFilePreview(input, file) {
         if (!input || !file) return;
         const cardKey = input.getAttribute('data-card');
@@ -456,14 +545,113 @@ document.addEventListener('DOMContentLoaded', function () {
         if (previewBox) previewBox.classList.remove('hidden');
     }
 
+    // ==========================================
+    // LocalStorage Draft Management
+    // ==========================================
+    function saveDeathDraft() {
+        if (!deathForm) return;
+        try {
+            const formData = new FormData(deathForm);
+            const draft = {};
+            let hasData = false;
+
+            for (const [key, value] of formData.entries()) {
+                if (key === '_token' || value instanceof File) continue;
+                draft[key] = value;
+                if (value && typeof value === 'string' && value.trim() !== '') {
+                    hasData = true;
+                }
+            }
+
+            if (hasData) {
+                localStorage.setItem(DEATH_DRAFT_KEY, JSON.stringify(draft));
+            }
+        } catch (e) {
+            console.warn('Gagal menyimpan draft form kematian:', e);
+        }
+    }
+
+    function restoreDeathDraft() {
+        if (!deathForm) return;
+        try {
+            const rawDraft = localStorage.getItem(DEATH_DRAFT_KEY);
+            if (!rawDraft) return;
+            const draft = JSON.parse(rawDraft);
+            if (!draft || typeof draft !== 'object') return;
+
+            Object.keys(draft).forEach(key => {
+                const elements = deathForm.querySelectorAll(`[name="${key}"]`);
+                elements.forEach(el => {
+                    if (el.type === 'radio') {
+                        if (el.value === draft[key]) el.checked = true;
+                    } else if (el.type === 'checkbox') {
+                        el.checked = Boolean(draft[key]);
+                    } else if (el.type !== 'file') {
+                        el.value = draft[key];
+                    }
+                });
+            });
+        } catch (e) {
+            console.warn('Gagal memulihkan draft form kematian:', e);
+        }
+    }
+
+    async function restoreDeathDraftFiles() {
+        for (const inputId of deathFileInputIds) {
+            const input = document.getElementById(inputId);
+            if (!input) continue;
+            const dbKey = 'death_' + inputId + '_' + CURRENT_USER_ID;
+            const record = await getFileFromDB(dbKey);
+            if (record && record.file) {
+                try {
+                    const dt = new DataTransfer();
+                    const restoredFile = new File([record.file], record.name, {
+                        type: record.type,
+                        lastModified: record.lastModified || Date.now()
+                    });
+                    dt.items.add(restoredFile);
+                    input.files = dt.files;
+                    updateFilePreview(input, restoredFile);
+                } catch (e) {
+                    console.warn('Gagal memulihkan file kematian:', e);
+                }
+            }
+        }
+    }
+
+    // Pasang event listener untuk file input
     document.querySelectorAll('.file-input').forEach(input => {
-        input.addEventListener('change', function () {
+        input.addEventListener('change', async function () {
             if (this.files && this.files.length > 0) {
                 const file = this.files[0];
                 updateFilePreview(this, file);
+                const dbKey = 'death_' + this.id + '_' + CURRENT_USER_ID;
+                await saveFileToDB(dbKey, file);
             }
         });
     });
+
+    // Pasang listener input/change untuk autosave form
+    if (deathForm) {
+        deathForm.addEventListener('input', saveDeathDraft);
+        deathForm.addEventListener('change', saveDeathDraft);
+
+        // Reset cache/draft saat form dikirim
+        deathForm.addEventListener('submit', function () {
+            setTimeout(function () {
+                try {
+                    localStorage.removeItem(DEATH_DRAFT_KEY);
+                    clearDraftFilesFromDB('death_');
+                } catch (e) {
+                    console.warn('Gagal membersihkan cache form kematian:', e);
+                }
+            }, 500);
+        });
+    }
+
+    // Restore draft saat halaman selesai dimuat
+    restoreDeathDraft();
+    restoreDeathDraftFiles();
 });
 </script>
 @endsection

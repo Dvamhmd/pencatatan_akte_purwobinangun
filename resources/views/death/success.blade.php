@@ -65,4 +65,36 @@
     </div>
 
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    try {
+        const CURRENT_USER_ID = '{{ Auth::id() ?? "guest" }}';
+        localStorage.removeItem('purwobinangun_death_form_draft_' + CURRENT_USER_ID);
+        localStorage.removeItem('purwobinangun_death_form_draft');
+        if (window.indexedDB) {
+            const req = indexedDB.open('PurwobinangunFormDB', 1);
+            req.onsuccess = function (e) {
+                try {
+                    const db = e.target.result;
+                    if (db.objectStoreNames.contains('draft_files')) {
+                        const tx = db.transaction('draft_files', 'readwrite');
+                        const store = tx.objectStore('draft_files');
+                        const cursorReq = store.openCursor();
+                        cursorReq.onsuccess = function (ev) {
+                            const cursor = ev.target.result;
+                            if (cursor) {
+                                if (String(cursor.key).startsWith('death_')) {
+                                    cursor.delete();
+                                }
+                                cursor.continue();
+                            }
+                        };
+                    }
+                } catch (err) {}
+            };
+        }
+    } catch (e) {}
+});
+</script>
 @endsection

@@ -60,6 +60,11 @@ class AdminProfileRequestController extends Controller
 
     public function verify(Request $request, ProfileUpdateRequest $profileRequest)
     {
+        if (!$profileRequest->isPending()) {
+            return redirect()->route('admin.profile_requests.show', $profileRequest)
+                ->with('error', 'Permohonan perubahan data ini telah diproses sebelumnya.');
+        }
+
         $validated = $request->validate([
             'action' => 'required|in:approve,reject',
             'rejection_reason' => 'required_if:action,reject|nullable|string|max:1000',
