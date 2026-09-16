@@ -304,6 +304,13 @@ class WargaProfileUpdateRequestTest extends TestCase
         // Verifikasi status request menjadi approved
         $this->assertEquals('approved', $profileReq->fresh()->status);
         $this->assertEquals('Admin Kalurahan', $profileReq->fresh()->processed_by);
+
+        // Verifikasi warga melihat notifikasi banner disetujui di halaman profil
+        $viewRes = $this->actingAs($warga)->get(route('profile.index'));
+        $viewRes->assertSee('Permohonan Perubahan Data Telah Disetujui');
+        $viewRes->assertSee('Admin Kalurahan');
+        $viewRes->assertSee('fa-solid fa-xmark');
+        $viewRes->assertSee('dismissProfileNotification');
     }
 
     public function test_admin_rejecting_request_leaves_user_unchanged_and_stores_rejection_reason()
@@ -344,9 +351,11 @@ class WargaProfileUpdateRequestTest extends TestCase
         $this->assertEquals('rejected', $profileReq->fresh()->status);
         $this->assertEquals('Nama tidak sesuai dengan KTP fisik dan KK.', $profileReq->fresh()->admin_notes);
 
-        // Verifikasi warga melihat catatan penolakan saat buka profil
+        // Verifikasi warga melihat catatan penolakan dan tombol silang penutup saat buka profil
         $viewRes = $this->actingAs($warga)->get(route('profile.index'));
         $viewRes->assertSee('Permohonan Perubahan Data Sebelumnya Ditolak');
         $viewRes->assertSee('Nama tidak sesuai dengan KTP fisik dan KK.');
+        $viewRes->assertSee('fa-solid fa-xmark');
+        $viewRes->assertSee('dismissProfileNotification');
     }
 }

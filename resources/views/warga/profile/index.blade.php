@@ -83,23 +83,51 @@
             </form>
         </div>
     @elseif($latestRequest && $latestRequest->isRejected())
-        <div class="bg-rose-50 rounded-xl p-4 sm:p-5 border border-rose-300 shadow-xs flex items-start gap-3.5">
-            <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0 border border-rose-200 text-lg">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-            </div>
-            <div class="flex-1">
-                <div class="flex items-center gap-2 flex-wrap">
-                    <h3 class="font-bold text-rose-900 text-sm">Permohonan Perubahan Data Sebelumnya Ditolak</h3>
-                    <span class="text-[10px] text-slate-500 font-mono">({{ $latestRequest->updated_at->translatedFormat('d F Y, H:i') }} WIB)</span>
+        <div id="profile-rejected-banner-{{ $latestRequest->id }}" class="bg-rose-50 rounded-xl p-4 sm:p-5 border border-rose-300 shadow-xs flex items-start justify-between gap-3.5 transition-all duration-300">
+            <div class="flex items-start gap-3.5 flex-1">
+                <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0 border border-rose-200 text-lg">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
                 </div>
-                <div class="mt-2 p-3 bg-white/90 rounded-lg border border-rose-200 text-xs text-rose-800">
-                    <p class="font-bold mb-0.5"><i class="fa-solid fa-comment-dots text-rose-600 mr-1"></i> Catatan dari Petugas Kelurahan:</p>
-                    <p class="italic text-[11px]">{{ $latestRequest->admin_notes ?: 'Data tidak sesuai atau berkas persyaratan belum lengkap.' }}</p>
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <h3 class="font-bold text-rose-900 text-sm">Permohonan Perubahan Data Sebelumnya Ditolak</h3>
+                        <span class="text-[10px] text-slate-500 font-mono">({{ $latestRequest->updated_at->translatedFormat('d F Y, H:i') }} WIB)</span>
+                    </div>
+                    <div class="mt-2 p-3 bg-white/90 rounded-lg border border-rose-200 text-xs text-rose-800">
+                        <p class="font-bold mb-0.5"><i class="fa-solid fa-comment-dots text-rose-600 mr-1"></i> Catatan dari Petugas Kelurahan:</p>
+                        <p class="italic text-[11px]">{{ $latestRequest->admin_notes ?: 'Data tidak sesuai atau berkas persyaratan belum lengkap.' }}</p>
+                    </div>
+                    <p class="text-xs text-slate-600 mt-2">
+                        Silakan perbaiki data pada formulir di bawah ini dan kirimkan kembali untuk diverifikasi ulang oleh petugas.
+                    </p>
                 </div>
-                <p class="text-xs text-slate-600 mt-2">
-                    Silakan perbaiki data pada formulir di bawah ini dan kirimkan kembali untuk diverifikasi ulang oleh petugas.
-                </p>
             </div>
+            <button type="button" onclick="dismissProfileNotification('profile-rejected-banner-{{ $latestRequest->id }}', 'purwobinangun_dismissed_profile_rejected_{{ Auth::id() }}_{{ $latestRequest->id }}')" class="shrink-0 text-rose-400 hover:text-rose-700 hover:bg-rose-100/80 w-8 h-8 rounded-lg transition flex items-center justify-center cursor-pointer -mt-1 -mr-1" title="Tutup Notifikasi" aria-label="Tutup Notifikasi">
+                <i class="fa-solid fa-xmark text-base"></i>
+            </button>
+        </div>
+    @elseif($latestRequest && $latestRequest->isApproved())
+        <div id="profile-approved-banner-{{ $latestRequest->id }}" class="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl p-4 sm:p-5 border border-emerald-300 shadow-xs flex items-start justify-between gap-3.5 transition-all duration-300">
+            <div class="flex items-start gap-3.5 flex-1">
+                <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 border border-emerald-200 text-lg">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <h3 class="font-bold text-emerald-900 text-sm">Permohonan Perubahan Data Telah Disetujui</h3>
+                        <span class="bg-emerald-200 text-emerald-900 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                            Disetujui
+                        </span>
+                        <span class="text-[10px] text-slate-500 font-mono">({{ $latestRequest->updated_at->translatedFormat('d F Y, H:i') }} WIB)</span>
+                    </div>
+                    <p class="text-xs text-slate-700 mt-1.5 leading-relaxed">
+                        Permohonan perubahan data akun dan anggota keluarga Anda telah diverifikasi dan disetujui oleh petugas kelurahan <strong>({{ $latestRequest->processed_by ?: 'Petugas Kelurahan' }})</strong>. Seluruh data terbaru Anda telah berhasil diperbarui dan aktif di sistem.
+                    </p>
+                </div>
+            </div>
+            <button type="button" onclick="dismissProfileNotification('profile-approved-banner-{{ $latestRequest->id }}', 'purwobinangun_dismissed_profile_approved_{{ Auth::id() }}_{{ $latestRequest->id }}')" class="shrink-0 text-emerald-400 hover:text-emerald-700 hover:bg-emerald-100/80 w-8 h-8 rounded-lg transition flex items-center justify-center cursor-pointer -mt-1 -mr-1" title="Tutup Notifikasi" aria-label="Tutup Notifikasi">
+                <i class="fa-solid fa-xmark text-base"></i>
+            </button>
         </div>
     @endif
 
@@ -1401,6 +1429,41 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Restore draft form & file KK pada saat load
     loadProfileDraft();
+
+    // Periksa status dismiss notifikasi banner perubahan profil
+    @if($latestRequest && $latestRequest->isRejected())
+        try {
+            if (localStorage.getItem('purwobinangun_dismissed_profile_rejected_{{ Auth::id() }}_{{ $latestRequest->id }}') === 'true') {
+                const rejBanner = document.getElementById('profile-rejected-banner-{{ $latestRequest->id }}');
+                if (rejBanner) rejBanner.remove();
+            }
+        } catch (e) {}
+    @elseif($latestRequest && $latestRequest->isApproved())
+        try {
+            if (localStorage.getItem('purwobinangun_dismissed_profile_approved_{{ Auth::id() }}_{{ $latestRequest->id }}') === 'true') {
+                const appBanner = document.getElementById('profile-approved-banner-{{ $latestRequest->id }}');
+                if (appBanner) appBanner.remove();
+            }
+        } catch (e) {}
+    @endif
 });
+
+// Fungsi penutup notifikasi banner profil secara halus
+function dismissProfileNotification(bannerId, storageKey) {
+    const banner = document.getElementById(bannerId);
+    if (!banner) return;
+
+    banner.style.opacity = '0';
+    banner.style.transform = 'translateY(-6px)';
+    setTimeout(() => {
+        if (banner) banner.remove();
+    }, 250);
+
+    if (storageKey) {
+        try {
+            localStorage.setItem(storageKey, 'true');
+        } catch (e) {}
+    }
+}
 </script>
 @endsection
