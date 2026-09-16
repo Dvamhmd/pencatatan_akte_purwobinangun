@@ -74,13 +74,18 @@
                     </p>
                 </div>
             </div>
-            <form action="{{ route('profile.cancel', $pendingRequest) }}" method="POST" onsubmit="try { localStorage.removeItem('purwobinangun_warga_profile_draft_{{ Auth::id() }}'); if (window.indexedDB) { clearDraftFilesFromDB('profile_doc_family_card_'); } } catch(e){} return confirm('Apakah Anda yakin ingin membatalkan permohonan perubahan data yang sedang menunggu verifikasi ini?');" class="shrink-0 m-0">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-300 px-3.5 py-2 rounded-lg transition flex items-center gap-1.5 cursor-pointer shadow-2xs">
-                    <i class="fa-solid fa-xmark"></i> Batalkan Pengajuan
+            <div class="flex items-center gap-2 shrink-0 flex-wrap">
+                <button type="button" onclick="showPendingChangesModal()" class="text-xs font-bold text-[#095b8c] bg-white hover:bg-teal-50 border border-teal-300 px-3.5 py-2 rounded-lg transition flex items-center gap-1.5 cursor-pointer shadow-2xs">
+                    <i class="fa-solid fa-code-compare"></i> Rincian Perubahan
                 </button>
-            </form>
+                <form action="{{ route('profile.cancel', $pendingRequest) }}" method="POST" onsubmit="try { localStorage.removeItem('purwobinangun_warga_profile_draft_{{ Auth::id() }}'); if (window.indexedDB) { clearDraftFilesFromDB('profile_doc_family_card_'); } } catch(e){} return confirm('Apakah Anda yakin ingin membatalkan permohonan perubahan data yang sedang menunggu verifikasi ini?');" class="shrink-0 m-0">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-300 px-3.5 py-2 rounded-lg transition flex items-center gap-1.5 cursor-pointer shadow-2xs">
+                        <i class="fa-solid fa-xmark"></i> Batalkan Pengajuan
+                    </button>
+                </form>
+            </div>
         </div>
     @elseif($latestRequest && $latestRequest->isRejected())
         <div id="profile-rejected-banner-{{ $latestRequest->id }}" class="bg-rose-50 rounded-xl p-4 sm:p-5 border border-rose-300 shadow-xs flex items-start justify-between gap-3.5 transition-all duration-300">
@@ -474,7 +479,7 @@
                         </div>
 
                         <div class="flex items-center justify-end">
-                            <button type="submit" class="w-full sm:w-auto bg-[#095b8c] hover:bg-[#059cb8] active:bg-[#074a73] text-white font-bold text-xs py-3 px-6 rounded-xl shadow-xs hover:shadow transition flex items-center justify-center cursor-pointer whitespace-nowrap">
+                            <button type="submit" id="btn-submit-profile-update" class="w-full sm:w-auto bg-[#095b8c] hover:bg-[#059cb8] active:bg-[#074a73] text-white font-bold text-xs py-3 px-6 rounded-xl shadow-xs hover:shadow transition flex items-center justify-center cursor-pointer whitespace-nowrap">
                                 <span>Kirim Permohonan Perubahan Data ke Admin</span>
                             </button>
                         </div>
@@ -712,6 +717,55 @@
             <button type="button" id="btn-close-modal-kk-footer" class="text-xs font-bold bg-[#095b8c] hover:bg-[#074a73] text-white px-4 py-2 rounded-xl shadow-xs transition cursor-pointer">
                 Tutup Pratinjau
             </button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL POPUP NOTIFIKASI RINGKASAN & KONFIRMASI PERUBAHAN DATA -->
+<div id="modal-confirm-profile-changes" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 hidden transition-opacity overflow-y-auto">
+    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-2xl w-full overflow-hidden flex flex-col max-h-[90vh] my-auto animate-in fade-in zoom-in-95 duration-150">
+        <!-- Header Modal -->
+        <div class="bg-gradient-to-r from-[#095b8c] via-[#0b7c89] to-[#059cb8] text-white px-5 sm:px-6 py-4 flex items-center justify-between shrink-0 shadow-sm">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-white/20 backdrop-blur border border-white/30 flex items-center justify-center text-teal-200 shrink-0 shadow-inner">
+                    <i class="fa-solid fa-code-compare text-base"></i>
+                </div>
+                <div>
+                    <h4 class="text-sm sm:text-base font-extrabold text-white" id="modal-changes-title">Konfirmasi Perubahan Data</h4>
+                    <p class="text-[11px] text-teal-100" id="modal-changes-subtitle">Rincian data sebelumnya dan data baru yang akan diajukan ke admin</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeProfileChangesModal()" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/25 text-teal-100 hover:text-white flex items-center justify-center transition cursor-pointer" title="Tutup">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+
+        <!-- Body Modal -->
+        <div class="overflow-y-auto p-5 sm:p-6 space-y-4 text-xs">
+            <div id="modal-changes-notice" class="p-3 bg-amber-50 rounded-xl border border-amber-200 text-slate-700 text-xs flex items-start gap-2.5">
+                <i class="fa-solid fa-circle-info text-amber-600 mt-0.5 shrink-0"></i>
+                <div class="text-[11px] leading-relaxed text-amber-950" id="modal-changes-notice-text">
+                    Periksa kembali daftar perubahan data di bawah ini. Pastikan data baru yang diajukan sudah sesuai sebelum dikirimkan ke petugas kelurahan.
+                </div>
+            </div>
+
+            <!-- Konten Komparasi Dinamis -->
+            <div id="modal-changes-body" class="space-y-4">
+                <!-- Diisi secara dinamis oleh JavaScript -->
+            </div>
+        </div>
+
+        <!-- Footer Modal -->
+        <div class="px-5 sm:px-6 py-3.5 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-3 shrink-0 flex-wrap">
+            <button type="button" id="btn-modal-cancel" onclick="closeProfileChangesModal()" class="text-xs font-bold text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 px-4 py-2.5 rounded-xl shadow-2xs transition cursor-pointer">
+                <i class="fa-solid fa-arrow-left mr-1"></i> Periksa Kembali
+            </button>
+            <div class="flex items-center gap-2" id="modal-submit-actions">
+                <button type="button" id="btn-execute-submit-changes" class="text-xs font-bold text-white bg-[#095b8c] hover:bg-[#074a73] px-5 py-2.5 rounded-xl shadow-xs transition flex items-center gap-2 cursor-pointer">
+                    <i class="fa-solid fa-check"></i>
+                    <span>Ya, Kirim Pengajuan</span>
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -1415,17 +1469,616 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Reset draft ketika form update profil disubmit
-    if (formProfileUpdate) {
-        formProfileUpdate.addEventListener('submit', function () {
-            setTimeout(function () {
-                try {
-                    localStorage.removeItem(PROFILE_DRAFT_KEY);
-                    clearDraftFilesFromDB('profile_doc_family_card_');
-                } catch (e) {}
-            }, 500);
+    @php
+        $baselineData = [
+            'nik' => (string) $warga->nik,
+            'family_card_no' => (string) $warga->family_card_no,
+            'name' => (string) $warga->name,
+            'birth_place' => (string) ($warga->birth_place ?: ''),
+            'birth_date' => (string) ($warga->birth_date ? $warga->birth_date->format('Y-m-d') : ''),
+            'gender' => (string) ($warga->gender ?: ''),
+            'family_relationship' => (string) ($warga->family_relationship ?: 'Kepala Keluarga'),
+            'phone' => (string) ($warga->phone ?: ''),
+            'email' => (string) ($warga->email ?: ''),
+            'address' => (string) ($warga->address ?: ''),
+            'rt' => (string) ($warga->rt ?: ''),
+            'rw' => (string) ($warga->rw ?: ''),
+            'family_members' => $warga->familyMembers->map(function($m) {
+                return [
+                    'family_card_no' => (string) ($m->family_card_no ?: ''),
+                    'nik' => (string) ($m->nik ?: ''),
+                    'name' => (string) ($m->name ?: ''),
+                    'birth_place' => (string) ($m->birth_place ?: ''),
+                    'birth_date' => (string) ($m->birth_date ? (\Carbon\Carbon::parse($m->birth_date)->format('Y-m-d')) : ''),
+                    'gender' => (string) ($m->gender ?: ''),
+                    'family_relationship' => (string) ($m->family_relationship ?: 'Anggota Keluarga'),
+                ];
+            })->values()->toArray(),
+        ];
+
+        $pendingBaseMembers = $pendingRequest ? $warga->familyMembers->map(function($m) {
+            return [
+                'family_card_no' => (string) ($m->family_card_no ?: ''),
+                'nik' => (string) ($m->nik ?: ''),
+                'name' => (string) ($m->name ?: ''),
+                'birth_place' => (string) ($m->birth_place ?: ''),
+                'birth_date' => (string) ($m->birth_date ? (\Carbon\Carbon::parse($m->birth_date)->format('Y-m-d')) : ''),
+                'gender' => (string) ($m->gender ?: ''),
+                'family_relationship' => (string) ($m->family_relationship ?: 'Anggota Keluarga'),
+            ];
+        })->values()->toArray() : [];
+
+        $pendingSubmittedMembers = ($pendingRequest && !empty($pendingRequest->family_members_data)) ? $pendingRequest->family_members_data : [];
+
+        $pendingFieldsList = [];
+        if ($pendingRequest) {
+            $fMap = [
+                'name' => 'Nama Lengkap',
+                'nik' => 'NIK',
+                'family_card_no' => 'Nomor KK',
+                'birth_place' => 'Tempat Lahir',
+                'birth_date' => 'Tanggal Lahir',
+                'gender' => 'Jenis Kelamin',
+                'family_relationship' => 'Posisi dalam KK',
+                'phone' => 'No. HP / WhatsApp',
+                'email' => 'Alamat Email',
+                'address' => 'Alamat Lengkap',
+                'rt' => 'RT',
+                'rw' => 'RW',
+            ];
+            foreach ($fMap as $fK => $fL) {
+                $oldV = (string) ($warga->{$fK} ?: '-');
+                $newV = (string) ($pendingRequest->{$fK} ?: '-');
+                if ($fK === 'birth_date') {
+                    $oldV = $warga->birth_date ? $warga->birth_date->format('Y-m-d') : '';
+                    $newV = $pendingRequest->birth_date ? $pendingRequest->birth_date->format('Y-m-d') : '';
+                }
+                $pendingFieldsList[] = [
+                    'key' => $fK,
+                    'label' => $fL,
+                    'oldVal' => $oldV,
+                    'newVal' => $newV,
+                ];
+            }
+        }
+    @endphp
+
+    // Helper formatter string & tanggal
+    function escapeHtml(str) {
+        if (str === null || str === undefined) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function formatDisplayDate(dateStr) {
+        if (!dateStr) return '-';
+        try {
+            const parts = dateStr.split('-');
+            if (parts.length === 3) {
+                return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+            const d = new Date(dateStr);
+            if (!isNaN(d.getTime())) {
+                const day = String(d.getDate()).padStart(2, '0');
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const year = d.getFullYear();
+                return `${day}/${month}/${year}`;
+            }
+        } catch(e) {}
+        return dateStr;
+    }
+
+    function formatGenderLabel(g) {
+        if (g === 'L') return 'Laki-laki';
+        if (g === 'P') return 'Perempuan';
+        return g || '-';
+    }
+
+    function compareFamilyMembers(baseMembers, currentMembers) {
+        const added = [];
+        const deleted = [];
+        const modified = [];
+        const matchedBaseIndices = new Set();
+
+        currentMembers.forEach(function(curr) {
+            let matchIdx = -1;
+
+            // 1. Match by NIK jika ada
+            if (curr.nik) {
+                matchIdx = baseMembers.findIndex((b, idx) => !matchedBaseIndices.has(idx) && b.nik && b.nik === curr.nik);
+            }
+
+            // 2. Match by Nama jika NIK tidak cocok
+            if (matchIdx === -1 && curr.name) {
+                matchIdx = baseMembers.findIndex((b, idx) => !matchedBaseIndices.has(idx) && b.name && b.name.toLowerCase() === curr.name.toLowerCase());
+            }
+
+            if (matchIdx !== -1) {
+                matchedBaseIndices.add(matchIdx);
+                const base = baseMembers[matchIdx];
+                const diffs = [];
+
+                if ((curr.name || '').toLowerCase() !== (base.name || '').toLowerCase()) {
+                    diffs.push({ label: 'Nama', oldVal: base.name || '-', newVal: curr.name || '-' });
+                }
+                if ((curr.nik || '') !== (base.nik || '')) {
+                    diffs.push({ label: 'NIK', oldVal: base.nik || '-', newVal: curr.nik || '-' });
+                }
+                if ((curr.birth_place || '').toLowerCase() !== (base.birth_place || '').toLowerCase()) {
+                    diffs.push({ label: 'Tempat Lahir', oldVal: base.birth_place || '-', newVal: curr.birth_place || '-' });
+                }
+                if ((curr.birth_date || '') !== (base.birth_date || '')) {
+                    diffs.push({ label: 'Tanggal Lahir', oldVal: formatDisplayDate(base.birth_date), newVal: formatDisplayDate(curr.birth_date) });
+                }
+                if ((curr.gender || '') !== (base.gender || '')) {
+                    diffs.push({ label: 'Jenis Kelamin', oldVal: formatGenderLabel(base.gender), newVal: formatGenderLabel(curr.gender) });
+                }
+                if ((curr.family_relationship || '').toLowerCase() !== (base.family_relationship || '').toLowerCase()) {
+                    diffs.push({ label: 'Hubungan', oldVal: base.family_relationship || '-', newVal: curr.family_relationship || '-' });
+                }
+
+                if (diffs.length > 0) {
+                    modified.push({
+                        name: curr.name || base.name || 'Anggota Keluarga',
+                        nik: curr.nik || base.nik || '-',
+                        relationship: curr.family_relationship || base.family_relationship || 'Anggota',
+                        diffs: diffs
+                    });
+                }
+            } else {
+                added.push(curr);
+            }
+        });
+
+        // Anggota yang dihapus: anggota baseline yang tidak ada di form saat ini
+        baseMembers.forEach(function(base, idx) {
+            if (!matchedBaseIndices.has(idx)) {
+                deleted.push(base);
+            }
+        });
+
+        return { added, deleted, modified };
+    }
+
+    // Fungsi membuat laporan perubahan data formulir dibanding baseline
+    function generateFormChangesReport() {
+        const baseline = @json($baselineData);
+        const profileChanges = [];
+        const fieldMeta = [
+            { id: 'name', key: 'name', label: 'Nama Lengkap', type: 'text' },
+            { id: 'nik', key: 'nik', label: 'NIK', type: 'text' },
+            { id: 'family_card_no', key: 'family_card_no', label: 'Nomor KK', type: 'text' },
+            { id: 'birth_place', key: 'birth_place', label: 'Tempat Lahir', type: 'text' },
+            { id: 'birth_date', key: 'birth_date', label: 'Tanggal Lahir', type: 'date' },
+            { name: 'gender', key: 'gender', label: 'Jenis Kelamin', type: 'radio_gender' },
+            { id: 'family_relationship', key: 'family_relationship', label: 'Posisi dalam KK', type: 'text' },
+            { id: 'phone', key: 'phone', label: 'No. HP / WhatsApp', type: 'text' },
+            { id: 'email', key: 'email', label: 'Alamat Email', type: 'text' },
+            { id: 'address', key: 'address', label: 'Alamat Lengkap', type: 'text' },
+            { id: 'rt', key: 'rt', label: 'RT', type: 'text' },
+            { id: 'rw', key: 'rw', label: 'RW', type: 'text' },
+        ];
+
+        fieldMeta.forEach(function(item) {
+            let currVal = '';
+            if (item.type === 'radio_gender') {
+                currVal = (document.querySelector('input[name="gender"]:checked')?.value || '').trim();
+            } else {
+                currVal = (document.getElementById(item.id)?.value || '').trim();
+            }
+
+            const baseVal = (baseline[item.key] || '').trim();
+
+            let isDifferent = false;
+            if (item.type === 'date') {
+                isDifferent = currVal !== baseVal;
+            } else {
+                isDifferent = currVal.toLowerCase() !== baseVal.toLowerCase();
+            }
+
+            if (isDifferent) {
+                profileChanges.push({
+                    key: item.key,
+                    label: item.label,
+                    oldVal: item.type === 'date' ? formatDisplayDate(baseVal) : (item.type === 'radio_gender' ? formatGenderLabel(baseVal) : (baseVal || '-')),
+                    newVal: item.type === 'date' ? formatDisplayDate(currVal) : (item.type === 'radio_gender' ? formatGenderLabel(currVal) : (currVal || '-')),
+                });
+            }
+        });
+
+        // Cek unggahan berkas KK baru
+        let docKkChange = null;
+        if (docKkInput && docKkInput.files && docKkInput.files.length > 0) {
+            const file = docKkInput.files[0];
+            const sizeKb = Math.round(file.size / 1024);
+            const sizeStr = sizeKb >= 1024 ? (sizeKb / 1024).toFixed(1) + ' MB' : sizeKb + ' KB';
+            docKkChange = {
+                name: file.name,
+                size: sizeStr,
+            };
+        }
+
+        // Periksa data anggota keluarga
+        const memberCards = familyContainer ? familyContainer.querySelectorAll('.family-member-card') : [];
+        const currentMembers = [];
+        memberCards.forEach(function(card) {
+            const mKk = (card.querySelector('input[name*="[family_card_no]"]')?.value || '').trim();
+            const mNik = (card.querySelector('input[name*="[nik]"]')?.value || '').trim();
+            const mName = (card.querySelector('input[name*="[name]"]')?.value || '').trim();
+            const mBirthPlace = (card.querySelector('input[name*="[birth_place]"]')?.value || '').trim();
+            const mBirthDate = (card.querySelector('input[name*="[birth_date]"]')?.value || '').trim();
+            const mGender = (card.querySelector('select[name*="[gender]"]')?.value || '').trim();
+            const mRel = (card.querySelector('select[name*="[family_relationship]"]')?.value || '').trim();
+
+            if (mName || mNik) {
+                currentMembers.push({
+                    family_card_no: mKk,
+                    nik: mNik,
+                    name: mName,
+                    birth_place: mBirthPlace,
+                    birth_date: mBirthDate,
+                    gender: mGender,
+                    family_relationship: mRel
+                });
+            }
+        });
+
+        const baseMembers = baseline.family_members || [];
+        const familyChanges = compareFamilyMembers(baseMembers, currentMembers);
+
+        const hasChanges = (
+            profileChanges.length > 0 ||
+            docKkChange !== null ||
+            familyChanges.added.length > 0 ||
+            familyChanges.deleted.length > 0 ||
+            familyChanges.modified.length > 0
+        );
+
+        return {
+            hasChanges,
+            profileChanges,
+            docKkChange,
+            familyChanges
+        };
+    }
+
+    // Fungsi render laporan perubahan ke dalam modal pop up
+    function renderChangesReportToModal(report, isViewOnly, modalTitle, modalSubtitle) {
+        const bodyEl = document.getElementById('modal-changes-body');
+        const titleEl = document.getElementById('modal-changes-title');
+        const subtitleEl = document.getElementById('modal-changes-subtitle');
+        const noticeEl = document.getElementById('modal-changes-notice-text');
+        const submitActions = document.getElementById('modal-submit-actions');
+        const cancelBtn = document.getElementById('btn-modal-cancel');
+
+        if (titleEl && modalTitle) titleEl.innerText = modalTitle;
+        if (subtitleEl && modalSubtitle) subtitleEl.innerText = modalSubtitle;
+        if (noticeEl) {
+            noticeEl.innerText = isViewOnly 
+                ? 'Berikut adalah rincian data sebelumnya dibandingkan dengan data permohonan yang diajukan ke admin kelurahan.' 
+                : 'Periksa kembali daftar perubahan data di bawah ini. Pastikan data baru yang diajukan sudah sesuai sebelum dikirimkan ke petugas kelurahan.';
+        }
+
+        if (isViewOnly) {
+            if (submitActions) submitActions.classList.add('hidden');
+            if (cancelBtn) cancelBtn.innerHTML = '<i class="fa-solid fa-xmark mr-1"></i> Tutup';
+        } else {
+            if (submitActions) submitActions.classList.remove('hidden');
+            if (cancelBtn) cancelBtn.innerHTML = '<i class="fa-solid fa-arrow-left mr-1"></i> Periksa Kembali';
+        }
+
+        let html = '';
+
+        // 1. Data Akun & Profil Warga
+        if (report.profileChanges && report.profileChanges.length > 0) {
+            html += `
+            <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-2xs">
+                <div class="bg-slate-50 px-3.5 py-2.5 border-b border-slate-200 flex items-center justify-between">
+                    <h5 class="font-bold text-slate-800 text-xs flex items-center gap-2">
+                        <i class="fa-solid fa-user-pen text-[#095b8c]"></i> Data Akun & Profil Pribadi
+                    </h5>
+                    <span class="text-[10px] font-bold bg-[#095b8c]/10 text-[#095b8c] px-2 py-0.5 rounded-full border border-[#095b8c]/20">
+                        ${report.profileChanges.length} Bidang Diubah
+                    </span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="text-[10px] uppercase font-bold text-slate-500 border-b border-slate-200 bg-slate-50/50">
+                                <th class="py-2 px-3 w-1/4">Bidang Data</th>
+                                <th class="py-2 px-3 w-3/8 text-slate-500">Data Sebelumnya</th>
+                                <th class="py-2 px-3 w-3/8 text-emerald-800">Data Baru yang Diajukan</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+            `;
+
+            report.profileChanges.forEach(function(item) {
+                html += `
+                            <tr class="hover:bg-slate-50/60 transition">
+                                <td class="py-2.5 px-3 font-semibold text-slate-700 text-xs">${escapeHtml(item.label)}</td>
+                                <td class="py-2.5 px-3 text-slate-500 text-xs bg-slate-50/40 line-through">${escapeHtml(item.oldVal)}</td>
+                                <td class="py-2.5 px-3 text-emerald-900 font-bold text-xs bg-emerald-50/30">
+                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                        <span>${escapeHtml(item.newVal)}</span>
+                                        <span class="text-[9px] bg-emerald-100 text-emerald-800 font-extrabold px-1.5 py-0.2 rounded border border-emerald-300 uppercase tracking-wide">Baru</span>
+                                    </div>
+                                </td>
+                            </tr>
+                `;
+            });
+
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            `;
+        }
+
+        // 2. Berkas Dokumen KK Baru
+        if (report.docKkChange) {
+            html += `
+            <div class="p-3.5 bg-teal-50/70 rounded-xl border border-teal-200 flex items-center justify-between gap-3 shadow-2xs">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-9 h-9 rounded-lg bg-teal-100 text-[#095b8c] flex items-center justify-center shrink-0 border border-teal-200">
+                        <i class="fa-solid fa-file-arrow-up text-base"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="font-bold text-slate-800 text-xs">Dokumen Kartu Keluarga (KK) Baru</p>
+                        <p class="text-[11px] text-slate-600 font-mono truncate">${escapeHtml(report.docKkChange.name)} <span class="text-slate-400">(${escapeHtml(report.docKkChange.size)})</span></p>
+                    </div>
+                </div>
+                <span class="text-[10px] font-bold bg-teal-100 text-[#095b8c] px-2.5 py-1 rounded-full border border-teal-300 shrink-0">
+                    Akan Diunggah
+                </span>
+            </div>
+            `;
+        }
+
+        // 3. Perubahan Anggota Keluarga
+        const fam = report.familyChanges;
+        const hasFamilyChanges = fam && (fam.added.length > 0 || fam.deleted.length > 0 || fam.modified.length > 0);
+
+        if (hasFamilyChanges) {
+            html += `
+            <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-2xs space-y-2 p-3.5">
+                <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+                    <h5 class="font-bold text-slate-800 text-xs flex items-center gap-2">
+                        <i class="fa-solid fa-people-roof text-[#095b8c]"></i> Data Anggota Keluarga Satu KK
+                    </h5>
+                    <span class="text-[10px] font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full border border-amber-300">
+                        Perubahan Susunan KK
+                    </span>
+                </div>
+                <div class="space-y-2.5 pt-1">
+            `;
+
+            // Anggota Ditambahkan
+            fam.added.forEach(function(m) {
+                html += `
+                    <div class="p-3 bg-emerald-50/60 rounded-lg border border-emerald-200 flex items-start justify-between gap-3">
+                        <div class="flex items-start gap-2.5">
+                            <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 text-xs mt-0.5">
+                                <i class="fa-solid fa-user-plus"></i>
+                            </span>
+                            <div>
+                                <p class="font-bold text-slate-800 text-xs">${escapeHtml(m.name || 'Anggota Baru')}</p>
+                                <p class="text-[11px] text-slate-600 font-mono mt-0.5">
+                                    NIK: ${escapeHtml(m.nik || '-')} &bull; ${formatGenderLabel(m.gender)} &bull; ${escapeHtml(m.family_relationship || 'Anggota')}
+                                </p>
+                                ${(m.birth_place || m.birth_date) ? `<p class="text-[10px] text-slate-500">Lahir: ${escapeHtml(m.birth_place || '')}${m.birth_place && m.birth_date ? ', ' : ''}${formatDisplayDate(m.birth_date)}</p>` : ''}
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full border border-emerald-300 shrink-0 whitespace-nowrap">
+                            + Ditambahkan
+                        </span>
+                    </div>
+                `;
+            });
+
+            // Anggota Dihapus
+            fam.deleted.forEach(function(m) {
+                html += `
+                    <div class="p-3 bg-rose-50/70 rounded-lg border border-rose-200 flex items-start justify-between gap-3">
+                        <div class="flex items-start gap-2.5">
+                            <span class="w-6 h-6 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center shrink-0 text-xs mt-0.5">
+                                <i class="fa-solid fa-user-minus"></i>
+                            </span>
+                            <div>
+                                <p class="font-bold text-rose-900 text-xs line-through">${escapeHtml(m.name || 'Anggota Keluarga')}</p>
+                                <p class="text-[11px] text-rose-700 font-mono mt-0.5">
+                                    NIK: ${escapeHtml(m.nik || '-')} &bull; ${formatGenderLabel(m.gender)} &bull; ${escapeHtml(m.family_relationship || 'Anggota')}
+                                </p>
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-bold bg-rose-100 text-rose-800 px-2 py-0.5 rounded-full border border-rose-300 shrink-0 whitespace-nowrap">
+                            - Dihapus dari KK
+                        </span>
+                    </div>
+                `;
+            });
+
+            // Anggota Diperbarui
+            fam.modified.forEach(function(m) {
+                html += `
+                    <div class="p-3 bg-blue-50/60 rounded-lg border border-blue-200 space-y-2">
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-full bg-blue-100 text-[#095b8c] flex items-center justify-center shrink-0 text-xs">
+                                    <i class="fa-solid fa-user-pen"></i>
+                                </span>
+                                <p class="font-bold text-slate-800 text-xs">${escapeHtml(m.name)} <span class="text-slate-400 font-mono text-[10px]">(${escapeHtml(m.relationship)})</span></p>
+                            </div>
+                            <span class="text-[10px] font-bold bg-blue-100 text-[#095b8c] px-2 py-0.5 rounded-full border border-blue-300 shrink-0 whitespace-nowrap">
+                                Data Diperbarui
+                            </span>
+                        </div>
+                        <div class="pl-8 space-y-1 text-[11px]">
+                `;
+
+                m.diffs.forEach(function(d) {
+                    html += `
+                            <div class="flex items-center gap-2">
+                                <span class="font-semibold text-slate-600 w-24 shrink-0">${escapeHtml(d.label)}:</span>
+                                <span class="text-slate-400 line-through">${escapeHtml(d.oldVal)}</span>
+                                <i class="fa-solid fa-arrow-right text-[9px] text-slate-400"></i>
+                                <span class="font-bold text-emerald-800">${escapeHtml(d.newVal)}</span>
+                            </div>
+                    `;
+                });
+
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `
+                </div>
+            </div>
+            `;
+        }
+
+        if (!html) {
+            html = `
+            <div class="p-6 text-center text-slate-400 italic">
+                <i class="fa-solid fa-circle-check text-emerald-500 text-2xl mb-2 block"></i>
+                Tidak ada data yang berubah dari data sebelumnya.
+            </div>
+            `;
+        }
+
+        bodyEl.innerHTML = html;
+    }
+
+    function openProfileChangesModal() {
+        const modal = document.getElementById('modal-confirm-profile-changes');
+        if (modal) {
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function closeProfileChangesModal() {
+        const modal = document.getElementById('modal-confirm-profile-changes');
+        if (modal) {
+            modal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+    }
+
+    window.closeProfileChangesModal = closeProfileChangesModal;
+    window.openProfileChangesModal = openProfileChangesModal;
+
+    // Modal click backdrop & Escape key listeners
+    const modalConfirmChanges = document.getElementById('modal-confirm-profile-changes');
+    if (modalConfirmChanges) {
+        modalConfirmChanges.addEventListener('click', function(e) {
+            if (e.target === modalConfirmChanges) {
+                closeProfileChangesModal();
+            }
         });
     }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeProfileChangesModal();
+        }
+    });
+
+    // Handle submit from modal popup
+    let isConfirmedProfileSubmission = false;
+    const btnExecuteSubmit = document.getElementById('btn-execute-submit-changes');
+    if (btnExecuteSubmit && formProfileUpdate) {
+        btnExecuteSubmit.addEventListener('click', function() {
+            isConfirmedProfileSubmission = true;
+            btnExecuteSubmit.disabled = true;
+            btnExecuteSubmit.classList.add('opacity-75', 'cursor-not-allowed');
+            btnExecuteSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-xs"></i> <span>Mengirim Permohonan...</span>';
+            
+            const btnMainSubmit = document.getElementById('btn-submit-profile-update');
+            if (btnMainSubmit) {
+                btnMainSubmit.disabled = true;
+                btnMainSubmit.classList.add('opacity-75', 'cursor-not-allowed');
+                btnMainSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-xs"></i> <span>Mengirim Permohonan...</span>';
+            }
+
+            formProfileUpdate.submit();
+        });
+    }
+
+    // Intercept form submit untuk validasi tidak ada perubahan dan memunculkan pop up
+    if (formProfileUpdate) {
+        formProfileUpdate.addEventListener('submit', function (e) {
+            if (isConfirmedProfileSubmission) {
+                setTimeout(function () {
+                    try {
+                        localStorage.removeItem(PROFILE_DRAFT_KEY);
+                        clearDraftFilesFromDB('profile_doc_family_card_');
+                    } catch (e) {}
+                }, 500);
+                return true;
+            }
+
+            e.preventDefault();
+
+            const report = generateFormChangesReport();
+            if (!report.hasChanges) {
+                alert('Tidak ada data yang berubah dari sebelumnya. Silakan perbarui data pada formulir terlebih dahulu sebelum mengirim permohonan ke admin.');
+                return false;
+            }
+
+            renderChangesReportToModal(report, false, 'Konfirmasi Perubahan Data', 'Rincian data sebelumnya dan data baru yang akan diajukan ke admin');
+            openProfileChangesModal();
+            return false;
+        });
+    }
+
+    // Modal untuk melihat rincian pengajuan yang sedang menunggu verifikasi (Pending Request)
+    window.showPendingChangesModal = function() {
+        @if($pendingRequest)
+            const baseMembers = @json($pendingBaseMembers);
+            const pendingMembers = @json($pendingSubmittedMembers);
+            const fields = @json($pendingFieldsList);
+
+            const profileChanges = [];
+            fields.forEach(function(f) {
+                if ((f.oldVal || '').toLowerCase() !== (f.newVal || '').toLowerCase()) {
+                    profileChanges.push({
+                        key: f.key,
+                        label: f.label,
+                        oldVal: f.key === 'birth_date' ? formatDisplayDate(f.oldVal) : (f.key === 'gender' ? formatGenderLabel(f.oldVal) : (f.oldVal || '-')),
+                        newVal: f.key === 'birth_date' ? formatDisplayDate(f.newVal) : (f.key === 'gender' ? formatGenderLabel(f.newVal) : (f.newVal || '-')),
+                    });
+                }
+            });
+
+            let docKkChange = null;
+            @if($pendingRequest->doc_family_card && $pendingRequest->doc_family_card !== $warga->doc_family_card)
+                docKkChange = {
+                    name: @json(basename($pendingRequest->doc_family_card)),
+                    size: 'Telah diajukan'
+                };
+            @endif
+
+            const familyChanges = compareFamilyMembers(baseMembers, pendingMembers);
+
+            const report = {
+                hasChanges: true,
+                profileChanges,
+                docKkChange,
+                familyChanges
+            };
+
+            renderChangesReportToModal(report, true, 'Rincian Perubahan Data yang Diajukan', 'Perbandingan data sebelumnya dengan data permohonan yang sedang diverifikasi admin');
+            openProfileChangesModal();
+        @endif
+    };
 
     // Restore draft form & file KK pada saat load
     loadProfileDraft();

@@ -75,18 +75,14 @@ class AdminNotificationService
             return false;
         }
 
-        $success = false;
-
-        foreach ($recipients as $recipient) {
-            try {
-                Mail::to($recipient)->send($mailable);
-                $success = true;
-            } catch (\Throwable $e) {
-                Log::error("Gagal mengirim email notifikasi pengajuan baru ke admin ({$recipient}): " . $e->getMessage());
-            }
+        try {
+            // Kirim sekaligus ke seluruh daftar email admin dalam satu sesi koneksi (menghemat waktu roundtrip SMTP & loading web)
+            Mail::to($recipients)->send($mailable);
+            return true;
+        } catch (\Throwable $e) {
+            Log::error("Gagal mengirim email notifikasi pengajuan baru ke admin: " . $e->getMessage());
+            return false;
         }
-
-        return $success;
     }
 
     /**

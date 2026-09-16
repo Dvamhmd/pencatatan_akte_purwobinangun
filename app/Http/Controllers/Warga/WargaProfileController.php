@@ -125,6 +125,60 @@ class WargaProfileController extends Controller
             }
         }
 
+        // Validasi apakah ada perubahan data dari data aktif sebelumnya
+        $warga->load('familyMembers');
+
+        $isAccountChanged = (
+            $warga->nik !== $validated['nik'] ||
+            $warga->family_card_no !== $validated['family_card_no'] ||
+            trim((string) $warga->name) !== trim((string) $validated['name']) ||
+            trim((string) $warga->birth_place) !== trim((string) $validated['birth_place']) ||
+            ($warga->birth_date ? $warga->birth_date->format('Y-m-d') : '') !== date('Y-m-d', strtotime($validated['birth_date'])) ||
+            (string) $warga->gender !== (string) $validated['gender'] ||
+            trim((string) $warga->family_relationship) !== trim((string) $validated['family_relationship']) ||
+            trim((string) $warga->phone) !== trim((string) $validated['phone']) ||
+            trim((string) $warga->email) !== trim((string) $validated['email']) ||
+            trim((string) $warga->address) !== trim((string) $validated['address']) ||
+            trim((string) $warga->rt) !== trim((string) $validated['rt']) ||
+            trim((string) $warga->rw) !== trim((string) $validated['rw']) ||
+            $request->hasFile('doc_family_card')
+        );
+
+        $isFamilyChanged = false;
+        $currentMembers = $warga->familyMembers;
+
+        if ($currentMembers->count() !== count($familyMembersData)) {
+            $isFamilyChanged = true;
+        } else {
+            $sortedCurrent = $currentMembers->sortBy(fn($m) => ($m->nik ?: '') . '_' . strtolower($m->name))->values();
+            $sortedProposed = collect($familyMembersData)->sortBy(fn($m) => ($m['nik'] ?? '') . '_' . strtolower($m['name'] ?? ''))->values();
+
+            for ($i = 0; $i < $sortedCurrent->count(); $i++) {
+                $cur = $sortedCurrent[$i];
+                $prop = $sortedProposed[$i];
+
+                $curBirthDate = $cur->birth_date ? $cur->birth_date->format('Y-m-d') : '';
+                $propBirthDate = !empty($prop['birth_date']) ? date('Y-m-d', strtotime($prop['birth_date'])) : '';
+
+                if (
+                    trim((string) ($cur->nik ?: '')) !== trim((string) ($prop['nik'] ?? '')) ||
+                    trim(strtolower((string) $cur->name)) !== trim(strtolower((string) ($prop['name'] ?? ''))) ||
+                    trim(strtolower((string) ($cur->birth_place ?: ''))) !== trim(strtolower((string) ($prop['birth_place'] ?? ''))) ||
+                    $curBirthDate !== $propBirthDate ||
+                    (string) ($cur->gender ?: '') !== (string) ($prop['gender'] ?? '') ||
+                    trim((string) ($cur->family_relationship ?: '')) !== trim((string) ($prop['family_relationship'] ?? ''))
+                ) {
+                    $isFamilyChanged = true;
+                    break;
+                }
+            }
+        }
+
+        if (!$isAccountChanged && !$isFamilyChanged) {
+            return redirect()->route('profile.index')
+                ->with('error', 'Tidak ada data yang berubah dari sebelumnya. Silakan perbarui data pada formulir terlebih dahulu sebelum mengirim permohonan ke admin.');
+        }
+
         // Cek apakah sudah ada permohonan pending sebelumnya
         $pendingRequest = $warga->latestPendingProfileRequest();
 

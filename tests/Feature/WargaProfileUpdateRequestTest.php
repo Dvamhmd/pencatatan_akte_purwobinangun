@@ -144,6 +144,52 @@ class WargaProfileUpdateRequestTest extends TestCase
         $viewResponse->assertSee('Budi Santoso, S.Kom');
     }
 
+    public function test_warga_cannot_submit_profile_update_if_no_data_changed()
+    {
+        $warga = $this->createActiveWarga();
+
+        // Kirim data yang 100% sama persis dengan data aktif saat ini tanpa perubahan apa pun
+        $postData = [
+            'nik' => $warga->nik,
+            'family_card_no' => $warga->family_card_no,
+            'name' => $warga->name,
+            'birth_place' => $warga->birth_place,
+            'birth_date' => $warga->birth_date->format('Y-m-d'),
+            'gender' => $warga->gender,
+            'family_relationship' => $warga->family_relationship,
+            'phone' => $warga->phone,
+            'email' => $warga->email,
+            'address' => $warga->address,
+            'rt' => $warga->rt,
+            'rw' => $warga->rw,
+            'family_members' => [
+                1 => [
+                    'family_card_no' => $warga->family_card_no,
+                    'nik' => '3404010101920002',
+                    'name' => 'Siti Aminah',
+                    'birth_place' => 'Sleman',
+                    'birth_date' => '1992-05-10',
+                    'gender' => 'P',
+                    'family_relationship' => 'Istri',
+                ],
+            ],
+        ];
+
+        $response = $this->actingAs($warga)->put(route('profile.update'), $postData);
+
+        $response->assertRedirect(route('profile.index'));
+        $response->assertSessionHas('error');
+        $this->assertEquals(
+            'Tidak ada data yang berubah dari sebelumnya. Silakan perbarui data pada formulir terlebih dahulu sebelum mengirim permohonan ke admin.',
+            session('error')
+        );
+
+        // Pastikan TIDAK ADA permohonan yang dibuat di database
+        $this->assertDatabaseMissing('profile_update_requests', [
+            'user_id' => $warga->id,
+        ]);
+    }
+
     public function test_warga_can_cancel_pending_profile_update_request()
     {
         $warga = $this->createActiveWarga();
@@ -204,6 +250,22 @@ class WargaProfileUpdateRequestTest extends TestCase
         $showRes->assertSee('Data Saat Ini (Tersimpan)');
         $showRes->assertSee('Data yang Diajukan (Baru)');
         $showRes->assertSee('Siti Aminah Baru');
+
+        // Uji kasus saat ada anggota keluarga yang dihapus dari KK
+        $emptyFamilyReq = ProfileUpdateRequest::create([
+            'user_id' => $warga->id,
+            'nik' => $warga->nik,
+            'family_card_no' => $warga->family_card_no,
+            'name' => 'Budi Tanpa Anggota',
+            'family_members_data' => [], // Kosong (Siti Aminah dihapus dari KK)
+            'status' => 'pending',
+        ]);
+
+        $delRes = $this->actingAs($admin)->get(route('admin.profile_requests.show', $emptyFamilyReq));
+        $delRes->assertStatus(200);
+        $delRes->assertSee('1 anggota keluarga dihapus dari KK');
+        $delRes->assertSee('Dihapus dari KK');
+        $delRes->assertSee('Siti Aminah');
     }
 
     public function test_admin_approving_request_updates_user_and_family_members()

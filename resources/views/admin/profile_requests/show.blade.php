@@ -105,20 +105,79 @@
 
             <!-- Card Perbandingan Anggota Keluarga Satu KK -->
             <div class="bg-white rounded-xl shadow-xs border border-slate-200 overflow-hidden">
-                <div class="bg-slate-50 px-5 py-3.5 border-b border-slate-200 flex items-center justify-between">
+                @php
+                    $proposedMembers = is_array($profileRequest->family_members_data) ? $profileRequest->family_members_data : [];
+                    $existingMembers = $user->familyMembers;
+
+                    $deletedMembers = $existingMembers->filter(function($oldMember) use ($proposedMembers) {
+                        foreach ($proposedMembers as $newMember) {
+                            if (!empty($oldMember->nik) && !empty($newMember['nik']) && $oldMember->nik === $newMember['nik']) {
+                                return false;
+                            }
+                            if (!empty($oldMember->name) && !empty($newMember['name']) && strtolower(trim($oldMember->name)) === strtolower(trim($newMember['name']))) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    });
+                    $deletedCount = $deletedMembers->count();
+
+                    $addedMembers = collect($proposedMembers)->filter(function($newMember) use ($existingMembers) {
+                        foreach ($existingMembers as $oldMember) {
+                            if (!empty($oldMember->nik) && !empty($newMember['nik']) && $oldMember->nik === $newMember['nik']) {
+                                return false;
+                            }
+                            if (!empty($oldMember->name) && !empty($newMember['name']) && strtolower(trim($oldMember->name)) === strtolower(trim($newMember['name']))) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    });
+                    $addedCount = $addedMembers->count();
+                @endphp
+
+                <div class="bg-slate-50 px-5 py-3.5 border-b border-slate-200 flex items-center justify-between gap-2 flex-wrap">
                     <h3 class="font-bold text-xs uppercase tracking-wider text-slate-700 flex items-center gap-2">
                         <i class="fa-solid fa-people-roof text-[#0b7c89]"></i> 2. Susunan Anggota Keluarga yang Diajukan
                     </h3>
-                    @php
-                        $proposedMembers = is_array($profileRequest->family_members_data) ? $profileRequest->family_members_data : [];
-                    @endphp
-                    <span class="text-[10px] font-bold bg-teal-50 text-[#0b7c89] border border-teal-200 px-2 py-0.5 rounded">
-                        {{ count($proposedMembers) }} Anggota Baru Diajukan
-                    </span>
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                        @if($deletedCount > 0)
+                            <span class="text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded flex items-center gap-1 shadow-2xs">
+                                <i class="fa-solid fa-user-minus text-rose-600"></i> {{ $deletedCount }} anggota keluarga dihapus dari KK
+                            </span>
+                        @endif
+                        @if($addedCount > 0)
+                            <span class="text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded flex items-center gap-1 shadow-2xs">
+                                <i class="fa-solid fa-user-plus text-emerald-600"></i> {{ $addedCount }} anggota baru ditambahkan
+                            </span>
+                        @endif
+                        <span class="text-[10px] font-bold bg-teal-50 text-[#0b7c89] border border-teal-200 px-2 py-0.5 rounded">
+                            Total: {{ count($proposedMembers) }} Anggota Diajukan
+                        </span>
+                    </div>
                 </div>
 
                 <div class="p-5 space-y-4 text-xs">
                     
+                    @if($deletedCount > 0)
+                        <!-- Alert Penjelasan Anggota yang Dihapus dari KK -->
+                        <div class="p-3.5 bg-rose-50 rounded-xl border border-rose-200 text-xs text-rose-900 flex items-start gap-2.5">
+                            <i class="fa-solid fa-triangle-exclamation text-rose-600 mt-0.5 shrink-0 text-sm"></i>
+                            <div>
+                                <p class="font-bold text-rose-900">{{ $deletedCount }} anggota keluarga dihapus dari KK pada permohonan ini:</p>
+                                <div class="mt-1.5 space-y-1">
+                                    @foreach($deletedMembers as $delMember)
+                                        <div class="text-[11px] text-rose-800 flex items-center gap-1.5">
+                                            <i class="fa-solid fa-user-xmark text-rose-500 text-xs"></i>
+                                            <span><strong>{{ $delMember->name }}</strong> ({{ $delMember->family_relationship ?: 'Anggota Keluarga' }} &bull; NIK: {{ $delMember->nik ?: '-' }})</span>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                <p class="text-[10px] text-rose-600 mt-1.5 italic">*Jika permohonan ini disetujui, anggota keluarga di atas akan dihapus dari data KK aktif sistem.</p>
+                            </div>
+                        </div>
+                    @endif
+
                     <!-- Data Baru yang Diajukan -->
                     <div>
                         <h4 class="font-bold text-slate-800 mb-2 flex items-center gap-1.5 text-xs text-[#095b8c]">
@@ -176,12 +235,24 @@
                         @if($user->familyMembers->count() > 0)
                             <div class="space-y-1.5">
                                 @foreach($user->familyMembers as $oldMember)
-                                    <div class="p-2 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-between text-[11px]">
-                                        <div class="flex items-center gap-2">
-                                            <span class="font-bold text-slate-800">{{ $oldMember->name }}</span>
+                                    @php
+                                        $isDeleted = $deletedMembers->contains('id', $oldMember->id);
+                                    @endphp
+                                    <div class="p-2.5 {{ $isDeleted ? 'bg-rose-50/70 border-rose-300' : 'bg-slate-50 border-slate-200' }} rounded-lg border flex items-center justify-between text-[11px]">
+                                        <div class="flex items-center gap-2 flex-wrap">
+                                            <span class="font-bold {{ $isDeleted ? 'text-rose-950 line-through' : 'text-slate-800' }}">{{ $oldMember->name }}</span>
                                             <span class="text-[9px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded">
                                                 {{ $oldMember->family_relationship ?: 'Anggota' }}
                                             </span>
+                                            @if($isDeleted)
+                                                <span class="text-[9px] bg-rose-100 text-rose-800 font-bold px-1.5 py-0.5 rounded border border-rose-300 flex items-center gap-1">
+                                                    <i class="fa-solid fa-user-xmark text-xs"></i> Dihapus dari KK
+                                                </span>
+                                            @else
+                                                <span class="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded border border-emerald-300 flex items-center gap-1">
+                                                    <i class="fa-solid fa-check text-xs"></i> Tetap Ada
+                                                </span>
+                                            @endif
                                         </div>
                                         <span class="text-slate-500 font-mono">
                                             NIK: {{ $oldMember->nik ?: '-' }} &bull; {{ $oldMember->gender === 'L' ? 'L' : 'P' }}

@@ -108,10 +108,23 @@
                                 <td class="px-4 py-3.5">
                                     @php
                                         $membersCount = is_array($req->family_members_data) ? count($req->family_members_data) : 0;
+                                        $oldMembersCount = $req->user ? $req->user->familyMembers()->count() : 0;
+                                        $diff = $membersCount - $oldMembersCount;
                                     @endphp
-                                    <span class="inline-flex items-center gap-1 text-[11px] font-bold text-[#0b7c89] bg-teal-50 px-2 py-0.5 rounded border border-teal-200">
-                                        <i class="fa-solid fa-users text-[10px]"></i> {{ $membersCount }} Orang
-                                    </span>
+                                    <div class="flex flex-col gap-1 items-start">
+                                        <span class="inline-flex items-center gap-1 text-[11px] font-bold text-[#0b7c89] bg-teal-50 px-2 py-0.5 rounded border border-teal-200">
+                                            <i class="fa-solid fa-users text-[10px]"></i> {{ $membersCount }} Orang Diajukan
+                                        </span>
+                                        @if($diff < 0)
+                                            <span class="inline-flex items-center gap-1 text-[10px] font-bold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200">
+                                                <i class="fa-solid fa-user-minus text-[9px]"></i> {{ abs($diff) }} Dihapus dari KK
+                                            </span>
+                                        @elseif($diff > 0)
+                                            <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                                                <i class="fa-solid fa-user-plus text-[9px]"></i> +{{ $diff }} Anggota Baru
+                                            </span>
+                                        @endif
+                                    </div>
                                 </td>
                                 <td class="px-4 py-3.5">
                                     <p class="text-slate-800 font-medium">{{ $req->created_at->translatedFormat('d M Y, H:i') }} WIB</p>
