@@ -340,3 +340,101 @@ footer *,
 .toggle-switch-thumb.active {
     transform: translateX(20px) !important;
 }
+
+/* =================================================================
+   WARGA NOTIFICATION DROPDOWN & CONTRAST READ/UNREAD STYLES
+   ================================================================= */
+.notif-item {
+    position: relative;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    border-left: 3.5px solid transparent;
+}
+
+/* Belum Dibaca (Unread) - Fresh, vivid, bold & high-contrast */
+.notif-item.notif-unread {
+    background-color: #f0fdfa !important; /* Soft mint/teal highlight */
+    border-left-color: #095b8c !important; /* Toska indicator */
+    opacity: 1 !important;
+}
+
+.notif-item.notif-unread:hover {
+    background-color: #e6f7f5 !important;
+}
+
+.notif-item.notif-unread h4 {
+    color: #0f172a !important;
+    font-weight: 800 !important;
+}
+
+.notif-item.notif-unread p {
+    color: #334155 !important;
+    font-weight: 500 !important;
+}
+
+.notif-item.notif-unread .notif-unread-dot {
+    display: block !important;
+    opacity: 1 !important;
+    transform: scale(1);
+    box-shadow: 0 0 0 2px #ffffff, 0 0 6px rgba(225, 29, 72, 0.4);
+}
+
+/* Sudah Dibaca / Dibuka (Read / Faded) - Kontras jelas, muted & faded */
+.notif-item.notif-read,
+.notif-item.is-read {
+    background-color: #fafbfc !important;
+    border-left-color: transparent !important;
+    opacity: 0.52 !important;
+}
+
+.notif-item.notif-read:hover,
+.notif-item.is-read:hover {
+    opacity: 0.95 !important;
+    background-color: #f1f5f9 !important;
+}
+
+.notif-item.notif-read h4,
+.notif-item.is-read h4 {
+    color: #64748b !important;
+    font-weight: 600 !important;
+}
+
+.notif-item.notif-read p,
+.notif-item.is-read p {
+    color: #94a3b8 !important;
+    font-weight: 400 !important;
+}
+
+.notif-item.notif-read .notif-unread-dot,
+.notif-item.is-read .notif-unread-dot {
+    display: none !important;
+    opacity: 0 !important;
+    transform: scale(0);
+}
+
+.notif-item.notif-read .status-icon-container,
+.notif-item.is-read .status-icon-container {
+    filter: grayscale(40%);
+    opacity: 0.8;
+}
+
+.notif-item.notif-read .notif-action-link,
+.notif-item.is-read .notif-action-link {
+    color: #64748b !important;
+}
+
+#warga-notif-list::-webkit-scrollbar {
+    width: 5px;
+}
+
+#warga-notif-list::-webkit-scrollbar-track {
+    background: #f8fafc;
+}
+
+#warga-notif-list::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+#warga-notif-list::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
