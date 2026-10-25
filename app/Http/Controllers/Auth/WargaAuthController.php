@@ -16,7 +16,7 @@ class WargaAuthController extends Controller
     public function showLoginForm()
     {
         if (Auth::check() && Auth::user()->isWarga()) {
-            return redirect()->route('submissions.index');
+            return redirect()->route('home');
         }
 
         return view('warga.auth.login');
@@ -84,20 +84,20 @@ class WargaAuthController extends Controller
         $wargaLoginUrl = route('warga.login');
         $wargaRegisterUrl = route('warga.register');
 
-        // Jika URL intended mengarah ke portal admin atau auth warga, arahkan ke daftar pengajuan
+        // Jika URL intended mengarah ke portal admin atau auth warga, arahkan ke beranda menu
         if ($intended && !\Illuminate\Support\Str::startsWith($intended, $adminBaseUrl) && $intended !== $wargaLoginUrl && $intended !== $wargaRegisterUrl && $intended !== url('/login') && $intended !== url('/daftar')) {
             return redirect()->to($intended)
                 ->with('success', 'Selamat datang kembali, ' . $user->name . '! Anda berhasil masuk.');
         }
 
-        return redirect()->route('submissions.index')
+        return redirect()->route('home')
             ->with('success', 'Selamat datang kembali, ' . $user->name . '! Anda berhasil masuk.');
     }
 
     public function showRegisterForm(Request $request)
     {
         if (Auth::check() && Auth::user()->isWarga()) {
-            return redirect()->route('submissions.index');
+            return redirect()->route('home');
         }
 
         $prefill = null;

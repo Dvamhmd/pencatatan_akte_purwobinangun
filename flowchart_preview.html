@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Standard Flowchart Sistem Pelayanan Pencatatan Akte Kalurahan Purwobinangun</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+        :root {
+            --primary: #1e3a8a;
+            --primary-dark: #0f172a;
+            --primary-light: #3b82f6;
+            --accent: #0284c7;
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-300: #cbd5e1;
+            --slate-600: #475569;
+            --slate-700: #334155;
+            --slate-800: #1e293b;
+            --slate-900: #0f172a;
+
+            /* Flowchart Colors matching standard specification */
+            --flow-yellow-fill: #fef08a;
+            --flow-yellow-stroke: #ca8a04;
+            --flow-yellow-text: #854d0e;
+
+            --flow-blue-fill: #bfdbfe;
+            --flow-blue-stroke: #2563eb;
+            --flow-blue-text: #1e40af;
+
+            --flow-gray-fill: #e2e8f0;
+            --flow-gray-stroke: #475569;
+            --flow-gray-text: #1e293b;
+
+            --flow-pink-fill: #fda4af;
+            --flow-pink-stroke: #e11d48;
+            --flow-pink-text: #9f1239;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: var(--slate-800);
+            background-color: #ffffff;
+            line-height: 1.4;
+            font-size: 10pt;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        @page {
+            size: A4 portrait;
+            margin: 12mm 14mm 14mm 14mm;
+        }
+
+        .page {
+            page-break-after: always;
+            position: relative;
+            padding-bottom: 22px;
+            min-height: 270mm;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .page:last-child {
+            page-break-after: avoid;
+        }
+
+        /* Header & Footer */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--slate-200);
+            padding-bottom: 6px;
+            margin-bottom: 12px;
+            font-size: 8pt;
+            color: var(--slate-600);
+        }
+
+        .page-header .brand {
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .page-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid var(--slate-200);
+            padding-top: 4px;
+            font-size: 7.5pt;
+            color: var(--slate-600);
+        }
+
+        /* Cover Page Styling */
+        .cover-container {
+            min-height: 260mm;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: linear-gradient(145deg, #0f172a 0%, #1e3a8a 50%, #0369a1 100%);
+            border-radius: 16px;
+            padding: 36px 32px;
+            color: #ffffff;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+        }
+
+        .cover-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .badge-pill {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(8px);
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 8.5pt;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .cover-title-box {
+            margin: 25px 0 20px 0;
+        }
+
+        .cover-title {
+            font-size: 23pt;
+            font-weight: 800;
+            line-height: 1.2;
+            letter-spacing: -0.5px;
+            margin-bottom: 12px;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .cover-subtitle {
+            font-size: 10.5pt;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #cbd5e1;
+            max-width: 90%;
+        }
+
+        .cover-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin: 20px 0;
+        }
+
+        .cover-card {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 14px;
+        }
+
+        .cover-card-icon {
+            font-size: 20pt;
+            margin-bottom: 8px;
+        }
+
+        .cover-card-title {
+            font-size: 10pt;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .cover-card-desc {
+            font-size: 7.5pt;
+            color: #cbd5e1;
+            line-height: 1.35;
+        }
+
+        /* Symbol Legend Box */
+        .symbol-legend-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 14px 18px;
+            color: var(--slate-900);
+            margin: 10px 0 18px 0;
+        }
+
+        .legend-title {
+            font-size: 9pt;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 8px;
+            border-radius: 8px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+
+        .legend-badge {
+            display: inline-block;
+            font-size: 8pt;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 6px;
+            margin-bottom: 6px;
+        }
+
+        .legend-badge.term {
+            background: #fef08a;
+            border: 1.5px solid #ca8a04;
+            color: #854d0e;
+            border-radius: 20px;
+        }
+
+        .legend-badge.io {
+            background: #bfdbfe;
+            border: 1.5px solid #2563eb;
+            color: #1e40af;
+            transform: skewX(-12deg);
+        }
+
+        .legend-badge.proc {
+            background: #e2e8f0;
+            border: 1.5px solid #475569;
+            color: #1e293b;
+        }
+
+        .legend-badge.dec {
+            background: #fda4af;
+            border: 1.5px solid #e11d48;
+            color: #9f1239;
+            font-weight: 800;
+        }
+
+        .legend-name {
+            font-size: 8pt;
+            font-weight: 700;
+            color: var(--slate-800);
+        }
+
+        .legend-desc {
+            font-size: 6.8pt;
+            color: var(--slate-600);
+            line-height: 1.2;
+            margin-top: 2px;
+        }
+
+        .cover-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding-top: 14px;
+        }
+
+        .meta-group h4 {
+            font-size: 7pt;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+            margin-bottom: 2px;
+        }
+
+        .meta-group p {
+            font-size: 8.5pt;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        /* Section Titles */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .section-num {
+            background: var(--primary);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 9.5pt;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-size: 12.5pt;
+            font-weight: 800;
+            color: var(--slate-900);
+            letter-spacing: -0.3px;
+        }
+
+        .section-desc {
+            font-size: 8.5pt;
+            color: var(--slate-600);
+            margin-bottom: 10px;
+            line-height: 1.35;
+        }
+
+        /* SVG Flow Visualizer Box */
+        .svg-flow-box {
+            background: #ffffff;
+            border: 1px solid var(--slate-200);
+            border-radius: 10px;
+            padding: 10px 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
+            flex-grow: 1;
+        }
+
+        svg {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Flow Notes Box */
+        .flow-notes-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .flow-note-card {
+            background: var(--slate-50);
+            border: 1px solid var(--slate-200);
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 7.5pt;
+            line-height: 1.35;
+        }
+
+        .flow-note-card.success {
+            border-left: 3px solid #059669;
+            background: #f0fdf4;
+        }
+
+        .flow-note-card.danger {
+            border-left: 3px solid #e11d48;
+            background: #fff1f2;
+        }
+
+        .flow-note-card.warning {
+            border-left: 3px solid #d97706;
+            background: #fffbeb;
+        }
+
+        .flow-note-card.info {
+            border-left: 3px solid #0284c7;
+            background: #f0f9ff;
+        }
+
+        .note-title {
+            font-weight: 700;
+            margin-bottom: 2px;
+            color: var(--slate-900);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========================================================
+         HALAMAN 1: COVER & STANDAR SIMBOL FLOWCHART
+         ======================================================== -->
+    <div class="page">
+        <div class="cover-container">
+            <div>
+                <div class="cover-top">
+                    <span class="badge-pill">Dokumentasi Standar Flowchart Sistem</span>
+                    <span class="badge-pill" style="background: rgba(16, 185, 129, 0.25); border-color: rgba(16, 185, 129, 0.4);">Kalurahan Purwobinangun</span>
+                </div>
+                
+                <div class="cover-title-box">
+                    <h1 class="cover-title">DIAGRAM ALIR SISTEM PELAYANAN PENCATATAN AKTE</h1>
+                    <p class="cover-subtitle">
+                        Pemetaan visual terstruktur alur proses bisnis pencatatan Akte Kelahiran & Akte Kematian berbasis web di Kalurahan Purwobinangun dengan simbol flowchart standar (ANSI/ISO), percabangan kondisi presisi, dan notifikasi multi-kanal.
+                    </p>
+                </div>
+
+                <!-- Simbol Standar Flowchart Sesuai Gambar Referensi -->
+                <div class="symbol-legend-container">
+                    <div class="legend-title">📌 Standar Simbol & Warna Flowchart yang Digunakan:</div>
+                    <div class="legend-grid">
+                        <div class="legend-item">
+                            <span class="legend-badge term">Start / End</span>
+                            <div class="legend-name">Terminator (Kapsul / Oval)</div>
+                            <div class="legend-desc">Menyatakan titik awal (Mulai) atau akhir (Selesai) dari suatu alur sistem.</div>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-badge io">Input / Output</span>
+                            <div class="legend-name">I/O (Jajaran Genjang)</div>
+                            <div class="legend-desc">Operasi masukan data oleh user atau keluaran informasi/resi/notifikasi oleh sistem.</div>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-badge proc">Proses</span>
+                            <div class="legend-name">Process (Persegi Panjang)</div>
+                            <div class="legend-desc">Aktivitas komputasi, validasi data, generate kode registrasi, atau review dokumen.</div>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-badge dec">Kondisi?</span>
+                            <div class="legend-name">Decision (Belah Ketupat)</div>
+                            <div class="legend-desc">Percabangan logika (Ya / Tidak, Valid / Revisi / Tolak) yang menentukan arah alir.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cover-grid">
+                    <div class="cover-card">
+                        <div class="cover-card-icon">👥</div>
+                        <div class="cover-card-title">Aktor Warga</div>
+                        <div class="cover-card-desc">Registrasi akun berbasis NIK/KK, formulir akta mandiri dengan auto-fill silsilah, tracking realtime, dan resi digital.</div>
+                    </div>
+                    <div class="cover-card">
+                        <div class="cover-card-icon">🏛️</div>
+                        <div class="cover-card-title">Petugas Admin</div>
+                        <div class="cover-card-desc">Verifikasi keabsahan dokumen, perubahan status lifecycle akta, validasi profil, dan cetak surat pengantar resmi.</div>
+                    </div>
+                    <div class="cover-card">
+                        <div class="cover-card-icon">⚡</div>
+                        <div class="cover-card-title">Otomasi & Keamanan</div>
+                        <div class="cover-card-desc">Notifikasi real-time Email SMTP & WhatsApp Fonnte, strict data scoping berbasis No. KK, dan proteksi privasi penduduk.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cover-bottom">
+                <div class="meta-group">
+                    <h4>Lokasi Pelayanan</h4>
+                    <p>Kalurahan Purwobinangun, Pakem, Sleman, D.I. Yogyakarta</p>
+                </div>
+                <div class="meta-group">
+                    <h4>Format Diagram</h4>
+                    <p>ANSI / ISO Standard Flowchart</p>
+                </div>
+                <div class="meta-group">
+                    <h4>Tanggal Pembaruan</h4>
+                    <p>Oktober 2026</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ========================================================
+         HALAMAN 2: FLOWCHART UTAMA SISTEM (END-TO-END MASTER FLOW)
+         ======================================================== -->
+    <div class="page">
+        <div class="page-header">
+            <span class="brand">🏛️ Sistem Pelayanan Akte Purwobinangun</span>
+            <span>Flowchart 1: Alur Utama Sistem (End-to-End Master Workflow)</span>
+        </div>
+
+        <div class="section-header">
+            <div class="section-num">01</div>
+            <div>
+                <h2 class="section-title">Alur Utama Pelayanan Pencatatan Akta (End-to-End)</h2>
+            </div>
+        </div>
+        <p class="section-desc">
+            Menggambarkan siklus hidup menyeluruh permohonan akte lahir / mati: mulai dari input permohonan oleh warga, validasi sistem, verifikasi berkas oleh admin, percabangan revisi/tolak/setuju, hingga terbitnya surat pengantar dan pengambilan dokumen.
+        </p>
+
+        <!-- SVG Flowchart 1 -->
+        <div class="svg-flow-box">
+            <svg width="680" height="710" viewBox="0 0 680 710" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#334155" />
+                    </marker>
+                    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse">
+                        <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.08"/>
+                    </filter>
+                </defs>
+
+                <!-- 1. START TERMINATOR -->
+                <g filter="url(#shadow)">
+                    <rect x="260" y="10" width="160" height="38" rx="19" fill="#FEF08A" stroke="#CA8A04" stroke-width="1.8"/>
+                    <text x="340" y="34" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="700" fill="#854D0E" text-anchor="middle">Mulai (Start)</text>
+                </g>
+
+                <!-- Line 1 -> 2 -->
+                <path d="M 340 48 L 340 75" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+                <!-- 2. INPUT DATA PERMOHONAN (PARALLELOGRAM) -->
+                <g filter="url(#shadow)">
+                    <polygon points="175,75 525,75 485,122 135,122" fill="#BFDBFE" stroke="#2563EB" stroke-width="1.8"/>
+                    <text x="330" y="96" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="700" fill="#1E40AF" text-anchor="middle">Warga Mengisi Form & Unggah Berkas Persyaratan</text>
+                    <text x="330" y="112" font-family="'Plus Jakarta Sans', sans-serif" font-size="8" fill="#1E3A8A" text-anchor="middle">(Akte Kelahiran / Kematian + 5 Berkas PDF/JPG)</text>
+                </g>
+
+                <!-- Line 2 -> 3 -->
+                <path d="M 330 122 L 330 148" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+                <!-- 3. PROCESS VALIDASI SISTEM -->
+                <g filter="url(#shadow)">
+                    <rect x="180" y="148" width="300" height="42" rx="4" fill="#E2E8F0" stroke="#475569" stroke-width="1.8"/>
+                    <text x="330" y="167" font-family="'Plus Jakarta Sans', sans-serif" font-size="9.5" font-weight="700" fill="#1E293B" text-anchor="middle">Sistem Validasi & Simpan Permohonan</text>
+                    <text x="330" y="181" font-family="'Plus Jakarta Sans', sans-serif" font-size="8" fill="#475569" text-anchor="middle">Generate No. Registrasi Unik & Resi Digital</text>
+                </g>
+
+                <!-- Line 3 -> 4 -->
+                <path d="M 330 190 L 330 216" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+                <!-- 4. I/O NOTIFIKASI KE ADMIN -->
+                <g filter="url(#shadow)">
+                    <polygon points="190,216 490,216 460,258 160,258" fill="#BFDBFE" stroke="#2563EB" stroke-width="1.8"/>
+                    <text x="325" y="235" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="700" fill="#1E40AF" text-anchor="middle">Kirim Notifikasi Email ke Petugas Kalurahan</text>
+                    <text x="325" y="249" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.5" fill="#1E3A8A" text-anchor="middle">Ada permohonan baru masuk antrean verifikasi</text>
+                </g>
+
+                <!-- Line 4 -> 5 -->
+                <path d="M 325 258 L 325 284" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+                <!-- 5. PROCESS REVIEW OLEH ADMIN -->
+                <g filter="url(#shadow)">
+                    <rect x="180" y="284" width="290" height="40" rx="4" fill="#E2E8F0" stroke="#475569" stroke-width="1.8"/>
+                    <text x="325" y="303" font-family="'Plus Jakarta Sans', sans-serif" font-size="9.5" font-weight="700" fill="#1E293B" text-anchor="middle">Petugas Memeriksa Keabsahan Berkas</text>
+                    <text x="325" y="316" font-family="'Plus Jakarta Sans', sans-serif" font-size="8" fill="#475569" text-anchor="middle">Pengecekan dokumen asli & kesesuaian data NIK/KK</text>
+                </g>
+
+                <!-- Line 5 -> 6 -->
+                <path d="M 325 324 L 325 352" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+                <!-- 6. DECISION 1: BERKAS SESUAI? -->
+                <g filter="url(#shadow)">
+                    <polygon points="325,352 425,398 325,444 225,398" fill="#FDA4AF" stroke="#E11D48" stroke-width="1.8"/>
+                    <text x="325" y="394" font-family="'Plus Jakarta Sans', sans-serif" font-size="9.5" font-weight="800" fill="#9F1239" text-anchor="middle">Berkas Lengkap</text>
+                    <text x="325" y="408" font-family="'Plus Jakarta Sans', sans-serif" font-size="9.5" font-weight="800" fill="#9F1239" text-anchor="middle">& Valid?</text>
+                </g>
+
+                <!-- BRANCH: TIDAK / PERLU REVISI (TO RIGHT) -->
+                <path d="M 425 398 L 475 398" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow)"/>
+                <rect x="428" y="386" width="40" height="15" rx="3" fill="#FFFFFF" stroke="#CBD5E1"/>
+                <text x="448" y="397" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.5" font-weight="700" fill="#9F1239" text-anchor="middle">Tidak</text>
+
+                <!-- 6A. DECISION 2: REVISI ATAU TOLAK? -->
+                <g filter="url(#shadow)">
+                    <polygon points="535,365 605,398 535,431 465,398" fill="#FDA4AF" stroke="#E11D48" stroke-width="1.6"/>
+                    <text x="535" y="395" font-family="'Plus Jakarta Sans', sans-serif" font-size="8" font-weight="700" fill="#9F1239" text-anchor="middle">Bisa</text>
+                    <text x="535" y="406" font-family="'Plus Jakarta Sans', sans-serif" font-size="8" font-weight="700" fill="#9F1239" text-anchor="middle">Direvisi?</text>
+                </g>
+
+                <!-- 6B. REVISI BRANCH (UP -> LOOP BACK TO USER) -->
+                <path d="M 535 365 L 535 250" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow)"/>
+                <rect x="515" y="340" width="38" height="15" rx="3" fill="#FFFFFF" stroke="#CBD5E1"/>
+                <text x="534" y="351" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.5" font-weight="700" fill="#0284C7" text-anchor="middle">Ya (Revisi)</text>
+
+                <g filter="url(#shadow)">
+                    <polygon points="495,210 655,210 635,250 475,250" fill="#BFDBFE" stroke="#2563EB" stroke-width="1.6"/>
+                    <text x="565" y="226" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.5" font-weight="700" fill="#1E40AF" text-anchor="middle">Kirim Notifikasi Revisi</text>
+                    <text x="565" y="238" font-family="'Plus Jakarta Sans', sans-serif" font-size="6.8" fill="#1E3A8A" text-anchor="middle">WA & Email + Catatan Petugas</text>
+                </g>
+
+                <!-- Loop from Revisi back to Input Warga -->
+                <path d="M 565 210 L 565 98 L 485 98" stroke="#2563EB" stroke-width="1.8" stroke-dasharray="4 4" marker-end="url(#arrow)"/>
+                <text x="540" y="145" font-family="'Plus Jakarta Sans', sans-serif" font-size="7" font-weight="700" fill="#2563EB" text-anchor="middle">Warga Perbaiki Berkas</text>
+
+                <!-- 6C. TOLAK BRANCH (DOWN -> END TOLAK) -->
+                <path d="M 535 431 L 535 470" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow)"/>
+                <rect x="538" y="440" width="48" height="15" rx="3" fill="#FFFFFF" stroke="#CBD5E1"/>
+                <text x="562" y="451" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.5" font-weight="700" fill="#9F1239" text-anchor="middle">Tidak (Tolak)</text>
+
+                <g filter="url(#shadow)">
+                    <rect x="475" y="470" width="125" height="38" rx="4" fill="#E2E8F0" stroke="#475569" stroke-width="1.6"/>
+                    <text x="537" y="487" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.5" font-weight="700" fill="#1E293B" text-anchor="middle">Admin Input Alasan Tolak</text>
+                    <text x="537" y="499" font-family="'Plus Jakarta Sans', sans-serif" font-size="6.8" fill="#475569" text-anchor="middle">& Berkas Diarsipkan</text>
+                </g>
+
+                <path d="M 537 508 L 537 535" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow)"/>
+                <g filter="url(#shadow)">
+                    <rect x="475" y="535" width="125" height="32" rx="16" fill="#FEF08A" stroke="#CA8A04" stroke-width="1.6"/>
+                    <text x="537" y="555" font-family="'Plus Jakarta Sans', sans-serif" font-size="8" font-weight="700" fill="#854D0E" text-anchor="middle">Selesai (Ditolak)</text>
+                </g>
+
+                <!-- BRANCH: YA / LENGKAP (DOWNWARDS) -->
+                <path d="M 325 444 L 325 472" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow)"/>
+                <rect x="330" y="449" width="30" height="15" rx="3" fill="#FFFFFF" stroke="#CBD5E1"/>
+                <text x="345" y="460" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.5" font-weight="700" fill="#166534" text-anchor="middle">Ya</text>
+
+                <!-- 7. PROCESS STATUS PROSES & SURAT PENGANTAR -->
+                <g filter="url(#shadow)">
+                    <rect x="165" y="472" width="320" height="42" rx="4" fill="#E2E8F0" stroke="#475569" stroke-width="1.8"/>
+                    <text x="325" y="491" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="700" fill="#1E293B" text-anchor="middle">Status "Sedang Diproses" & Generate Surat</text>
+                    <text x="325" y="504" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.8" fill="#475569" text-anchor="middle">Admin mencetak Surat Pengantar Resmi Kalurahan Purwobinangun</text>
+                </g>
+
+                <!-- Line 7 -> 8 -->
+                <path d="M 325 514 L 325 540" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+                <!-- 8. I/O NOTIFIKASI SIAP DIAMBIL -->
+                <g filter="url(#shadow)">
+                    <polygon points="175,540 500,540 470,582 145,582" fill="#BFDBFE" stroke="#2563EB" stroke-width="1.8"/>
+                    <text x="322" y="559" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="700" fill="#1E40AF" text-anchor="middle">Kirim Notifikasi Status "Siap Diambil" (WA & Email)</text>
+                    <text x="322" y="573" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.5" fill="#1E3A8A" text-anchor="middle">Warga menerima instruksi jadwal & syarat pengambilan berkas fisik</text>
+                </g>
+
+                <!-- Line 8 -> 9 -->
+                <path d="M 322 582 L 322 608" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+                <!-- 9. PROCESS PENGAMBILAN & PENGARSIPAN -->
+                <g filter="url(#shadow)">
+                    <rect x="175" y="608" width="295" height="42" rx="4" fill="#E2E8F0" stroke="#475569" stroke-width="1.8"/>
+                    <text x="322" y="627" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="700" fill="#1E293B" text-anchor="middle">Warga Ambil Dokumen di Kantor Kalurahan</text>
+                    <text x="322" y="640" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.8" fill="#475569" text-anchor="middle">Admin update status "Sudah Diambil" & Masuk Modul Arsip</text>
+                </g>
+
+                <!-- Line 9 -> 10 -->
+                <path d="M 322 650 L 322 675" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+                <!-- 10. END TERMINATOR -->
+                <g filter="url(#shadow)">
+                    <rect x="242" y="675" width="160" height="34" rx="17" fill="#FEF08A" stroke="#CA8A04" stroke-width="1.8"/>
+                    <text x="322" y="696" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="700" fill="#854D0E" text-anchor="middle">Selesai (End)</text>
+                </g>
+            </svg>
+        </div>
+
+        <div class="flow-notes-grid">
+            <div class="flow-note-card success">
+                <div class="note-title">✓ Jalur Utama Sukses (Golden Path)</div>
+                Warga isi form &rarr; Validasi sistem &rarr; Verifikasi admin Lengkap &rarr; Cetak Surat Pengantar &rarr; Notifikasi WA/Email &rarr; Dokumen diambil fisik &rarr; Arsip.
+            </div>
+            <div class="flow-note-card warning">
+                <div class="note-title">⚠️ Penanganan Revisi Berkas</div>
+                Jika berkas buram/kurang, admin menandai status <strong>Revisi</strong> beserta catatan. Warga mendapat pesan WA/Email dan dapat mengunggah ulang perbaikan tanpa membuat akun baru.
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <span>Kalurahan Purwobinangun, Pakem, Sleman</span>
+            <span>Halaman 2 dari 6</span>
+        </div>
+    </div>
+
+
+    <!-- ========================================================
+         HALAMAN 3: FLOWCHART REGISTRASI & VERIFIKASI AKUN WARGA
+         ======================================================== -->
+    <div class="page">
+        <div class="page-header">
+            <span class="brand">🏛️ Sistem Pelayanan Akte Purwobinangun</span>
+            <span>Flowchart 2: Autentikasi, Registrasi & Verifikasi Warga</span>
+        </div>
+
+        <div class="section-header">
+            <div class="section-num">02</div>
+            <div>
+                <h2 class="section-title">Alur Registrasi, Verifikasi Petugas & Login Warga</h2>
+            </div>
+        </div>
+        <p class="section-desc">
+            Untuk menjaga validitas data kependudukan, setiap akun warga harus diverifikasi keabsahannya dengan mencocokkan NIK, No. KK, dan berkas scan KK asli oleh petugas admin sebelum diizinkan mengakses layanan akta.
+        </p>
+
+        <!-- SVG Flowchart 2 -->
+        <div class="svg-flow-box">
+            <svg width="680" height="710" viewBox="0 0 680 710" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <marker id="arrow2" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#334155" />
+                    </marker>
+                </defs>
+
+                <!-- START -->
+                <g filter="url(#shadow)">
+                    <rect x="260" y="10" width="160" height="36" rx="18" fill="#FEF08A" stroke="#CA8A04" stroke-width="1.8"/>
+                    <text x="340" y="33" font-family="'Plus Jakarta Sans', sans-serif" font-size="10.5" font-weight="700" fill="#854D0E" text-anchor="middle">Mulai (Start)</text>
+                </g>
+
+                <path d="M 340 46 L 340 70" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow2)"/>
+
+                <!-- INPUT REGISTRASI -->
+                <g filter="url(#shadow)">
+                    <polygon points="170,70 535,70 495,116 130,116" fill="#BFDBFE" stroke="#2563EB" stroke-width="1.8"/>
+                    <text x="332" y="90" font-family="'Plus Jakarta Sans', sans-serif" font-size="9.5" font-weight="700" fill="#1E40AF" text-anchor="middle">Warga Mengisi Form Registrasi & Upload Dokumen KK</text>
+                    <text x="332" y="105" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.8" fill="#1E3A8A" text-anchor="middle">NIK 16 digit, No. KK, Data Diri, Anggota Keluarga, Scan KK (JPG/PDF)</text>
+                </g>
+
+                <path d="M 332 116 L 332 140" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow2)"/>
+
+                <!-- PROCESS VALIDASI FORMAT -->
+                <g filter="url(#shadow)">
+                    <rect x="180" y="140" width="305" height="38" rx="4" fill="#E2E8F0" stroke="#475569" stroke-width="1.8"/>
+                    <text x="332" y="157" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="700" fill="#1E293B" text-anchor="middle">Sistem Cek Keunikan NIK & Format Dokumen</text>
+                    <text x="332" y="170" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.5" fill="#475569" text-anchor="middle">Simpan Akun dengan Status: "Menunggu Verifikasi (Pending)"</text>
+                </g>
+
+                <path d="M 332 178 L 332 202" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow2)"/>
+
+                <!-- I/O EMAIL NOTIFIKASI PETUGAS -->
+                <g filter="url(#shadow)">
+                    <polygon points="190,202 495,202 465,242 160,242" fill="#BFDBFE" stroke="#2563EB" stroke-width="1.8"/>
+                    <text x="327" y="220" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="700" fill="#1E40AF" text-anchor="middle">Kirim Email Notifikasi Akun Baru ke Petugas</text>
+                    <text x="327" y="233" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.5" fill="#1E3A8A" text-anchor="middle">Pemberitahuan otomatis via SMTP Mail Service</text>
+                </g>
+
+                <path d="M 327 242 L 327 266" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow2)"/>
+
+                <!-- PROCESS ADMIN REVIEW DOKUMEN -->
+                <g filter="url(#shadow)">
+                    <rect x="175" y="266" width="305" height="40" rx="4" fill="#E2E8F0" stroke="#475569" stroke-width="1.8"/>
+                    <text x="327" y="284" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="700" fill="#1E293B" text-anchor="middle">Petugas Membandingkan Input vs Scan KK Asli</text>
+                    <text x="327" y="297" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.5" fill="#475569" text-anchor="middle">Menu: Admin > Kelola Warga > Menunggu Verifikasi</text>
+                </g>
+
+                <path d="M 327 306 L 327 332" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow2)"/>
+
+                <!-- DECISION: DOKUMEN KK VALID? -->
+                <g filter="url(#shadow)">
+                    <polygon points="327,332 435,375 327,418 219,375" fill="#FDA4AF" stroke="#E11D48" stroke-width="1.8"/>
+                    <text x="327" y="371" font-family="'Plus Jakarta Sans', sans-serif" font-size="9.5" font-weight="800" fill="#9F1239" text-anchor="middle">Dokumen KK</text>
+                    <text x="327" y="384" font-family="'Plus Jakarta Sans', sans-serif" font-size="9.5" font-weight="800" fill="#9F1239" text-anchor="middle">Sesuai & Sah?</text>
+                </g>
+
+                <!-- BRANCH TIDAK (REJECT) -->
+                <path d="M 435 375 L 490 375" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow2)"/>
+                <rect x="442" y="363" width="38" height="15" rx="3" fill="#FFFFFF" stroke="#CBD5E1"/>
+                <text x="461" y="374" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.5" font-weight="700" fill="#9F1239" text-anchor="middle">Tidak</text>
+
+                <!-- PROCESS TOLAK -->
+                <g filter="url(#shadow)">
+                    <rect x="490" y="354" width="165" height="42" rx="4" fill="#E2E8F0" stroke="#475569" stroke-width="1.6"/>
+                    <text x="572" y="371" font-family="'Plus Jakarta Sans', sans-serif" font-size="8" font-weight="700" fill="#1E293B" text-anchor="middle">Admin Klik "Tolak Pendaftaran"</text>
+                    <text x="572" y="384" font-family="'Plus Jakarta Sans', sans-serif" font-size="7" fill="#475569" text-anchor="middle">+ Input Alasan Penolakan</text>
+                </g>
+
+                <!-- Line Tolak to Notif Warga -->
+                <path d="M 572 396 L 572 430" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow2)"/>
+                <g filter="url(#shadow)">
+                    <polygon points="495,430 655,430 630,470 470,470" fill="#BFDBFE" stroke="#2563EB" stroke-width="1.6"/>
+                    <text x="562" y="447" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.5" font-weight="700" fill="#1E40AF" text-anchor="middle">Status Akun = "Rejected"</text>
+                    <text x="562" y="459" font-family="'Plus Jakarta Sans', sans-serif" font-size="6.8" fill="#1E3A8A" text-anchor="middle">Muncul Banner Alasan & Tombol Daftar Ulang</text>
+                </g>
+
+                <!-- Loop Tolak to Daftar Ulang -->
+                <path d="M 562 470 L 562 505 L 435 505" stroke="#334155" stroke-width="1.8" stroke-dasharray="4 4" marker-end="url(#arrow2)"/>
+                <g filter="url(#shadow)">
+                    <rect x="470" y="525" width="160" height="32" rx="16" fill="#FEF08A" stroke="#CA8A04" stroke-width="1.6"/>
+                    <text x="550" y="545" font-family="'Plus Jakarta Sans', sans-serif" font-size="8" font-weight="700" fill="#854D0E" text-anchor="middle">Warga Daftar Ulang / Batal</text>
+                </g>
+                <path d="M 562 470 L 562 525" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow2)"/>
+
+                <!-- BRANCH YA (APPROVE) -->
+                <path d="M 327 418 L 327 448" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow2)"/>
+                <rect x="332" y="424" width="30" height="15" rx="3" fill="#FFFFFF" stroke="#CBD5E1"/>
+                <text x="347" y="435" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.5" font-weight="700" fill="#166534" text-anchor="middle">Ya</text>
+
+                <!-- PROCESS AKTIFKAN AKUN -->
+                <g filter="url(#shadow)">
+                    <rect x="175" y="448" width="305" height="40" rx="4" fill="#E2E8F0" stroke="#475569" stroke-width="1.8"/>
+                    <text x="327" y="466" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="700" fill="#1E293B" text-anchor="middle">Admin Klik "Verifikasi Akun"</text>
+                    <text x="327" y="479" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.5" fill="#475569" text-anchor="middle">Status Akun Warga Berubah Menjadi "Active"</text>
+                </g>
+
+                <path d="M 327 488 L 327 514" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow2)"/>
+
+                <!-- INPUT LOGIN WARGA -->
+                <g filter="url(#shadow)">
+                    <polygon points="175,514 505,514 475,556 145,556" fill="#BFDBFE" stroke="#2563EB" stroke-width="1.8"/>
+                    <text x="325" y="532" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="700" fill="#1E40AF" text-anchor="middle">Warga Melakukan Login (NIK & Password)</text>
+                    <text x="325" y="546" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.5" fill="#1E3A8A" text-anchor="middle">Autentikasi Aman via Guard Warga Kalurahan</text>
+                </g>
+
+                <path d="M 325 556 L 325 582" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow2)"/>
+
+                <!-- PROCESS DASHBOARD WARGA -->
+                <g filter="url(#shadow)">
+                    <rect x="170" y="582" width="310" height="42" rx="4" fill="#E2E8F0" stroke="#475569" stroke-width="1.8"/>
+                    <text x="325" y="601" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="700" fill="#1E293B" text-anchor="middle">Masuk ke Dashboard Layanan Warga</text>
+                    <text x="325" y="614" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.5" fill="#475569" text-anchor="middle">Akses formulir Akte Lahir, Akte Mati, Lacak & Profil Keluarga</text>
+                </g>
+
+                <path d="M 325 624 L 325 654" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow2)"/>
+
+                <!-- END -->
+                <g filter="url(#shadow)">
+                    <rect x="245" y="654" width="160" height="36" rx="18" fill="#FEF08A" stroke="#CA8A04" stroke-width="1.8"/>
+                    <text x="325" y="677" font-family="'Plus Jakarta Sans', sans-serif" font-size="10.5" font-weight="700" fill="#854D0E" text-anchor="middle">Selesai (End)</text>
+                </g>
+            </svg>
+        </div>
+
+        <div class="flow-notes-grid">
+            <div class="flow-note-card info">
+                <div class="note-title">🛡️ Pencegahan Akun Duplikat / Fiktif</div>
+                Sistem secara ketat memeriksa keunikan NIK pemohon dan mencatat histori nomor KK untuk mencegah pendaftaran ganda dari nomor KK yang sama.
+            </div>
+            <div class="flow-note-card success">
+                <div class="note-title">🚀 Fitur Auto-Fill Data Anggota Keluarga</div>
+                Saat registrasi berhasil diverifikasi, semua anggota keluarga yang diinput otomatis masuk ke database relasional, sehingga saat membuat permohonan akta data orang tua otomatis terisi.
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <span>Kalurahan Purwobinangun, Pakem, Sleman</span>
+            <span>Halaman 3 dari 6</span>
+        </div>
+    </div>
+
+
+    <!-- ========================================================
+         HALAMAN 4: FLOWCHART PENGAJUAN AKTE LAHIR & KEMATIAN
+         ======================================================== -->
+    <div class="page">
+        <div class="page-header">
+            <span class="brand">🏛️ Sistem Pelayanan Akte Purwobinangun</span>
+            <span>Flowchart 3: Pengajuan Akte Kelahiran & Akte Kematian</span>
+        </div>
+
+        <div class="section-header">
+            <div class="section-num">03</div>
+            <div>
+                <h2 class="section-title">Alur Pengisian Form & Permohonan Akta Mandiri</h2>
+            </div>
+        </div>
+        <p class="section-desc">
+            Alur presisi pengisian formulir permohonan Akte Kelahiran maupun Akte Kematian oleh warga terautentikasi: auto-fill silsilah KK, unggah 5 berkas wajib, validasi server, hingga penerbitan resi dan QR tracking.
+        </p>
+
+        <!-- SVG Flowchart 3 -->
+        <div class="svg-flow-box">
+            <svg width="680" height="710" viewBox="0 0 680 710" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <marker id="arrow3" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#334155" />
+                    </marker>
+                </defs>
+
+                <!-- START -->
+                <g filter="url(#shadow)">
+                    <rect x="260" y="10" width="160" height="34" rx="17" fill="#FEF08A" stroke="#CA8A04" stroke-width="1.8"/>
+                    <text x="340" y="32" font-family="'Plus Jakarta Sans', sans-serif" font-size="10.5" font-weight="700" fill="#854D0E" text-anchor="middle">Mulai (Start)</text>
+                </g>
+
+                <path d="M 340 44 L 340 68" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow3)"/>
+
+                <!-- DECISION PILIH JENIS AKTA -->
+                <g filter="url(#shadow)">
+                    <polygon points="340,68 450,108 340,148 230,108" fill="#FDA4AF" stroke="#E11D48" stroke-width="1.8"/>
+                    <text x="340" y="104" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="800" fill="#9F1239" text-anchor="middle">Pilih Jenis</text>
+                    <text x="340" y="117" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="800" fill="#9F1239" text-anchor="middle">Layanan Akta?</text>
+                </g>
+
+                <!-- BRANCH KIRI: AKTE KELAHIRAN -->
+                <path d="M 230 108 L 140 108 L 140 155" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow3)"/>
+                <rect x="150" y="96" width="70" height="15" rx="3" fill="#FFFFFF" stroke="#CBD5E1"/>
+                <text x="185" y="107" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.5" font-weight="700" fill="#0284C7" text-anchor="middle">Akte Kelahiran</text>
+
+                <g filter="url(#shadow)">
+                    <polygon points="20,155 260,155 235,198 5,198" fill="#BFDBFE" stroke="#2563EB" stroke-width="1.6"/>
+                    <text x="130" y="173" font-family="'Plus Jakarta Sans', sans-serif" font-size="8" font-weight="700" fill="#1E40AF" text-anchor="middle">Auto-fill Data Ayah & Ibu (dari KK)</text>
+                    <text x="130" y="186" font-family="'Plus Jakarta Sans', sans-serif" font-size="7" fill="#1E3A8A" text-anchor="middle">+ Input Data Kelahiran Bayi</text>
+                </g>
+
+                <!-- BRANCH KANAN: AKTE KEMATIAN -->
+                <path d="M 450 108 L 540 108 L 540 155" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow3)"/>
+                <rect x="460" y="96" width="70" height="15" rx="3" fill="#FFFFFF" stroke="#CBD5E1"/>
+                <text x="495" y="107" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.5" font-weight="700" fill="#9F1239" text-anchor="middle">Akte Kematian</text>
+
+                <g filter="url(#shadow)">
+                    <polygon points="420,155 660,155 635,198 405,198" fill="#BFDBFE" stroke="#2563EB" stroke-width="1.6"/>
+                    <text x="535" y="173" font-family="'Plus Jakarta Sans', sans-serif" font-size="8" font-weight="700" fill="#1E40AF" text-anchor="middle">Pilih Anggota Keluarga yang Wafat</text>
+                    <text x="535" y="186" font-family="'Plus Jakarta Sans', sans-serif" font-size="7" fill="#1E3A8A" text-anchor="middle">+ Input Waktu, Lokasi & Sebab</text>
+                </g>
+
+                <!-- CONVERGE TO UPLOAD 5 BERKAS -->
+                <path d="M 130 198 L 130 225 L 340 225 L 340 245" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow3)"/>
+                <path d="M 535 198 L 535 225 L 340 225" stroke="#334155" stroke-width="1.8"/>
+
+                <!-- INPUT UPLOAD 5 BERKAS -->
+                <g filter="url(#shadow)">
+                    <polygon points="175,245 535,245 495,292 135,292" fill="#BFDBFE" stroke="#2563EB" stroke-width="1.8"/>
+                    <text x="335" y="265" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="700" fill="#1E40AF" text-anchor="middle">Warga Mengunggah 5 Berkas Persyaratan Wajib</text>
+                    <text x="335" y="280" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.5" fill="#1E3A8A" text-anchor="middle">Surat Ket. RS/Dokter, KK, Buku Nikah/KTP Jenazah, KTP Ortu/Pelapor, Saksi</text>
+                </g>
+
+                <path d="M 335 292 L 335 318" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow3)"/>
+
+                <!-- DECISION VALIDASI FORM -->
+                <g filter="url(#shadow)">
+                    <polygon points="335,318 440,360 335,402 230,360" fill="#FDA4AF" stroke="#E11D48" stroke-width="1.8"/>
+                    <text x="335" y="356" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="800" fill="#9F1239" text-anchor="middle">Form Lengkap &</text>
+                    <text x="335" y="369" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="800" fill="#9F1239" text-anchor="middle">Ukuran File Sesuai?</text>
+                </g>
+
+                <!-- BRANCH TIDAK (ERROR VALIDASI) -->
+                <path d="M 440 360 L 520 360 L 520 270 L 495 270" stroke="#334155" stroke-width="1.8" stroke-dasharray="4 4" marker-end="url(#arrow3)"/>
+                <rect x="448" y="348" width="45" height="15" rx="3" fill="#FFFFFF" stroke="#CBD5E1"/>
+                <text x="470" y="359" font-family="'Plus Jakarta Sans', sans-serif" font-size="7" font-weight="700" fill="#9F1239" text-anchor="middle">Tidak (Error)</text>
+
+                <!-- BRANCH YA -->
+                <path d="M 335 402 L 335 430" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow3)"/>
+                <rect x="340" y="408" width="28" height="15" rx="3" fill="#FFFFFF" stroke="#CBD5E1"/>
+                <text x="354" y="419" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.5" font-weight="700" fill="#166534" text-anchor="middle">Ya</text>
+
+                <!-- PROCESS GENERATE REGISTRATION NO -->
+                <g filter="url(#shadow)">
+                    <rect x="170" y="430" width="330" height="42" rx="4" fill="#E2E8F0" stroke="#475569" stroke-width="1.8"/>
+                    <text x="335" y="449" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="700" fill="#1E293B" text-anchor="middle">Generate Nomor Registrasi Unik & Simpan DB</text>
+                    <text x="335" y="462" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.8" fill="#475569" text-anchor="middle">Format: AKL-YYYYMMDD-XXXX atau AKM-YYYYMMDD-XXXX</text>
+                </g>
+
+                <path d="M 335 472 L 335 498" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow3)"/>
+
+                <!-- I/O TERBITKAN RESI & NOTIFIKASI -->
+                <g filter="url(#shadow)">
+                    <polygon points="160,498 530,498 495,544 125,544" fill="#BFDBFE" stroke="#2563EB" stroke-width="1.8"/>
+                    <text x="328" y="518" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="700" fill="#1E40AF" text-anchor="middle">Terbitkan Resi Digital & QR Code Tracking</text>
+                    <text x="328" y="532" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.5" fill="#1E3A8A" text-anchor="middle">Tampilkan Halaman Sukses + Tombol Cetak Resi Pendaftaran</text>
+                </g>
+
+                <path d="M 328 544 L 328 570" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow3)"/>
+
+                <!-- I/O NOTIFIKASI KE EMAIL ADMIN -->
+                <g filter="url(#shadow)">
+                    <polygon points="175,570 500,570 470,610 145,610" fill="#BFDBFE" stroke="#2563EB" stroke-width="1.8"/>
+                    <text x="322" y="588" font-family="'Plus Jakarta Sans', sans-serif" font-size="8.5" font-weight="700" fill="#1E40AF" text-anchor="middle">AdminNotificationService Mengirim Email ke Petugas</text>
+                    <text x="322" y="601" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.2" fill="#1E3A8A" text-anchor="middle">Rincian nama pemohon, NIK, No. HP, & No. Registrasi terkirim instan</text>
+                </g>
+
+                <path d="M 322 610 L 322 640" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow3)"/>
+
+                <!-- END -->
+                <g filter="url(#shadow)">
+                    <rect x="242" y="640" width="160" height="34" rx="17" fill="#FEF08A" stroke="#CA8A04" stroke-width="1.8"/>
+                    <text x="322" y="662" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="700" fill="#854D0E" text-anchor="middle">Selesai (End)</text>
+                </g>
+            </svg>
+        </div>
+
+        <div class="flow-notes-grid">
+            <div class="flow-note-card success">
+                <div class="note-title">📑 Format Resi Digital Resmi</div>
+                Resi pengajuan dapat langsung diunduh / dicetak oleh warga sebagai bukti pendaftaran resmi dan digunakan untuk pengambilan dokumen fisik di Kalurahan Purwobinangun.
+            </div>
+            <div class="flow-note-card info">
+                <div class="note-title">📱 Pelacakan Real-time Tanpa Ribet</div>
+                Setiap nomor registrasi yang terbit langsung aktif pada menu <strong>Lacak Berkas</strong> sehingga pemohon dapat memantau setiap detik progres verifikasi dokumennya.
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <span>Kalurahan Purwobinangun, Pakem, Sleman</span>
+            <span>Halaman 4 dari 6</span>
+        </div>
+    </div>
+
+
+    <!-- ========================================================
+         HALAMAN 5: FLOWCHART VERIFIKASI & STATUS LIFECYCLE ADMIN
+         ======================================================== -->
+    <div class="page">
+        <div class="page-header">
+            <span class="brand">🏛️ Sistem Pelayanan Akte Purwobinangun</span>
+            <span>Flowchart 4: Siklus Verifikasi, Revisi & Penerbitan Surat Pengantar</span>
+        </div>
+
+        <div class="section-header">
+            <div class="section-num">04</div>
+            <div>
+                <h2 class="section-title">Alur Kerja Petugas Admin & Siklus Status Berkas</h2>
+            </div>
+        </div>
+        <p class="section-desc">
+            Alur operasional verifikator kalurahan dalam meninjau berkas permohonan, memutuskan status tindak lanjut (Revisi, Tolak, Proses), mencetak Surat Pengantar ber-kop resmi, serta mengirimkan notifikasi multi-kanal (WhatsApp & Email).
+        </p>
+
+        <!-- SVG Flowchart 4 -->
+        <div class="svg-flow-box">
+            <svg width="680" height="710" viewBox="0 0 680 710" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <marker id="arrow4" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#334155" />
+                    </marker>
+                </defs>
+
+                <!-- START -->
+                <g filter="url(#shadow)">
+                    <rect x="260" y="10" width="160" height="34" rx="17" fill="#FEF08A" stroke="#CA8A04" stroke-width="1.8"/>
+                    <text x="340" y="32" font-family="'Plus Jakarta Sans', sans-serif" font-size="10.5" font-weight="700" fill="#854D0E" text-anchor="middle">Mulai (Start)</text>
+                </g>
+
+                <path d="M 340 44 L 340 68" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow4)"/>
+
+                <!-- PROCESS ADMIN BUKA ANTREAN -->
+                <g filter="url(#shadow)">
+                    <rect x="180" y="68" width="320" height="38" rx="4" fill="#E2E8F0" stroke="#475569" stroke-width="1.8"/>
+                    <text x="340" y="86" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="700" fill="#1E293B" text-anchor="middle">Admin Login & Buka Antrean Permohonan</text>
+                    <text x="340" y="99" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.5" fill="#475569" text-anchor="middle">Menu: Admin > Akte Kelahiran / Akte Kematian (Status: Menunggu)</text>
+                </g>
+
+                <path d="M 340 106 L 340 130" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow4)"/>
+
+                <!-- PROCESS PERIKSA BERKAS -->
+                <g filter="url(#shadow)">
+                    <rect x="190" y="130" width="300" height="38" rx="4" fill="#E2E8F0" stroke="#475569" stroke-width="1.8"/>
+                    <text x="340" y="148" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="700" fill="#1E293B" text-anchor="middle">Periksa 5 Berkas Dokumen Lampiran</text>
+                    <text x="340" y="161" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.5" fill="#475569" text-anchor="middle">Cek ketajaman scan, kecocokan NIK, tanggal peristiwa & saksi</text>
+                </g>
+
+                <path d="M 340 168 L 340 196" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow4)"/>
+
+                <!-- DECISION EVALUASI STATUS -->
+                <g filter="url(#shadow)">
+                    <polygon points="340,196 450,238 340,280 230,238" fill="#FDA4AF" stroke="#E11D48" stroke-width="1.8"/>
+                    <text x="340" y="234" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="800" fill="#9F1239" text-anchor="middle">Hasil Evaluasi</text>
+                    <text x="340" y="247" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="800" fill="#9F1239" text-anchor="middle">Berkas?</text>
+                </g>
+
+                <!-- BRANCH KIRI: REVISI BERKAS -->
+                <path d="M 230 238 L 130 238 L 130 290" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow4)"/>
+                <rect x="145" y="226" width="65" height="15" rx="3" fill="#FFFFFF" stroke="#CBD5E1"/>
+                <text x="177" y="237" font-family="'Plus Jakarta Sans', sans-serif" font-size="7" font-weight="700" fill="#D97706" text-anchor="middle">Kurang / Buram</text>
+
+                <g filter="url(#shadow)">
+                    <rect x="30" y="290" width="200" height="42" rx="4" fill="#E2E8F0" stroke="#475569" stroke-width="1.6"/>
+                    <text x="130" y="308" font-family="'Plus Jakarta Sans', sans-serif" font-size="8" font-weight="700" fill="#1E293B" text-anchor="middle">Status: "Revisi Berkas"</text>
+                    <text x="130" y="321" font-family="'Plus Jakarta Sans', sans-serif" font-size="7" fill="#475569" text-anchor="middle">Admin wajib mengisi rincian catatan revisi</text>
+                </g>
+
+                <path d="M 130 332 L 130 365" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow4)"/>
+
+                <g filter="url(#shadow)">
+                    <polygon points="10,365 250,365 225,405 5,405" fill="#BFDBFE" stroke="#2563EB" stroke-width="1.6"/>
+                    <text x="125" y="382" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.5" font-weight="700" fill="#1E40AF" text-anchor="middle">Kirim Pesan WA & Email ke Pemohon</text>
+                    <text x="125" y="394" font-family="'Plus Jakarta Sans', sans-serif" font-size="6.8" fill="#1E3A8A" text-anchor="middle">Instruksi perbaikan dokumen yang harus diupload ulang</text>
+                </g>
+
+                <!-- BRANCH KANAN: TOLAK / BATAL -->
+                <path d="M 450 238 L 550 238 L 550 290" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow4)"/>
+                <rect x="465" y="226" width="65" height="15" rx="3" fill="#FFFFFF" stroke="#CBD5E1"/>
+                <text x="497" y="237" font-family="'Plus Jakarta Sans', sans-serif" font-size="7" font-weight="700" fill="#9F1239" text-anchor="middle">Fiktif / Batal</text>
+
+                <g filter="url(#shadow)">
+                    <rect x="450" y="290" width="200" height="42" rx="4" fill="#E2E8F0" stroke="#475569" stroke-width="1.6"/>
+                    <text x="550" y="308" font-family="'Plus Jakarta Sans', sans-serif" font-size="8" font-weight="700" fill="#1E293B" text-anchor="middle">Status: "Ditolak / Dibatalkan"</text>
+                    <text x="550" y="321" font-family="'Plus Jakarta Sans', sans-serif" font-size="7" fill="#475569" text-anchor="middle">Catat alasan penolakan & arsipkan berkas</text>
+                </g>
+
+                <path d="M 550 332 L 550 365" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow4)"/>
+
+                <g filter="url(#shadow)">
+                    <rect x="470" y="365" width="160" height="32" rx="16" fill="#FEF08A" stroke="#CA8A04" stroke-width="1.6"/>
+                    <text x="550" y="385" font-family="'Plus Jakarta Sans', sans-serif" font-size="8" font-weight="700" fill="#854D0E" text-anchor="middle">Selesai (Diarsipkan)</text>
+                </g>
+
+                <!-- BRANCH TENGAH: LENGKAP & VALID -->
+                <path d="M 340 280 L 340 310" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow4)"/>
+                <rect x="345" y="286" width="60" height="15" rx="3" fill="#FFFFFF" stroke="#CBD5E1"/>
+                <text x="375" y="297" font-family="'Plus Jakarta Sans', sans-serif" font-size="7" font-weight="700" fill="#166534" text-anchor="middle">Lengkap & Sah</text>
+
+                <!-- PROCESS PROSES STATUS & CETAK SURAT -->
+                <g filter="url(#shadow)">
+                    <rect x="190" y="310" width="300" height="42" rx="4" fill="#E2E8F0" stroke="#475569" stroke-width="1.8"/>
+                    <text x="340" y="329" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="700" fill="#1E293B" text-anchor="middle">Status: "Sedang Diproses"</text>
+                    <text x="340" y="342" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.5" fill="#475569" text-anchor="middle">Admin klik "Cetak Surat Pengantar" Resmi Kalurahan</text>
+                </g>
+
+                <path d="M 340 352 L 340 380" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow4)"/>
+
+                <!-- PROCESS UPDATE STATUS SIAP DIAMBIL -->
+                <g filter="url(#shadow)">
+                    <rect x="180" y="380" width="320" height="42" rx="4" fill="#E2E8F0" stroke="#475569" stroke-width="1.8"/>
+                    <text x="340" y="399" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="700" fill="#1E293B" text-anchor="middle">Ubah Status Menjadi "Siap Diambil"</text>
+                    <text x="340" y="412" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.5" fill="#475569" text-anchor="middle">Centang kirim WA (Fonnte API) & Email (SMTP)</text>
+                </g>
+
+                <path d="M 340 422 L 340 450" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow4)"/>
+
+                <!-- I/O NOTIFIKASI PENGAMBILAN FISIK -->
+                <g filter="url(#shadow)">
+                    <polygon points="170,450 520,450 490,494 140,494" fill="#BFDBFE" stroke="#2563EB" stroke-width="1.8"/>
+                    <text x="330" y="470" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="700" fill="#1E40AF" text-anchor="middle">Kirim Notifikasi Pengambilan ke Pemohon</text>
+                    <text x="330" y="484" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.5" fill="#1E3A8A" text-anchor="middle">Pemberitahuan jam layanan & berkas fisik asli yang wajib dibawa</text>
+                </g>
+
+                <path d="M 330 494 L 330 522" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow4)"/>
+
+                <!-- PROCESS SERAH TERIMA & ARSIP -->
+                <g filter="url(#shadow)">
+                    <rect x="180" y="522" width="300" height="42" rx="4" fill="#E2E8F0" stroke="#475569" stroke-width="1.8"/>
+                    <text x="330" y="541" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="700" fill="#1E293B" text-anchor="middle">Warga Datang & Serah Terima Dokumen Fisik</text>
+                    <text x="330" y="554" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.5" fill="#475569" text-anchor="middle">Admin ubah status "Sudah Diambil" & Masuk Modul Arsip</text>
+                </g>
+
+                <path d="M 330 564 L 330 600" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow4)"/>
+
+                <!-- END -->
+                <g filter="url(#shadow)">
+                    <rect x="250" y="600" width="160" height="34" rx="17" fill="#FEF08A" stroke="#CA8A04" stroke-width="1.8"/>
+                    <text x="330" y="622" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="700" fill="#854D0E" text-anchor="middle">Selesai (End)</text>
+                </g>
+            </svg>
+        </div>
+
+        <div class="flow-notes-grid">
+            <div class="flow-note-card info">
+                <div class="note-title">📜 Format Cetak Surat Pengantar Resmi</div>
+                Sistem otomatis memformat Surat Pengantar lengkap dengan Kop Kalurahan Sleman, Nomor Surat Standar, Data Detail Pemohon/Jenazah/Bayi, dan ruang Tanda Tangan Lurah / Carik Purwobinangun.
+            </div>
+            <div class="flow-note-card success">
+                <div class="note-title">🗄️ Manajemen Arsip & Pemulihan (Restore)</div>
+                Data permohonan yang selesai otomatis dipindahkan ke menu <strong>Arsip</strong> agar tampilan harian petugas tetap bersih, serta tersedia fitur <em>Restore</em> jika diperlukan audit data.
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <span>Kalurahan Purwobinangun, Pakem, Sleman</span>
+            <span>Halaman 5 dari 6</span>
+        </div>
+    </div>
+
+
+    <!-- ========================================================
+         HALAMAN 6: PELACAKAN, KEAMANAN KK & PERUBAHAN PROFIL
+         ======================================================== -->
+    <div class="page">
+        <div class="page-header">
+            <span class="brand">🏛️ Sistem Pelayanan Akte Purwobinangun</span>
+            <span>Flowchart 5 & 6: Pelacakan (Tracking), Keamanan KK & Perubahan Profil</span>
+        </div>
+
+        <div class="section-header">
+            <div class="section-num">05</div>
+            <div>
+                <h2 class="section-title">Alur Lacak Berkas & Permohonan Perubahan Profil</h2>
+            </div>
+        </div>
+        <p class="section-desc">
+            Mengatur mekanisme keamanan pelacakan berkas berbasis No. Kartu Keluarga (KK) agar data privasi warga terlindungi, serta alur permohonan pembaruan data profil warga yang wajib diverifikasi admin.
+        </p>
+
+        <!-- SVG Flowchart 5 & 6 -->
+        <div class="svg-flow-box">
+            <svg width="680" height="710" viewBox="0 0 680 710" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <marker id="arrow5" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#334155" />
+                    </marker>
+                </defs>
+
+                <!-- ================= BAGIAN KIRI: PELACAKAN BERKAS ================= -->
+                <!-- Title Kiri -->
+                <rect x="20" y="10" width="290" height="24" rx="4" fill="#0284C7"/>
+                <text x="165" y="26" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="700" fill="#FFFFFF" text-anchor="middle">A. ALUR LACAK BERKAS (TRACKING)</text>
+
+                <!-- Start Lacak -->
+                <g filter="url(#shadow)">
+                    <rect x="95" y="42" width="140" height="30" rx="15" fill="#FEF08A" stroke="#CA8A04" stroke-width="1.6"/>
+                    <text x="165" y="61" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="700" fill="#854D0E" text-anchor="middle">Mulai (Start)</text>
+                </g>
+
+                <path d="M 165 72 L 165 92" stroke="#334155" stroke-width="1.6" marker-end="url(#arrow5)"/>
+
+                <!-- Input No Reg -->
+                <g filter="url(#shadow)">
+                    <polygon points="35,92 295,92 275,130 15,130" fill="#BFDBFE" stroke="#2563EB" stroke-width="1.6"/>
+                    <text x="155" y="108" font-family="'Plus Jakarta Sans', sans-serif" font-size="8" font-weight="700" fill="#1E40AF" text-anchor="middle">Input No. Registrasi / NIK</text>
+                    <text x="155" y="120" font-family="'Plus Jakarta Sans', sans-serif" font-size="7" fill="#1E3A8A" text-anchor="middle">di Halaman Lacak Pengajuan</text>
+                </g>
+
+                <path d="M 155 130 L 155 150" stroke="#334155" stroke-width="1.6" marker-end="url(#arrow5)"/>
+
+                <!-- Decision User Login? -->
+                <g filter="url(#shadow)">
+                    <polygon points="155,150 245,185 155,220 65,185" fill="#FDA4AF" stroke="#E11D48" stroke-width="1.6"/>
+                    <text x="155" y="181" font-family="'Plus Jakarta Sans', sans-serif" font-size="8" font-weight="800" fill="#9F1239" text-anchor="middle">Pengguna</text>
+                    <text x="155" y="193" font-family="'Plus Jakarta Sans', sans-serif" font-size="8" font-weight="800" fill="#9F1239" text-anchor="middle">Sudah Login?</text>
+                </g>
+
+                <!-- Branch Belum Login -->
+                <path d="M 65 185 L 20 185 L 20 240 L 40 240" stroke="#334155" stroke-width="1.6" marker-end="url(#arrow5)"/>
+                <text x="35" y="177" font-family="'Plus Jakarta Sans', sans-serif" font-size="6.8" font-weight="700" fill="#9F1239">Belum</text>
+
+                <g filter="url(#shadow)">
+                    <polygon points="40,225 150,225 135,265 25,265" fill="#BFDBFE" stroke="#2563EB" stroke-width="1.4"/>
+                    <text x="88" y="240" font-family="'Plus Jakarta Sans', sans-serif" font-size="7" font-weight="700" fill="#1E40AF" text-anchor="middle">Tampilkan Ringkasan</text>
+                    <text x="88" y="252" font-family="'Plus Jakarta Sans', sans-serif" font-size="6.2" fill="#1E3A8A" text-anchor="middle">Status Publik Dasar</text>
+                </g>
+
+                <!-- Branch Sudah Login -> Cek Kesesuaian No KK -->
+                <path d="M 155 220 L 155 270" stroke="#334155" stroke-width="1.6" marker-end="url(#arrow5)"/>
+                <text x="160" y="235" font-family="'Plus Jakarta Sans', sans-serif" font-size="6.8" font-weight="700" fill="#166534">Sudah</text>
+
+                <!-- Decision KK Cocok? -->
+                <g filter="url(#shadow)">
+                    <polygon points="155,270 245,305 155,340 65,305" fill="#FDA4AF" stroke="#E11D48" stroke-width="1.6"/>
+                    <text x="155" y="301" font-family="'Plus Jakarta Sans', sans-serif" font-size="8" font-weight="800" fill="#9F1239" text-anchor="middle">No. KK Akun =</text>
+                    <text x="155" y="313" font-family="'Plus Jakarta Sans', sans-serif" font-size="8" font-weight="800" fill="#9F1239" text-anchor="middle">No. KK Berkas?</text>
+                </g>
+
+                <!-- KK Cocok: Ya -->
+                <path d="M 155 340 L 155 365" stroke="#334155" stroke-width="1.6" marker-end="url(#arrow5)"/>
+                <text x="160" y="352" font-family="'Plus Jakarta Sans', sans-serif" font-size="6.8" font-weight="700" fill="#166534">Ya</text>
+
+                <g filter="url(#shadow)">
+                    <polygon points="35,365 285,365 265,410 15,410" fill="#BFDBFE" stroke="#2563EB" stroke-width="1.6"/>
+                    <text x="150" y="382" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.5" font-weight="700" fill="#1E40AF" text-anchor="middle">Akses Penuh: Buka Detail Berkas,</text>
+                    <text x="150" y="394" font-family="'Plus Jakarta Sans', sans-serif" font-size="7" fill="#1E3A8A" text-anchor="middle">Timeline Status, Catatan & Cetak Ulang Resi</text>
+                </g>
+
+                <!-- KK Cocok: Tidak -->
+                <path d="M 245 305 L 290 305 L 290 385 L 285 385" stroke="#334155" stroke-width="1.6"/>
+                <text x="250" y="297" font-family="'Plus Jakarta Sans', sans-serif" font-size="6.8" font-weight="700" fill="#9F1239">Beda KK</text>
+
+                <path d="M 150 410 L 150 440" stroke="#334155" stroke-width="1.6" marker-end="url(#arrow5)"/>
+                <g filter="url(#shadow)">
+                    <rect x="80" y="440" width="140" height="28" rx="14" fill="#FEF08A" stroke="#CA8A04" stroke-width="1.6"/>
+                    <text x="150" y="458" font-family="'Plus Jakarta Sans', sans-serif" font-size="8.5" font-weight="700" fill="#854D0E" text-anchor="middle">Selesai Lacak</text>
+                </g>
+
+
+                <!-- ================= BAGIAN KANAN: PERUBAHAN DATA PROFIL ================= -->
+                <!-- Title Kanan -->
+                <rect x="360" y="10" width="300" height="24" rx="4" fill="#7C3AED"/>
+                <text x="510" y="26" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="700" fill="#FFFFFF" text-anchor="middle">B. ALUR PERMOHONAN UBAH DATA PROFIL</text>
+
+                <!-- Start Profil -->
+                <g filter="url(#shadow)">
+                    <rect x="440" y="42" width="140" height="30" rx="15" fill="#FEF08A" stroke="#CA8A04" stroke-width="1.6"/>
+                    <text x="510" y="61" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="700" fill="#854D0E" text-anchor="middle">Mulai (Start)</text>
+                </g>
+
+                <path d="M 510 72 L 510 92" stroke="#334155" stroke-width="1.6" marker-end="url(#arrow5)"/>
+
+                <!-- Input Ubah Profil -->
+                <g filter="url(#shadow)">
+                    <polygon points="380,92 650,92 630,132 360,132" fill="#BFDBFE" stroke="#2563EB" stroke-width="1.6"/>
+                    <text x="505" y="108" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.8" font-weight="700" fill="#1E40AF" text-anchor="middle">Warga Ubah Data Profil / Anggota KK</text>
+                    <text x="505" y="120" font-family="'Plus Jakarta Sans', sans-serif" font-size="6.8" fill="#1E3A8A" text-anchor="middle">& Unggah Scan Kartu Keluarga Baru</text>
+                </g>
+
+                <path d="M 505 132 L 505 152" stroke="#334155" stroke-width="1.6" marker-end="url(#arrow5)"/>
+
+                <!-- Process Simpan Pending Request -->
+                <g filter="url(#shadow)">
+                    <rect x="375" y="152" width="260" height="38" rx="4" fill="#E2E8F0" stroke="#475569" stroke-width="1.6"/>
+                    <text x="505" y="169" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.8" font-weight="700" fill="#1E293B" text-anchor="middle">Simpan di Profile_Update_Requests</text>
+                    <text x="505" y="181" font-family="'Plus Jakarta Sans', sans-serif" font-size="6.8" fill="#475569" text-anchor="middle">Status "Pending" (Akun Warga Tetap Normal)</text>
+                </g>
+
+                <path d="M 505 190 L 505 215" stroke="#334155" stroke-width="1.6" marker-end="url(#arrow5)"/>
+
+                <!-- Process Admin Review -->
+                <g filter="url(#shadow)">
+                    <rect x="370" y="215" width="270" height="38" rx="4" fill="#E2E8F0" stroke="#475569" stroke-width="1.6"/>
+                    <text x="505" y="232" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.8" font-weight="700" fill="#1E293B" text-anchor="middle">Admin Memeriksa Perubahan vs Scan KK Baru</text>
+                    <text x="505" y="244" font-family="'Plus Jakarta Sans', sans-serif" font-size="6.8" fill="#475569" text-anchor="middle">Menu: Admin > Perubahan Data Warga</text>
+                </g>
+
+                <path d="M 505 253 L 505 280" stroke="#334155" stroke-width="1.6" marker-end="url(#arrow5)"/>
+
+                <!-- Decision Admin Setuju? -->
+                <g filter="url(#shadow)">
+                    <polygon points="505,280 595,315 505,350 415,315" fill="#FDA4AF" stroke="#E11D48" stroke-width="1.6"/>
+                    <text x="505" y="311" font-family="'Plus Jakarta Sans', sans-serif" font-size="8" font-weight="800" fill="#9F1239" text-anchor="middle">Perubahan Data</text>
+                    <text x="505" y="323" font-family="'Plus Jakarta Sans', sans-serif" font-size="8" font-weight="800" fill="#9F1239" text-anchor="middle">Disetujui?</text>
+                </g>
+
+                <!-- Branch Tolak -->
+                <path d="M 595 315 L 650 315 L 650 370" stroke="#334155" stroke-width="1.6" marker-end="url(#arrow5)"/>
+                <text x="605" y="307" font-family="'Plus Jakarta Sans', sans-serif" font-size="6.8" font-weight="700" fill="#9F1239">Tolak</text>
+
+                <g filter="url(#shadow)">
+                    <rect x="580" y="370" width="90" height="34" rx="4" fill="#E2E8F0" stroke="#475569" stroke-width="1.4"/>
+                    <text x="625" y="385" font-family="'Plus Jakarta Sans', sans-serif" font-size="6.8" font-weight="700" fill="#1E293B" text-anchor="middle">Tolak Permohonan</text>
+                    <text x="625" y="396" font-family="'Plus Jakarta Sans', sans-serif" font-size="6" fill="#475569" text-anchor="middle">+ Input Alasan</text>
+                </g>
+
+                <!-- Branch Setuju -->
+                <path d="M 505 350 L 505 375" stroke="#334155" stroke-width="1.6" marker-end="url(#arrow5)"/>
+                <text x="510" y="362" font-family="'Plus Jakarta Sans', sans-serif" font-size="6.8" font-weight="700" fill="#166534">Setuju</text>
+
+                <g filter="url(#shadow)">
+                    <rect x="375" y="375" width="195" height="42" rx="4" fill="#E2E8F0" stroke="#475569" stroke-width="1.6"/>
+                    <text x="472" y="393" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.5" font-weight="700" fill="#1E293B" text-anchor="middle">Sinkronisasi Database Otomatis</text>
+                    <text x="472" y="405" font-family="'Plus Jakarta Sans', sans-serif" font-size="6.5" fill="#475569" text-anchor="middle">Update tabel Citizens, Family_Members & Berkas</text>
+                </g>
+
+                <path d="M 472 417 L 472 445" stroke="#334155" stroke-width="1.6" marker-end="url(#arrow5)"/>
+                <path d="M 625 404 L 625 430 L 580 430 L 580 445" stroke="#334155" stroke-width="1.6"/>
+
+                <g filter="url(#shadow)">
+                    <rect x="440" y="445" width="140" height="28" rx="14" fill="#FEF08A" stroke="#CA8A04" stroke-width="1.6"/>
+                    <text x="510" y="463" font-family="'Plus Jakarta Sans', sans-serif" font-size="8.5" font-weight="700" fill="#854D0E" text-anchor="middle">Selesai Ubah Profil</text>
+                </g>
+
+                <!-- ================= FOOTER SUMMARY BOX ================= -->
+                <rect x="20" y="500" width="640" height="90" rx="8" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.2"/>
+                <text x="340" y="525" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="800" fill="#0F172A" text-anchor="middle">Ringkasan Proteksi Keamanan & Akurasi Data Sistem</text>
+                <text x="40" y="548" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.8" fill="#334155">• Data Scoping: Warga hanya memiliki hak akses untuk melacak dan melihat permohonan keluarga di dalam No. KK yang sama.</text>
+                <text x="40" y="565" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.8" fill="#334155">• Integritas Silsilah: Setiap pergantian susunan KK diverifikasi oleh petugas kalurahan guna mencegah pemalsuan identitas.</text>
+                <text x="40" y="582" font-family="'Plus Jakarta Sans', sans-serif" font-size="7.8" fill="#334155">• Log Audit Terpusat: Seluruh pergantian status, catatan verifikator, dan pengiriman notifikasi tercatat rapi di database.</text>
+            </svg>
+        </div>
+
+        <div class="flow-notes-grid">
+            <div class="flow-note-card success">
+                <div class="note-title">🛡️ Perlindungan Privasi Berbasis KK</div>
+                Mencegah kebocoran data NIK / Akta antarwarga karena sistem memvalidasi sesi login dan membandingkan nomor KK pemohon dengan nomor KK pada berkas permohonan.
+            </div>
+            <div class="flow-note-card info">
+                <div class="note-title">🔄 Sinkronisasi Data Riwayat Akta</div>
+                Jika permohonan perubahan profil disetujui, nama pemohon dan nomor kontak pada seluruh pengajuan akta lama otomatis tersinkronisasi.
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <span>Kalurahan Purwobinangun, Pakem, Sleman</span>
+            <span>Halaman 6 dari 6</span>
+        </div>
+    </div>
+
+</body>
+</html>

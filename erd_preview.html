@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entity Relationship Diagram (ERD) - Sistem Pelayanan Akte Purwobinangun</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+        :root {
+            --primary: #1e3a8a;
+            --primary-dark: #0f172a;
+            --primary-light: #3b82f6;
+            --accent: #0284c7;
+            --emerald: #059669;
+            --amber: #d97706;
+            --rose: #e11d48;
+            --purple: #7c3aed;
+            --indigo: #4f46e5;
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-300: #cbd5e1;
+            --slate-600: #475569;
+            --slate-700: #334155;
+            --slate-800: #1e293b;
+            --slate-900: #0f172a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: var(--slate-800);
+            background-color: #ffffff;
+            line-height: 1.5;
+            font-size: 10.5pt;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        @page {
+            size: A4 portrait;
+            margin: 12mm 14mm 14mm 14mm;
+        }
+
+        .page {
+            page-break-after: always;
+            position: relative;
+            padding-bottom: 25px;
+        }
+
+        .page:last-child {
+            page-break-after: avoid;
+        }
+
+        /* Header & Footer */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--slate-200);
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+            font-size: 8.5pt;
+            color: var(--slate-600);
+        }
+
+        .page-header .brand {
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .page-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid var(--slate-200);
+            padding-top: 6px;
+            font-size: 8pt;
+            color: var(--slate-600);
+        }
+
+        /* Cover Page Styling */
+        .cover-container {
+            min-height: 255mm;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: linear-gradient(145deg, #0f172a 0%, #1e1b4b 40%, #1e3a8a 80%, #0369a1 100%);
+            border-radius: 16px;
+            padding: 40px;
+            color: white;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .cover-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .badge-pill {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(8px);
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 9pt;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+
+        .cover-title-box {
+            margin-top: 35px;
+        }
+
+        .cover-title {
+            font-size: 25pt;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 12px;
+            color: #ffffff;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .cover-subtitle {
+            font-size: 12.5pt;
+            font-weight: 400;
+            color: #bae6fd;
+            max-width: 620px;
+            line-height: 1.5;
+        }
+
+        .cover-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 35px;
+        }
+
+        .cover-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 16px;
+            backdrop-filter: blur(6px);
+        }
+
+        .cover-card-icon {
+            font-size: 18pt;
+            margin-bottom: 8px;
+        }
+
+        .cover-card-title {
+            font-size: 10pt;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .cover-card-desc {
+            font-size: 8pt;
+            color: #e2e8f0;
+            line-height: 1.4;
+        }
+
+        .cover-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            font-size: 9pt;
+            color: #cbd5e1;
+        }
+
+        .meta-group h4 {
+            color: #93c5fd;
+            font-size: 8.5pt;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .meta-group p {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        /* Typography & Content Sections */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .section-num {
+            background: var(--primary);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 11pt;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-size: 13.5pt;
+            font-weight: 800;
+            color: var(--slate-900);
+            letter-spacing: -0.3px;
+        }
+
+        .section-desc {
+            font-size: 9pt;
+            color: var(--slate-600);
+            margin-bottom: 12px;
+            line-height: 1.45;
+        }
+
+        /* SVG Box */
+        .svg-box {
+            background: #ffffff;
+            border: 1px solid var(--slate-200);
+            border-radius: 12px;
+            padding: 10px;
+            margin-bottom: 14px;
+            display: flex;
+            justify-content: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Tables & Dictionary */
+        .schema-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 8pt;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        }
+
+        .schema-table th {
+            background: var(--slate-100);
+            color: var(--slate-900);
+            text-align: left;
+            padding: 5px 8px;
+            font-weight: 700;
+            border: 1px solid var(--slate-300);
+            font-size: 8pt;
+        }
+
+        .schema-table td {
+            padding: 4px 8px;
+            border: 1px solid var(--slate-200);
+            color: var(--slate-700);
+            vertical-align: top;
+        }
+
+        .schema-table tr:nth-child(even) {
+            background-color: #fafbfc;
+        }
+
+        .type-pill {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 7pt;
+            padding: 1px 5px;
+            border-radius: 3px;
+            background: #f1f5f9;
+            color: #0f172a;
+            border: 1px solid #e2e8f0;
+            font-weight: 600;
+        }
+
+        .pk-pill {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 7pt;
+            padding: 1px 5px;
+            border-radius: 3px;
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde047;
+            font-weight: 700;
+        }
+
+        .fk-pill {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 7pt;
+            padding: 1px 5px;
+            border-radius: 3px;
+            background: #e0e7ff;
+            color: #3730a3;
+            border: 1px solid #c7d2fe;
+            font-weight: 700;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .info-panel {
+            background: var(--slate-50);
+            border: 1px solid var(--slate-200);
+            border-radius: 8px;
+            padding: 9px 12px;
+        }
+
+        .info-panel-title {
+            font-size: 8.5pt;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .info-panel ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 7.5pt;
+            color: var(--slate-700);
+        }
+
+        .info-panel ul li {
+            position: relative;
+            padding-left: 12px;
+            margin-bottom: 3px;
+            line-height: 1.35;
+        }
+
+        .info-panel ul li::before {
+            content: "•";
+            position: absolute;
+            left: 2px;
+            color: var(--primary-light);
+            font-weight: bold;
+        }
+
+        .table-title-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--slate-800);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 6px 6px 0 0;
+            font-weight: 700;
+            font-size: 8.5pt;
+        }
+
+        .table-desc-bar {
+            background: #f8fafc;
+            border-left: 1px solid var(--slate-200);
+            border-right: 1px solid var(--slate-200);
+            border-bottom: 1px solid var(--slate-200);
+            padding: 4px 10px;
+            font-size: 7.5pt;
+            color: var(--slate-600);
+            margin-bottom: 6px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- HALAMAN 1: COVER ERD -->
+    <div class="page">
+        <div class="cover-container">
+            <div>
+                <div class="cover-top">
+                    <span class="badge-pill">Dokumentasi Basis Data & ERD</span>
+                    <span class="badge-pill" style="background: rgba(16, 185, 129, 0.25); border-color: rgba(16, 185, 129, 0.4);">MySQL / Eloquent ORM</span>
+                </div>
+                
+                <div class="cover-title-box">
+                    <h1 class="cover-title">ENTITY RELATIONSHIP DIAGRAM (ERD) & KAMUS DATA</h1>
+                    <p class="cover-subtitle">
+                        Spesifikasi teknis struktur tabel, relasi entitas, kardinalitas, tipe data, indeks, dan integritas referensial pada Sistem Pelayanan Pencatatan Akte Kalurahan Purwobinangun.
+                    </p>
+                </div>
+
+                <div class="cover-grid">
+                    <div class="cover-card">
+                        <div class="cover-card-icon">🗄️</div>
+                        <div class="cover-card-title">5 Entitas Utama</div>
+                        <div class="cover-card-desc">users, family_members, profile_update_requests, birth_certificates, death_certificates.</div>
+                    </div>
+                    <div class="cover-card">
+                        <div class="cover-card-icon">🔗</div>
+                        <div class="cover-card-title">Relasi & Integritas</div>
+                        <div class="cover-card-desc">One-to-Many (1:N) dengan aksi Cascade On Delete dan Null On Delete yang terdefinisi rapi.</div>
+                    </div>
+                    <div class="cover-card">
+                        <div class="cover-card-icon">🛡️</div>
+                        <div class="cover-card-title">Scoping Berbasis KK</div>
+                        <div class="cover-card-desc">Indeks nomor KK untuk mendukung keamanan akses data keluarga secara ketat.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cover-bottom">
+                <div class="meta-group">
+                    <h4>Aplikasi</h4>
+                    <p>Pencatatan Akte Purwobinangun</p>
+                </div>
+                <div class="meta-group">
+                    <h4>Format Dokumen</h4>
+                    <p>Database Specification (PDF)</p>
+                </div>
+                <div class="meta-group">
+                    <h4>Tanggal Rilis</h4>
+                    <p>Oktober 2026</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HALAMAN 2: DIAGRAM ERD VISUAL (CROW'S FOOT NOTATION) -->
+    <div class="page">
+        <div class="page-header">
+            <span class="brand">🏛️ Sistem Pelayanan Akte Purwobinangun</span>
+            <span>Diagram ERD Visual (Relasional)</span>
+        </div>
+
+        <div class="section-header">
+            <div class="section-num">01</div>
+            <div>
+                <h2 class="section-title">Diagram Hubungan Entitas (ERD Visual)</h2>
+            </div>
+        </div>
+        <p class="section-desc">
+            Visualisasi relasi antar tabel menggunakan notasi relasional. Tabel <code>users</code> berperan sebagai entitas pusat yang menaungi anggota keluarga, permohonan pembaruan data profil, serta permohonan akte kelahiran dan kematian.
+        </p>
+
+        <!-- SVG ERD Diagram -->
+        <div class="svg-box">
+            <svg width="680" height="580" viewBox="0 0 680 580" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Defs for markers & shadows -->
+                <defs>
+                    <filter id="shadow" x="-5" y="-5" width="110%" height="110%" filterUnits="userSpaceOnUse">
+                        <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#0f172a" flood-opacity="0.08"/>
+                    </filter>
+                </defs>
+
+                <!-- ================= TABLE: USERS (CENTER) ================= -->
+                <g filter="url(#shadow)">
+                    <rect x="230" y="150" width="220" height="230" rx="6" fill="#FFFFFF" stroke="#0284C7" stroke-width="2"/>
+                    <rect x="230" y="150" width="220" height="28" rx="6" fill="#0284C7"/>
+                    <text x="340" y="169" font-family="'Plus Jakarta Sans', sans-serif" font-size="10.5" font-weight="700" fill="#FFFFFF" text-anchor="middle">USERS (Pengguna / Warga)</text>
+                    
+                    <text x="240" y="195" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" fill="#D97706">PK</text>
+                    <text x="260" y="195" font-family="'JetBrains Mono', monospace" font-size="8" fill="#1E293B">id : bigint (unsigned)</text>
+
+                    <text x="240" y="212" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" fill="#2563EB">UK</text>
+                    <text x="260" y="212" font-family="'JetBrains Mono', monospace" font-size="8" fill="#1E293B">nik : varchar(16)</text>
+
+                    <text x="240" y="229" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" fill="#475569">IX</text>
+                    <text x="260" y="229" font-family="'JetBrains Mono', monospace" font-size="8" fill="#1E293B">family_card_no : varchar(16)</text>
+
+                    <text x="260" y="246" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">role : varchar (admin|warga)</text>
+                    <text x="260" y="263" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">name : varchar(255)</text>
+                    <text x="260" y="280" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">birth_place, birth_date</text>
+                    <text x="260" y="297" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">gender : enum(L, P)</text>
+                    <text x="260" y="314" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">family_relationship : varchar</text>
+                    <text x="260" y="331" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">doc_family_card : varchar</text>
+                    <text x="260" y="348" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">phone, email, password</text>
+                    <text x="260" y="365" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">status : enum(pending|active|...)</text>
+                </g>
+
+                <!-- ================= TABLE: FAMILY_MEMBERS (TOP LEFT) ================= -->
+                <g filter="url(#shadow)">
+                    <rect x="20" y="20" width="200" height="175" rx="6" fill="#FFFFFF" stroke="#059669" stroke-width="1.5"/>
+                    <rect x="20" y="20" width="200" height="26" rx="6" fill="#059669"/>
+                    <text x="120" y="37" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">FAMILY_MEMBERS</text>
+
+                    <text x="30" y="60" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" fill="#D97706">PK</text>
+                    <text x="50" y="60" font-family="'JetBrains Mono', monospace" font-size="8" fill="#1E293B">id : bigint</text>
+
+                    <text x="30" y="77" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" fill="#7C3AED">FK</text>
+                    <text x="50" y="77" font-family="'JetBrains Mono', monospace" font-size="8" fill="#1E293B">user_id : bigint (users.id)</text>
+
+                    <text x="30" y="94" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" fill="#475569">IX</text>
+                    <text x="50" y="94" font-family="'JetBrains Mono', monospace" font-size="8" fill="#1E293B">family_card_no : varchar(16)</text>
+
+                    <text x="50" y="111" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">nik : varchar(16)</text>
+                    <text x="50" y="128" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">name : varchar(255)</text>
+                    <text x="50" y="145" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">birth_place, birth_date</text>
+                    <text x="50" y="162" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">gender : enum(L, P)</text>
+                    <text x="50" y="179" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">family_relationship : varchar</text>
+                </g>
+
+                <!-- ================= TABLE: PROFILE_UPDATE_REQUESTS (TOP RIGHT) ================= -->
+                <g filter="url(#shadow)">
+                    <rect x="460" y="20" width="200" height="175" rx="6" fill="#FFFFFF" stroke="#7C3AED" stroke-width="1.5"/>
+                    <rect x="460" y="20" width="200" height="26" rx="6" fill="#7C3AED"/>
+                    <text x="560" y="37" font-family="'Plus Jakarta Sans', sans-serif" font-size="9.5" font-weight="700" fill="#FFFFFF" text-anchor="middle">PROFILE_UPDATE_REQUESTS</text>
+
+                    <text x="470" y="60" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" fill="#D97706">PK</text>
+                    <text x="490" y="60" font-family="'JetBrains Mono', monospace" font-size="8" fill="#1E293B">id : bigint</text>
+
+                    <text x="470" y="77" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" fill="#7C3AED">FK</text>
+                    <text x="490" y="77" font-family="'JetBrains Mono', monospace" font-size="8" fill="#1E293B">user_id : bigint (users.id)</text>
+
+                    <text x="490" y="94" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">nik, family_card_no</text>
+                    <text x="490" y="111" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">name, birth_place, date</text>
+                    <text x="490" y="128" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">doc_family_card : varchar</text>
+                    <text x="490" y="145" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">family_members_data : json</text>
+                    <text x="490" y="162" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">status : enum(pending|...)</text>
+                    <text x="490" y="179" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">admin_notes, processed_by</text>
+                </g>
+
+                <!-- ================= TABLE: BIRTH_CERTIFICATES (BOTTOM LEFT) ================= -->
+                <g filter="url(#shadow)">
+                    <rect x="20" y="350" width="200" height="210" rx="6" fill="#FFFFFF" stroke="#0284C7" stroke-width="1.5"/>
+                    <rect x="20" y="350" width="200" height="26" rx="6" fill="#0284C7"/>
+                    <text x="120" y="367" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">BIRTH_CERTIFICATES</text>
+
+                    <text x="30" y="390" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" fill="#D97706">PK</text>
+                    <text x="50" y="390" font-family="'JetBrains Mono', monospace" font-size="8" fill="#1E293B">id : bigint</text>
+
+                    <text x="30" y="407" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" fill="#7C3AED">FK</text>
+                    <text x="50" y="407" font-family="'JetBrains Mono', monospace" font-size="8" fill="#1E293B">user_id : bigint (users.id)</text>
+
+                    <text x="30" y="424" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" fill="#2563EB">UK</text>
+                    <text x="50" y="424" font-family="'JetBrains Mono', monospace" font-size="8" fill="#1E293B">registration_no : varchar</text>
+
+                    <text x="30" y="441" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" fill="#475569">IX</text>
+                    <text x="50" y="441" font-family="'JetBrains Mono', monospace" font-size="8" fill="#1E293B">family_card_no : varchar(16)</text>
+
+                    <text x="50" y="458" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">child_name, gender, date</text>
+                    <text x="50" y="475" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">father_nik, father_name</text>
+                    <text x="50" y="492" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">mother_nik, mother_name</text>
+                    <text x="50" y="509" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">applicant_nik, applicant_name</text>
+                    <text x="50" y="526" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">doc_birth_cert, doc_kk, doc_ktp</text>
+                    <text x="50" y="543" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">status : enum(pending|...)</text>
+                </g>
+
+                <!-- ================= TABLE: DEATH_CERTIFICATES (BOTTOM RIGHT) ================= -->
+                <g filter="url(#shadow)">
+                    <rect x="460" y="350" width="200" height="210" rx="6" fill="#FFFFFF" stroke="#E11D48" stroke-width="1.5"/>
+                    <rect x="460" y="350" width="200" height="26" rx="6" fill="#E11D48"/>
+                    <text x="560" y="367" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">DEATH_CERTIFICATES</text>
+
+                    <text x="470" y="390" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" fill="#D97706">PK</text>
+                    <text x="490" y="390" font-family="'JetBrains Mono', monospace" font-size="8" fill="#1E293B">id : bigint</text>
+
+                    <text x="470" y="407" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" fill="#7C3AED">FK</text>
+                    <text x="490" y="407" font-family="'JetBrains Mono', monospace" font-size="8" fill="#1E293B">user_id : bigint (users.id)</text>
+
+                    <text x="470" y="424" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" fill="#2563EB">UK</text>
+                    <text x="490" y="424" font-family="'JetBrains Mono', monospace" font-size="8" fill="#1E293B">registration_no : varchar</text>
+
+                    <text x="470" y="441" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" fill="#475569">IX</text>
+                    <text x="490" y="441" font-family="'JetBrains Mono', monospace" font-size="8" fill="#1E293B">family_card_no : varchar(16)</text>
+
+                    <text x="490" y="458" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">deceased_nik, deceased_name</text>
+                    <text x="490" y="475" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">death_date, death_place, cause</text>
+                    <text x="490" y="492" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">applicant_nik, applicant_name</text>
+                    <text x="490" y="509" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">witness_nik, witness_name</text>
+                    <text x="490" y="526" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">doc_death_statement, doc_kk</text>
+                    <text x="490" y="543" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">status : enum(pending|...)</text>
+                </g>
+
+                <!-- ================= RELATION LINES (CROW'S FOOT) ================= -->
+                <!-- users -> family_members (1:N, cascade) -->
+                <path d="M230 190 H150 V195" stroke="#059669" stroke-width="2" fill="none"/>
+                <circle cx="225" cy="190" r="3" fill="#059669"/>
+                <text x="175" y="182" font-family="'Plus Jakarta Sans', sans-serif" font-size="8" font-weight="700" fill="#059669">1 : N (Cascade)</text>
+
+                <!-- users -> profile_update_requests (1:N, cascade) -->
+                <path d="M450 190 H530 V195" stroke="#7C3AED" stroke-width="2" fill="none"/>
+                <circle cx="455" cy="190" r="3" fill="#7C3AED"/>
+                <text x="460" y="182" font-family="'Plus Jakarta Sans', sans-serif" font-size="8" font-weight="700" fill="#7C3AED">1 : N (Cascade)</text>
+
+                <!-- users -> birth_certificates (1:N, null on delete) -->
+                <path d="M230 340 H150 V350" stroke="#0284C7" stroke-width="2" fill="none"/>
+                <circle cx="225" cy="340" r="3" fill="#0284C7"/>
+                <text x="145" y="332" font-family="'Plus Jakarta Sans', sans-serif" font-size="8" font-weight="700" fill="#0284C7">1 : N (NullOnDelete)</text>
+
+                <!-- users -> death_certificates (1:N, null on delete) -->
+                <path d="M450 340 H530 V350" stroke="#E11D48" stroke-width="2" fill="none"/>
+                <circle cx="455" cy="340" r="3" fill="#E11D48"/>
+                <text x="460" y="332" font-family="'Plus Jakarta Sans', sans-serif" font-size="8" font-weight="700" fill="#E11D48">1 : N (NullOnDelete)</text>
+            </svg>
+        </div>
+
+        <div class="page-footer">
+            <span>Kalurahan Purwobinangun, Pakem, Sleman</span>
+            <span>Halaman 2 dari 5</span>
+        </div>
+    </div>
+
+    <!-- HALAMAN 3: KAMUS DATA - TABEL USERS & FAMILY_MEMBERS -->
+    <div class="page">
+        <div class="page-header">
+            <span class="brand">🏛️ Sistem Pelayanan Akte Purwobinangun</span>
+            <span>Kamus Data: Tabel Users & Family Members</span>
+        </div>
+
+        <div class="section-header">
+            <div class="section-num">02</div>
+            <div>
+                <h2 class="section-title">Kamus Data: Entitas Pengguna & Kependudukan</h2>
+            </div>
+        </div>
+
+        <!-- Tabel Users -->
+        <div class="table-title-box">
+            <span>📋 Tabel 1: users (Akun Warga & Petugas Admin)</span>
+            <span style="font-size: 7.5pt; font-weight: normal; background: rgba(255,255,255,0.2); padding: 1px 6px; border-radius: 3px;">Primary Model: App\Models\User</span>
+        </div>
+        <div class="table-desc-bar">
+            Menyimpan data otentikasi login serta profil kependudukan warga desa yang terhubung dengan NIK dan Kartu Keluarga.
+        </div>
+
+        <table class="schema-table">
+            <thead>
+                <tr>
+                    <th style="width: 22%;">Nama Kolom</th>
+                    <th style="width: 18%;">Tipe Data</th>
+                    <th style="width: 15%;">Atribut / Index</th>
+                    <th style="width: 45%;">Keterangan & Logika Bisnis</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>id</strong></td>
+                    <td><span class="type-pill">bigint unsigned</span></td>
+                    <td><span class="pk-pill">PRIMARY KEY</span>, Auto Inc</td>
+                    <td>Identifier unik record pengguna.</td>
+                </tr>
+                <tr>
+                    <td><strong>role</strong></td>
+                    <td><span class="type-pill">varchar(255)</span></td>
+                    <td>Default: 'warga'</td>
+                    <td>Peran pengguna dalam sistem: <code>admin</code> atau <code>warga</code>.</td>
+                </tr>
+                <tr>
+                    <td><strong>nik</strong></td>
+                    <td><span class="type-pill">varchar(16)</span></td>
+                    <td><span class="type-pill">UNIQUE</span>, Nullable</td>
+                    <td>Nomor Induk Kependudukan 16 digit warga (kredensial login warga).</td>
+                </tr>
+                <tr>
+                    <td><strong>family_card_no</strong></td>
+                    <td><span class="type-pill">varchar(16)</span></td>
+                    <td><span class="type-pill">INDEX</span>, Nullable</td>
+                    <td>Nomor Kartu Keluarga (KK) 16 digit untuk scoping akses data.</td>
+                </tr>
+                <tr>
+                    <td><strong>name</strong></td>
+                    <td><span class="type-pill">varchar(255)</span></td>
+                    <td>NOT NULL</td>
+                    <td>Nama lengkap pengguna sesuai KTP/KK.</td>
+                </tr>
+                <tr>
+                    <td><strong>birth_place, birth_date</strong></td>
+                    <td><span class="type-pill">varchar / date</span></td>
+                    <td>Nullable</td>
+                    <td>Tempat dan tanggal lahir warga.</td>
+                </tr>
+                <tr>
+                    <td><strong>gender</strong></td>
+                    <td><span class="type-pill">enum('L','P')</span></td>
+                    <td>Nullable</td>
+                    <td>Jenis kelamin (L = Laki-laki, P = Perempuan).</td>
+                </tr>
+                <tr>
+                    <td><strong>family_relationship</strong></td>
+                    <td><span class="type-pill">varchar(100)</span></td>
+                    <td>Nullable</td>
+                    <td>Kedudukan dalam keluarga (Kepala Keluarga, Istri, Anak, dll).</td>
+                </tr>
+                <tr>
+                    <td><strong>doc_family_card</strong></td>
+                    <td><span class="type-pill">varchar(255)</span></td>
+                    <td>Nullable</td>
+                    <td>Path berkas upload foto / scan Kartu Keluarga asli.</td>
+                </tr>
+                <tr>
+                    <td><strong>phone, email</strong></td>
+                    <td><span class="type-pill">varchar(20/255)</span></td>
+                    <td>Email UNIQUE</td>
+                    <td>Kontak pemohon untuk notifikasi WhatsApp & Email otomatis.</td>
+                </tr>
+                <tr>
+                    <td><strong>status</strong></td>
+                    <td><span class="type-pill">enum</span></td>
+                    <td>Default: 'pending'</td>
+                    <td>Nilai: <code>pending</code>, <code>active</code>, <code>rejected</code>, <code>archived</code>.</td>
+                </tr>
+                <tr>
+                    <td><strong>verified_at, verified_by</strong></td>
+                    <td><span class="type-pill">timestamp / varchar</span></td>
+                    <td>Nullable</td>
+                    <td>Waktu verifikasi dan nama petugas admin yang memvalidasi akun.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Tabel Family Members -->
+        <div class="table-title-box" style="background: #065f46; margin-top: 10px;">
+            <span>📋 Tabel 2: family_members (Anggota Keluarga Warga)</span>
+            <span style="font-size: 7.5pt; font-weight: normal; background: rgba(255,255,255,0.2); padding: 1px 6px; border-radius: 3px;">Primary Model: App\Models\FamilyMember</span>
+        </div>
+        <div class="table-desc-bar">
+            Menyimpan daftar seluruh anggota keluarga yang tercantum dalam Kartu Keluarga pengguna untuk fitur auto-fill.
+        </div>
+
+        <table class="schema-table">
+            <thead>
+                <tr>
+                    <th style="width: 22%;">Nama Kolom</th>
+                    <th style="width: 18%;">Tipe Data</th>
+                    <th style="width: 15%;">Atribut / Index</th>
+                    <th style="width: 45%;">Keterangan & Logika Bisnis</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>id</strong></td>
+                    <td><span class="type-pill">bigint unsigned</span></td>
+                    <td><span class="pk-pill">PRIMARY KEY</span>, Auto Inc</td>
+                    <td>Identifier unik record anggota keluarga.</td>
+                </tr>
+                <tr>
+                    <td><strong>user_id</strong></td>
+                    <td><span class="type-pill">bigint unsigned</span></td>
+                    <td><span class="fk-pill">FOREIGN KEY</span> (users.id)</td>
+                    <td>ID akun kepala keluarga / pemohon utama. <code>ON DELETE CASCADE</code>.</td>
+                </tr>
+                <tr>
+                    <td><strong>family_card_no</strong></td>
+                    <td><span class="type-pill">varchar(16)</span></td>
+                    <td><span class="type-pill">INDEX</span>, Nullable</td>
+                    <td>Nomor Kartu Keluarga anggota.</td>
+                </tr>
+                <tr>
+                    <td><strong>nik, name</strong></td>
+                    <td><span class="type-pill">varchar(16/255)</span></td>
+                    <td>NIK: Index, Nullable</td>
+                    <td>Nomor NIK dan Nama lengkap anggota keluarga.</td>
+                </tr>
+                <tr>
+                    <td><strong>birth_place, birth_date</strong></td>
+                    <td><span class="type-pill">varchar / date</span></td>
+                    <td>Nullable</td>
+                    <td>Tempat dan tanggal lahir anggota keluarga.</td>
+                </tr>
+                <tr>
+                    <td><strong>gender</strong></td>
+                    <td><span class="type-pill">enum('L','P')</span></td>
+                    <td>Nullable</td>
+                    <td>Jenis kelamin anggota keluarga.</td>
+                </tr>
+                <tr>
+                    <td><strong>family_relationship</strong></td>
+                    <td><span class="type-pill">varchar(100)</span></td>
+                    <td>Nullable</td>
+                    <td>Status hubungan (Kepala Keluarga, Istri, Anak, Cucu, Orang Tua).</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="page-footer">
+            <span>Kalurahan Purwobinangun, Pakem, Sleman</span>
+            <span>Halaman 3 dari 5</span>
+        </div>
+    </div>
+
+    <!-- HALAMAN 4: KAMUS DATA - TABEL BIRTH & DEATH CERTIFICATES -->
+    <div class="page">
+        <div class="page-header">
+            <span class="brand">🏛️ Sistem Pelayanan Akte Purwobinangun</span>
+            <span>Kamus Data: Tabel Akte Kelahiran & Kematian</span>
+        </div>
+
+        <div class="section-header">
+            <div class="section-num">03</div>
+            <div>
+                <h2 class="section-title">Kamus Data: Pengajuan Akte Kelahiran & Kematian</h2>
+            </div>
+        </div>
+
+        <!-- Tabel Birth Certificates -->
+        <div class="table-title-box">
+            <span>📋 Tabel 3: birth_certificates (Permohonan Akte Kelahiran)</span>
+            <span style="font-size: 7.5pt; font-weight: normal; background: rgba(255,255,255,0.2); padding: 1px 6px; border-radius: 3px;">Primary Model: App\Models\BirthCertificate</span>
+        </div>
+
+        <table class="schema-table">
+            <thead>
+                <tr>
+                    <th style="width: 22%;">Nama Kolom</th>
+                    <th style="width: 18%;">Tipe Data</th>
+                    <th style="width: 15%;">Atribut / Index</th>
+                    <th style="width: 45%;">Keterangan & Logika Bisnis</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>id</strong></td>
+                    <td><span class="type-pill">bigint unsigned</span></td>
+                    <td><span class="pk-pill">PRIMARY KEY</span></td>
+                    <td>Identifier unik data permohonan akte kelahiran.</td>
+                </tr>
+                <tr>
+                    <td><strong>user_id</strong></td>
+                    <td><span class="type-pill">bigint unsigned</span></td>
+                    <td><span class="fk-pill">FOREIGN KEY</span> (users.id)</td>
+                    <td>Relasi ke akun pemohon (<code>ON DELETE SET NULL</code>).</td>
+                </tr>
+                <tr>
+                    <td><strong>registration_no</strong></td>
+                    <td><span class="type-pill">varchar(255)</span></td>
+                    <td><span class="type-pill">UNIQUE</span></td>
+                    <td>Nomor registrasi unik format: <code>AKL-YYYYMMDD-XXXX</code>.</td>
+                </tr>
+                <tr>
+                    <td><strong>family_card_no</strong></td>
+                    <td><span class="type-pill">varchar(16)</span></td>
+                    <td><span class="type-pill">INDEX</span>, Nullable</td>
+                    <td>Nomor KK untuk pembatasan hak akses tracking/resi.</td>
+                </tr>
+                <tr>
+                    <td><strong>child_name, gender</strong></td>
+                    <td><span class="type-pill">varchar / enum</span></td>
+                    <td>NOT NULL</td>
+                    <td>Nama lengkap bayi dan jenis kelamin (L/P).</td>
+                </tr>
+                <tr>
+                    <td><strong>birth_place, birth_date</strong></td>
+                    <td><span class="type-pill">varchar / date</span></td>
+                    <td>NOT NULL</td>
+                    <td>Tempat, tanggal, dan jam kelahiran bayi.</td>
+                </tr>
+                <tr>
+                    <td><strong>father_nik, father_name</strong></td>
+                    <td><span class="type-pill">varchar(16/255)</span></td>
+                    <td>Nullable</td>
+                    <td>Data ayah (otomatis terisi dari anggota KK Kepala Keluarga).</td>
+                </tr>
+                <tr>
+                    <td><strong>mother_nik, mother_name</strong></td>
+                    <td><span class="type-pill">varchar(16/255)</span></td>
+                    <td>Nullable</td>
+                    <td>Data ibu (otomatis terisi dari anggota KK Istri).</td>
+                </tr>
+                <tr>
+                    <td><strong>applicant_nik, name, phone</strong></td>
+                    <td><span class="type-pill">varchar</span></td>
+                    <td>NOT NULL</td>
+                    <td>Identitas dan kontak pemohon / pelapor.</td>
+                </tr>
+                <tr>
+                    <td><strong>doc_birth_cert, doc_family_card, doc_marriage_cert, doc_parents_ktp</strong></td>
+                    <td><span class="type-pill">varchar(255)</span></td>
+                    <td>Nullable</td>
+                    <td>Path 4 berkas wajib (Surat Lahir RS/Bidan, KK, Buku Nikah, KTP Orang Tua) + KTP Saksi.</td>
+                </tr>
+                <tr>
+                    <td><strong>status</strong></td>
+                    <td><span class="type-pill">enum</span></td>
+                    <td>Default: 'pending'</td>
+                    <td><code>pending</code>, <code>in_process</code>, <code>revision</code>, <code>ready_for_pickup</code>, <code>picked_up</code>, <code>rejected</code>, <code>archived</code>.</td>
+                </tr>
+                <tr>
+                    <td><strong>is_archived</strong></td>
+                    <td><span class="type-pill">boolean</span></td>
+                    <td>Default: false</td>
+                    <td>Penanda data yang sudah diambil atau diarsipkan.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Tabel Death Certificates -->
+        <div class="table-title-box" style="background: #9f1239; margin-top: 6px;">
+            <span>📋 Tabel 4: death_certificates (Permohonan Akte Kematian)</span>
+            <span style="font-size: 7.5pt; font-weight: normal; background: rgba(255,255,255,0.2); padding: 1px 6px; border-radius: 3px;">Primary Model: App\Models\DeathCertificate</span>
+        </div>
+
+        <table class="schema-table">
+            <thead>
+                <tr>
+                    <th style="width: 22%;">Nama Kolom</th>
+                    <th style="width: 18%;">Tipe Data</th>
+                    <th style="width: 15%;">Atribut / Index</th>
+                    <th style="width: 45%;">Keterangan & Logika Bisnis</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>id, user_id</strong></td>
+                    <td><span class="type-pill">bigint unsigned</span></td>
+                    <td><span class="pk-pill">PK</span> / <span class="fk-pill">FK</span></td>
+                    <td>Identifier unik & relasi pemohon (<code>ON DELETE SET NULL</code>).</td>
+                </tr>
+                <tr>
+                    <td><strong>registration_no</strong></td>
+                    <td><span class="type-pill">varchar(255)</span></td>
+                    <td><span class="type-pill">UNIQUE</span></td>
+                    <td>Nomor registrasi unik format: <code>AKM-YYYYMMDD-XXXX</code>.</td>
+                </tr>
+                <tr>
+                    <td><strong>deceased_nik, deceased_name</strong></td>
+                    <td><span class="type-pill">varchar(16/255)</span></td>
+                    <td>NOT NULL</td>
+                    <td>NIK dan nama almarhum/almarhumah.</td>
+                </tr>
+                <tr>
+                    <td><strong>death_date, death_time, death_place</strong></td>
+                    <td><span class="type-pill">date / varchar</span></td>
+                    <td>NOT NULL</td>
+                    <td>Waktu dan tempat peristiwa meninggal dunia.</td>
+                </tr>
+                <tr>
+                    <td><strong>cause_of_death</strong></td>
+                    <td><span class="type-pill">varchar(255)</span></td>
+                    <td>Default: 'Sakit / Usia Tua'</td>
+                    <td>Penyebab kematian jenazah.</td>
+                </tr>
+                <tr>
+                    <td><strong>applicant_nik, applicant_name</strong></td>
+                    <td><span class="type-pill">varchar(16/255)</span></td>
+                    <td>NOT NULL</td>
+                    <td>Identitas pelapor dan hubungan dengan jenazah.</td>
+                </tr>
+                <tr>
+                    <td><strong>doc_death_statement, doc_family_card, doc_deceased_ktp</strong></td>
+                    <td><span class="type-pill">varchar(255)</span></td>
+                    <td>Nullable</td>
+                    <td>Path upload surat kematian RS/RT, KK, dan KTP almarhum.</td>
+                </tr>
+                <tr>
+                    <td><strong>status, is_archived</strong></td>
+                    <td><span class="type-pill">enum / boolean</span></td>
+                    <td>Default: 'pending', false</td>
+                    <td>Status siklus hidup dan flag pengarsipan berkas kematian.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="page-footer">
+            <span>Kalurahan Purwobinangun, Pakem, Sleman</span>
+            <span>Halaman 4 dari 5</span>
+        </div>
+    </div>
+
+    <!-- HALAMAN 5: PROFILE UPDATE REQUESTS & INTEGRITAS SISTEM -->
+    <div class="page">
+        <div class="page-header">
+            <span class="brand">🏛️ Sistem Pelayanan Akte Purwobinangun</span>
+            <span>Kamus Data: Profile Requests & Aturan Relasi</span>
+        </div>
+
+        <div class="section-header">
+            <div class="section-num">04</div>
+            <div>
+                <h2 class="section-title">Permohonan Perubahan Profil & Integritas Relasi</h2>
+            </div>
+        </div>
+
+        <!-- Tabel Profile Update Requests -->
+        <div class="table-title-box" style="background: #5b21b6;">
+            <span>📋 Tabel 5: profile_update_requests (Permohonan Update Profil & Keluarga)</span>
+            <span style="font-size: 7.5pt; font-weight: normal; background: rgba(255,255,255,0.2); padding: 1px 6px; border-radius: 3px;">Primary Model: App\Models\ProfileUpdateRequest</span>
+        </div>
+        <div class="table-desc-bar">
+            Menampung permohonan perubahan biodata diri dan anggota keluarga oleh warga sebelum disetujui petugas kalurahan.
+        </div>
+
+        <table class="schema-table">
+            <thead>
+                <tr>
+                    <th style="width: 22%;">Nama Kolom</th>
+                    <th style="width: 18%;">Tipe Data</th>
+                    <th style="width: 15%;">Atribut / Index</th>
+                    <th style="width: 45%;">Keterangan & Logika Bisnis</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>id</strong></td>
+                    <td><span class="type-pill">bigint unsigned</span></td>
+                    <td><span class="pk-pill">PRIMARY KEY</span></td>
+                    <td>Identifier unik permohonan perubahan profil.</td>
+                </tr>
+                <tr>
+                    <td><strong>user_id</strong></td>
+                    <td><span class="type-pill">bigint unsigned</span></td>
+                    <td><span class="fk-pill">FOREIGN KEY</span> (users.id)</td>
+                    <td>Relasi ke akun warga pemohon. <code>ON DELETE CASCADE</code>.</td>
+                </tr>
+                <tr>
+                    <td><strong>name, birth_place, date</strong></td>
+                    <td><span class="type-pill">varchar / date</span></td>
+                    <td>Nullable</td>
+                    <td>Data profil baru yang diajukan.</td>
+                </tr>
+                <tr>
+                    <td><strong>doc_family_card</strong></td>
+                    <td><span class="type-pill">varchar(255)</span></td>
+                    <td>Nullable</td>
+                    <td>Path scan Kartu Keluarga terbaru sebagai bukti perubahan.</td>
+                </tr>
+                <tr>
+                    <td><strong>family_members_data</strong></td>
+                    <td><span class="type-pill">json</span></td>
+                    <td>Nullable</td>
+                    <td>Struktur JSON array berisi daftar anggota keluarga baru.</td>
+                </tr>
+                <tr>
+                    <td><strong>status</strong></td>
+                    <td><span class="type-pill">enum</span></td>
+                    <td>Default: 'pending'</td>
+                    <td>Status: <code>pending</code>, <code>approved</code>, <code>rejected</code>.</td>
+                </tr>
+                <tr>
+                    <td><strong>admin_notes, processed_by</strong></td>
+                    <td><span class="type-pill">text / varchar</span></td>
+                    <td>Nullable</td>
+                    <td>Catatan verifikator dan petugas yang memproses.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Ringkasan Integritas Relasional & Aturan Bisnis -->
+        <div class="info-grid" style="margin-top: 10px;">
+            <div class="info-panel">
+                <div class="info-panel-title">🛡️ Integritas Referensial (Foreign Keys)</div>
+                <ul>
+                    <li><strong>Cascade on Delete:</strong> Menghapus user akan otomatis menghapus <code>family_members</code> dan <code>profile_update_requests</code>.</li>
+                    <li><strong>Null on Delete:</strong> Menghapus user akan menjaga integritas histori akta (<code>birth_certificates</code> & <code>death_certificates</code>) dengan mengubah <code>user_id</code> menjadi NULL.</li>
+                </ul>
+            </div>
+            <div class="info-panel">
+                <div class="info-panel-title">⚡ Sinkronisasi Transaksional (DB::transaction)</div>
+                <ul>
+                    <li>Saat permohonan profil disetujui (Approve), sistem secara atomik memperbarui tabel <code>users</code>, merefresh data di <code>family_members</code>, dan mensinkronkan nomor telepon pemohon di histori akta.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div style="margin-top: 10px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 10px; text-align: center; font-size: 8.5pt; color: #64748b;">
+            ✨ <strong>Arsitektur Basis Data Relasional Kalurahan Purwobinangun</strong> — Dirancang Normal, Aman, Efisien, dan Memiliki Ketahanan Integritas Data yang Tinggi.
+        </div>
+
+        <div class="page-footer">
+            <span>Kalurahan Purwobinangun, Pakem, Sleman</span>
+            <span>Halaman 5 dari 5</span>
+        </div>
+    </div>
+
+</body>
+</html>
