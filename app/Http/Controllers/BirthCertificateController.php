@@ -20,6 +20,67 @@ class BirthCertificateController extends Controller
             'Potrowangsan', 'Surodadi', 'Tawangrejo', 'Turgo', 'Watuadeg', 'Somokaton'
         ];
 
+        // Standar Nasional Indonesia Kategori Pekerjaan (Dukcapil / BPS)
+        $pekerjaanList = [
+            'Belum / Tidak Bekerja',
+            'Mengurus Rumah Tangga',
+            'Pelajar / Mahasiswa',
+            'Pensiunan',
+            'Pegawai Negeri Sipil (PNS)',
+            'Tentara Nasional Indonesia (TNI)',
+            'Kepolisian RI (POLRI)',
+            'Karyawan Swasta',
+            'Karyawan BUMN',
+            'Karyawan BUMD',
+            'Karyawan Honorer',
+            'Buruh Harian Lepas',
+            'Buruh Tani / Perkebunan',
+            'Buruh Nelayan / Perikanan',
+            'Buruh Peternakan',
+            'Pembantu Rumah Tangga',
+            'Petani / Pekebun',
+            'Peternak',
+            'Nelayan / Perikanan',
+            'Perdagangan / Pedagang',
+            'Wiraswasta',
+            'Industri',
+            'Konstruksi',
+            'Transportasi',
+            'Sopir',
+            'Mekanik',
+            'Tukang Listrik',
+            'Tukang Kayu',
+            'Tukang Batu',
+            'Tukang Jahit',
+            'Tukang Las / Pandai Besi',
+            'Tukang Cukur / Penata Rambut',
+            'Penata Rias',
+            'Penata Busana',
+            'Juru Masak',
+            'Dosen',
+            'Guru',
+            'Dokter',
+            'Bidan',
+            'Perawat',
+            'Apoteker',
+            'Psikiater / Psikolog',
+            'Pilot',
+            'Pelaut',
+            'Pengacara',
+            'Notaris',
+            'Arsitek',
+            'Akuntan',
+            'Konsultan',
+            'Wartawan',
+            'Peneliti',
+            'Seniman',
+            'Perangkat Desa',
+            'Kepala Desa',
+            'Tokoh Agama / Rohaniwan',
+            'Anggota Legislatif (DPR / DPD / DPRD)',
+            'Lainnya',
+        ];
+
         $user = Auth::user();
 
         $defaultFather = null;
@@ -113,7 +174,7 @@ class BirthCertificateController extends Controller
             }
         }
 
-        return view('birth.create', compact('padukuhanList', 'user', 'defaultFather', 'defaultMother'));
+        return view('birth.create', compact('padukuhanList', 'pekerjaanList', 'user', 'defaultFather', 'defaultMother'));
     }
 
     public function store(Request $request)
@@ -140,6 +201,18 @@ class BirthCertificateController extends Controller
             'mother_nik' => 'required|digits:16',
             'mother_birth_date' => 'required|date',
             'mother_job' => 'required|string|max:100',
+
+            // Data Saksi 1 & 2
+            'witness_1_nik' => 'nullable|digits:16',
+            'witness_1_name' => 'nullable|string|max:255',
+            'witness_1_birth_date' => 'nullable|date',
+            'witness_1_job' => 'nullable|string|max:100',
+            'witness_1_address' => 'nullable|string|max:500',
+            'witness_2_nik' => 'nullable|digits:16',
+            'witness_2_name' => 'nullable|string|max:255',
+            'witness_2_birth_date' => 'nullable|date',
+            'witness_2_job' => 'nullable|string|max:100',
+            'witness_2_address' => 'nullable|string|max:500',
 
             // Dokumen Unggahan
             'doc_parents_ktp' => 'required|file|mimes:jpg,jpeg,png,pdf|max:3072',
@@ -191,6 +264,16 @@ class BirthCertificateController extends Controller
             'birth_time' => 'Jam Kelahiran',
             'birth_order' => 'Kelahiran Anak ke-',
             'birth_type' => 'Jenis Kelahiran',
+            'witness_1_nik' => 'NIK Saksi 1',
+            'witness_1_name' => 'Nama Saksi 1',
+            'witness_1_birth_date' => 'Tanggal Lahir Saksi 1',
+            'witness_1_job' => 'Pekerjaan Saksi 1',
+            'witness_1_address' => 'Alamat Saksi 1',
+            'witness_2_nik' => 'NIK Saksi 2',
+            'witness_2_name' => 'Nama Saksi 2',
+            'witness_2_birth_date' => 'Tanggal Lahir Saksi 2',
+            'witness_2_job' => 'Pekerjaan Saksi 2',
+            'witness_2_address' => 'Alamat Saksi 2',
             'birth_place_type' => 'Tempat Dilahirkan',
         ]);
 
