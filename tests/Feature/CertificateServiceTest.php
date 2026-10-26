@@ -83,6 +83,86 @@ class CertificateServiceTest extends TestCase
         $response->assertRedirect(route('birth.success', ['registration_no' => $birth->registration_no]));
     }
 
+    public function test_birth_certificate_can_be_submitted_with_all_12_kelurahan_template_fields(): void
+    {
+        Storage::fake('public');
+
+        $warga = User::create([
+            'name' => 'Bapak Joko Template',
+            'nik' => '3404051205900099',
+            'family_card_no' => '3404050101900099',
+            'role' => 'warga',
+            'status' => 'active',
+            'password' => bcrypt('password123'),
+        ]);
+
+        $response = $this->actingAs($warga)->post('/akte-kelahiran/buat', [
+            // 1. Nama Lengkap
+            'child_name' => 'Muhammad Bintang Pratama',
+            // 2. NIK
+            'child_nik' => '3404050101260001',
+            // 3. Jenis Kelamin
+            'gender' => 'L',
+            // 4. Tempat Dilahirkan
+            'birth_place_type' => 'RS/SB',
+            // 5. Tempat Kelahiran
+            'birth_place' => 'Sleman',
+            // 6. Hari dan Tanggal Lahir
+            'birth_day' => 'Senin',
+            'birth_date' => '2026-08-03',
+            // 7. Pukul
+            'birth_time' => '08:45',
+            // 8. Jenis Kelahiran
+            'birth_type' => 'Tunggal',
+            // 9. Kelahiran Anak Ke
+            'birth_order' => 1,
+            // 10. Penolong Kelahiran
+            'birth_helper' => 'Dokter',
+            // 11. Berat Bayi
+            'weight_gram' => 3450,
+            // 12. Panjang Bayi
+            'length_cm' => 50.2,
+
+            'applicant_nik' => '3404051205900099',
+            'applicant_name' => 'Bapak Joko Template',
+            'address' => 'Padukuhan Kadilobo RT 01 / RW 02',
+            'applicant_phone' => '081234567890',
+            'father_name' => 'Bapak Joko Template',
+            'father_nik' => '3404051205900099',
+            'father_birth_date' => '1990-05-12',
+            'father_job' => 'Wiraswasta',
+            'mother_name' => 'Ibu Siti Template',
+            'mother_nik' => '3404051205900098',
+            'mother_birth_date' => '1992-06-15',
+            'mother_job' => 'PNS',
+            'doc_birth_cert' => UploadedFile::fake()->create('surat_lahir.pdf', 100),
+            'doc_family_card' => UploadedFile::fake()->create('kk.jpg', 100),
+            'doc_marriage_cert' => UploadedFile::fake()->create('buku_nikah.pdf', 100),
+            'doc_parents_ktp' => UploadedFile::fake()->create('ktp.jpg', 100),
+        ]);
+
+        $this->assertDatabaseHas('birth_certificates', [
+            'child_name' => 'Muhammad Bintang Pratama',
+            'child_nik' => '3404050101260001',
+            'gender' => 'L',
+            'birth_place_type' => 'RS/SB',
+            'birth_place' => 'Sleman',
+            'birth_day' => 'Senin',
+            'birth_time' => '08:45',
+            'birth_type' => 'Tunggal',
+            'birth_order' => 1,
+            'birth_helper' => 'Dokter',
+            'weight_gram' => 3450,
+            'weight_kg' => 3.45,
+            'length_cm' => 50.2,
+            'status' => 'pending',
+        ]);
+
+        $birth = BirthCertificate::where('child_nik', '3404050101260001')->first();
+        $this->assertNotNull($birth);
+        $response->assertRedirect(route('birth.success', ['registration_no' => $birth->registration_no]));
+    }
+
     public function test_birth_submissions_list_page_can_be_accessed(): void
     {
         $warga = User::create([

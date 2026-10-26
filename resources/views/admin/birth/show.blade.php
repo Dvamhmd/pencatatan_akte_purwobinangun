@@ -39,13 +39,16 @@
                     <i class="fa-solid fa-baby text-base"></i> 1. Data Bayi / Anak
                 </h4>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                    <div><span class="text-slate-500 block text-[11px]">Nama Lengkap:</span> <strong class="text-slate-900 text-sm">{{ $birth->child_name }}</strong></div>
-                    <div><span class="text-slate-500 block text-[11px]">Jenis Kelamin:</span> <span class="font-medium text-slate-800">{{ $birth->gender === 'L' ? 'Laki-laki' : 'Perempuan' }}</span></div>
-                    <div><span class="text-slate-500 block text-[11px]">Tempat, Tgl Lahir:</span> <span class="font-medium text-slate-800">{{ $birth->birth_place }}, {{ $birth->birth_date->translatedFormat('d F Y') }}</span></div>
-                    <div><span class="text-slate-500 block text-[11px]">Waktu / Pukul Lahir:</span> <span class="font-medium text-slate-800">{{ $birth->birth_time ?? '-' }}</span></div>
-                    <div><span class="text-slate-500 block text-[11px]">Jenis & Anak Ke-:</span> <span class="font-medium text-slate-800">{{ $birth->birth_type }} (Anak ke-{{ $birth->birth_order }})</span></div>
-                    <div><span class="text-slate-500 block text-[11px]">Penolong Kelahiran:</span> <span class="font-medium text-slate-800">{{ $birth->birth_helper }}</span></div>
-                    <div><span class="text-slate-500 block text-[11px]">Berat / Panjang Badan:</span> <span class="font-medium text-slate-800">{{ $birth->weight_kg ?? '-' }} kg / {{ $birth->length_cm ?? '-' }} cm</span></div>
+                    <div><span class="text-slate-500 block text-[11px]">1. Nama Lengkap:</span> <strong class="text-slate-900 text-sm">{{ $birth->child_name }}</strong></div>
+                    <div><span class="text-slate-500 block text-[11px]">2. NIK Bayi / Anak:</span> <span class="font-mono font-bold text-slate-800">{{ $birth->child_nik ?? '-' }}</span></div>
+                    <div><span class="text-slate-500 block text-[11px]">3. Jenis Kelamin:</span> <span class="font-medium text-slate-800">{{ $birth->gender === 'L' ? 'Laki-laki' : 'Perempuan' }}</span></div>
+                    <div><span class="text-slate-500 block text-[11px]">4. Tempat Dilahirkan:</span> <span class="font-medium text-slate-800">{{ $birth->birth_place_type ?? '-' }}</span></div>
+                    <div><span class="text-slate-500 block text-[11px]">5. Tempat Kelahiran:</span> <span class="font-medium text-slate-800">{{ $birth->birth_place }}</span></div>
+                    <div><span class="text-slate-500 block text-[11px]">6. Tanggal Lahir:</span> <span class="font-medium text-slate-800">{{ $birth->birth_day ? $birth->birth_day . ', ' : '' }}{{ $birth->birth_date->translatedFormat('d F Y') }}</span></div>
+                    <div><span class="text-slate-500 block text-[11px]">7. Waktu / Pukul Lahir:</span> <span class="font-medium text-slate-800">{{ $birth->birth_time ?? '-' }}</span></div>
+                    <div><span class="text-slate-500 block text-[11px]">8. Jenis & 9. Anak Ke-:</span> <span class="font-medium text-slate-800">{{ $birth->birth_type }} (Anak ke-{{ $birth->birth_order }})</span></div>
+                    <div><span class="text-slate-500 block text-[11px]">10. Penolong Kelahiran:</span> <span class="font-medium text-slate-800">{{ $birth->birth_helper }}</span></div>
+                    <div><span class="text-slate-500 block text-[11px]">11. Berat / 12. Panjang Badan:</span> <span class="font-medium text-slate-800">{{ $birth->weight_gram ? $birth->weight_gram . ' gram (' . $birth->weight_kg . ' kg)' : ($birth->weight_kg ? $birth->weight_kg . ' kg' : '-') }} / {{ $birth->length_cm ?? '-' }} cm</span></div>
                 </div>
             </div>
 
@@ -55,22 +58,60 @@
                     <i class="fa-solid fa-users text-base"></i> 2. Data Orang Tua
                 </h4>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-xs">
-                    <!-- Ayah -->
-                    <div class="p-3 bg-slate-50 rounded-lg border border-slate-200/70 space-y-2">
-                        <p class="font-bold text-slate-800 text-teal-800"><i class="fa-solid fa-user-tie mr-1"></i> Ayah Kandung</p>
-                        <div><span class="text-slate-500 text-[11px] block">NIK Ayah:</span> <span class="font-mono font-bold">{{ $birth->father_nik }}</span></div>
-                        <div><span class="text-slate-500 text-[11px] block">Nama Lengkap:</span> <span class="font-medium">{{ $birth->father_name }}</span></div>
-                        <div><span class="text-slate-500 text-[11px] block">Tgl Lahir:</span> <span class="font-medium">{{ $birth->father_birth_date ? $birth->father_birth_date->translatedFormat('d F Y') : '-' }}</span></div>
-                        <div><span class="text-slate-500 text-[11px] block">Pekerjaan:</span> <span class="font-medium">{{ $birth->father_job ?? '-' }}</span></div>
+                    <!-- Ibu -->
+                    <div class="p-4 bg-slate-50 rounded-lg border border-slate-200/70 space-y-2">
+                        <p class="font-bold text-pink-700 pb-1 border-b border-pink-100 flex items-center justify-between">
+                            <span><i class="fa-solid fa-user-nurse mr-1"></i> Ibu Kandung</span>
+                            <span class="text-[10px] bg-pink-100 text-pink-700 px-2 py-0.5 rounded font-normal">Bagian IBU</span>
+                        </p>
+                        <div><span class="text-slate-500 text-[11px] block">1. NIK Ibu:</span> <span class="font-mono font-bold">{{ $birth->mother_nik }}</span></div>
+                        <div><span class="text-slate-500 text-[11px] block">2. Nama Lengkap:</span> <span class="font-medium">{{ $birth->mother_name }}</span></div>
+                        <div><span class="text-slate-500 text-[11px] block">3. Tgl Lahir / Umur:</span> <span class="font-medium">{{ $birth->mother_birth_date ? $birth->mother_birth_date->translatedFormat('d F Y') : '-' }} {{ $birth->mother_age ? '(' . $birth->mother_age . ' tahun)' : '' }}</span></div>
+                        <div><span class="text-slate-500 text-[11px] block">4. Pekerjaan:</span> <span class="font-medium">{{ $birth->mother_job ?? '-' }}</span></div>
+                        <div class="pt-1 border-t border-slate-200/60">
+                            <span class="text-slate-500 text-[11px] block">5. Alamat Domisili:</span>
+                            <span class="font-medium block">
+                                {{ $birth->mother_address ?: '-' }}
+                                @if($birth->mother_rt || $birth->mother_rw)
+                                    (RT {{ $birth->mother_rt ?? '-' }} / RW {{ $birth->mother_rw ?? '-' }})
+                                @endif
+                                @if($birth->mother_village || $birth->mother_district)
+                                    <br><span class="text-slate-600 text-[11px]">{{ $birth->mother_village ?? '' }}, {{ $birth->mother_district ?? '' }}, {{ $birth->mother_city ?? '' }} {{ $birth->mother_province ? '('.$birth->mother_province.')' : '' }}</span>
+                                @endif
+                            </span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 pt-1 border-t border-slate-200/60">
+                            <div><span class="text-slate-500 text-[11px] block">6. Kewarganegaraan:</span> <span class="font-medium">{{ $birth->mother_citizenship ?? 'WNI' }} ({{ $birth->mother_nationality ?? 'INDONESIA' }})</span></div>
+                            <div><span class="text-slate-500 text-[11px] block">8. Tgl Perkawinan:</span> <span class="font-medium">{{ $birth->marriage_date ? $birth->marriage_date->translatedFormat('d F Y') : '-' }}</span></div>
+                        </div>
                     </div>
 
-                    <!-- Ibu -->
-                    <div class="p-3 bg-slate-50 rounded-lg border border-slate-200/70 space-y-2">
-                        <p class="font-bold text-slate-800 text-teal-800"><i class="fa-solid fa-user-nurse mr-1"></i> Ibu Kandung</p>
-                        <div><span class="text-slate-500 text-[11px] block">NIK Ibu:</span> <span class="font-mono font-bold">{{ $birth->mother_nik }}</span></div>
-                        <div><span class="text-slate-500 text-[11px] block">Nama Lengkap:</span> <span class="font-medium">{{ $birth->mother_name }}</span></div>
-                        <div><span class="text-slate-500 text-[11px] block">Tgl Lahir:</span> <span class="font-medium">{{ $birth->mother_birth_date ? $birth->mother_birth_date->translatedFormat('d F Y') : '-' }}</span></div>
-                        <div><span class="text-slate-500 text-[11px] block">Pekerjaan:</span> <span class="font-medium">{{ $birth->mother_job ?? '-' }}</span></div>
+                    <!-- Ayah -->
+                    <div class="p-4 bg-slate-50 rounded-lg border border-slate-200/70 space-y-2">
+                        <p class="font-bold text-blue-700 pb-1 border-b border-blue-100 flex items-center justify-between">
+                            <span><i class="fa-solid fa-user-tie mr-1"></i> Ayah Kandung</span>
+                            <span class="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-normal">Bagian AYAH</span>
+                        </p>
+                        <div><span class="text-slate-500 text-[11px] block">1. NIK Ayah:</span> <span class="font-mono font-bold">{{ $birth->father_nik }}</span></div>
+                        <div><span class="text-slate-500 text-[11px] block">2. Nama Lengkap:</span> <span class="font-medium">{{ $birth->father_name }}</span></div>
+                        <div><span class="text-slate-500 text-[11px] block">3. Tgl Lahir / Umur:</span> <span class="font-medium">{{ $birth->father_birth_date ? $birth->father_birth_date->translatedFormat('d F Y') : '-' }} {{ $birth->father_age ? '(' . $birth->father_age . ' tahun)' : '' }}</span></div>
+                        <div><span class="text-slate-500 text-[11px] block">4. Pekerjaan:</span> <span class="font-medium">{{ $birth->father_job ?? '-' }}</span></div>
+                        <div class="pt-1 border-t border-slate-200/60">
+                            <span class="text-slate-500 text-[11px] block">5. Alamat Domisili:</span>
+                            <span class="font-medium block">
+                                {{ $birth->father_address ?: '-' }}
+                                @if($birth->father_rt || $birth->father_rw)
+                                    (RT {{ $birth->father_rt ?? '-' }} / RW {{ $birth->father_rw ?? '-' }})
+                                @endif
+                                @if($birth->father_village || $birth->father_district)
+                                    <br><span class="text-slate-600 text-[11px]">{{ $birth->father_village ?? '' }}, {{ $birth->father_district ?? '' }}, {{ $birth->father_city ?? '' }} {{ $birth->father_province ? '('.$birth->father_province.')' : '' }}</span>
+                                @endif
+                            </span>
+                        </div>
+                        <div class="pt-1 border-t border-slate-200/60">
+                            <span class="text-slate-500 text-[11px] block">6. Kewarganegaraan:</span>
+                            <span class="font-medium">{{ $birth->father_citizenship ?? 'WNI' }} ({{ $birth->father_nationality ?? 'INDONESIA' }})</span>
+                        </div>
                     </div>
                 </div>
             </div>

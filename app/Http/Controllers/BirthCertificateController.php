@@ -151,6 +151,15 @@ class BirthCertificateController extends Controller
                     'name' => $fatherCandidate->name,
                     'nik' => $fatherCandidate->nik,
                     'birth_date' => $fatherCandidate->birth_date,
+                    'address' => $user->address ?? '',
+                    'rt' => $user->rt ?? '',
+                    'rw' => $user->rw ?? '',
+                    'village' => 'Purwobinangun',
+                    'district' => 'Pakem',
+                    'city' => 'Sleman',
+                    'province' => 'D.I. Yogyakarta',
+                    'citizenship' => 'WNI',
+                    'nationality' => 'INDONESIA',
                 ];
             }
 
@@ -170,6 +179,15 @@ class BirthCertificateController extends Controller
                     'name' => $motherCandidate->name,
                     'nik' => $motherCandidate->nik,
                     'birth_date' => $motherCandidate->birth_date,
+                    'address' => $user->address ?? '',
+                    'rt' => $user->rt ?? '',
+                    'rw' => $user->rw ?? '',
+                    'village' => 'Purwobinangun',
+                    'district' => 'Pakem',
+                    'city' => 'Sleman',
+                    'province' => 'D.I. Yogyakarta',
+                    'citizenship' => 'WNI',
+                    'nationality' => 'INDONESIA',
                 ];
             }
         }
@@ -196,11 +214,33 @@ class BirthCertificateController extends Controller
             'father_name' => 'required|string|max:255',
             'father_nik' => 'required|digits:16',
             'father_birth_date' => 'required|date',
+            'father_age' => 'nullable|integer|min:1|max:130',
             'father_job' => 'required|string|max:100',
+            'father_address' => 'nullable|string|max:500',
+            'father_rt' => 'nullable|string|max:5',
+            'father_rw' => 'nullable|string|max:5',
+            'father_village' => 'nullable|string|max:100',
+            'father_district' => 'nullable|string|max:100',
+            'father_city' => 'nullable|string|max:100',
+            'father_province' => 'nullable|string|max:100',
+            'father_citizenship' => 'nullable|string|max:20',
+            'father_nationality' => 'nullable|string|max:50',
+
             'mother_name' => 'required|string|max:255',
             'mother_nik' => 'required|digits:16',
             'mother_birth_date' => 'required|date',
+            'mother_age' => 'nullable|integer|min:1|max:130',
             'mother_job' => 'required|string|max:100',
+            'mother_address' => 'nullable|string|max:500',
+            'mother_rt' => 'nullable|string|max:5',
+            'mother_rw' => 'nullable|string|max:5',
+            'mother_village' => 'nullable|string|max:100',
+            'mother_district' => 'nullable|string|max:100',
+            'mother_city' => 'nullable|string|max:100',
+            'mother_province' => 'nullable|string|max:100',
+            'mother_citizenship' => 'nullable|string|max:20',
+            'mother_nationality' => 'nullable|string|max:50',
+            'marriage_date' => 'nullable|date',
 
             // Data Saksi 1 & 2
             'witness_1_nik' => 'nullable|digits:16',
@@ -223,11 +263,16 @@ class BirthCertificateController extends Controller
 
             // Biodata Bayi
             'child_name' => 'required|string|max:255',
+            'child_nik' => 'nullable|digits:16',
             'gender' => 'required|in:L,P',
             'birth_place' => 'required|string|max:150',
             'birth_date' => 'required|date',
+            'birth_day' => 'nullable|string|max:20',
             'birth_time' => 'nullable|string|max:50',
             'birth_order' => 'required|integer|min:1|max:30',
+            'birth_helper' => 'nullable|string|max:100',
+            'birth_helper_other' => 'nullable|string|max:100',
+            'weight_gram' => 'nullable|numeric|min:100|max:10000',
             'weight_kg' => 'nullable|numeric|min:0.1|max:20',
             'length_cm' => 'nullable|numeric|min:10|max:150',
             'birth_type' => 'required|string|max:100',
@@ -258,12 +303,17 @@ class BirthCertificateController extends Controller
             'doc_birth_cert' => 'Surat Kelahiran RS/Bidan',
             'doc_marriage_cert' => 'Buku Nikah / Akta Perkawinan',
             'child_name' => 'Nama Lengkap Anak',
+            'child_nik' => 'NIK Anak',
             'gender' => 'Jenis Kelamin',
             'birth_place' => 'Tempat Kelahiran',
             'birth_date' => 'Tanggal Lahir',
+            'birth_day' => 'Hari Lahir',
             'birth_time' => 'Jam Kelahiran',
             'birth_order' => 'Kelahiran Anak ke-',
             'birth_type' => 'Jenis Kelahiran',
+            'birth_helper' => 'Penolong Kelahiran',
+            'weight_gram' => 'Berat Bayi',
+            'length_cm' => 'Panjang Bayi',
             'witness_1_nik' => 'NIK Saksi 1',
             'witness_1_name' => 'Nama Saksi 1',
             'witness_1_birth_date' => 'Tanggal Lahir Saksi 1',
@@ -290,13 +340,65 @@ class BirthCertificateController extends Controller
             $data['birth_type'] = 'Kembar ' . $request->input('birth_type_custom');
         }
 
-        // Jika Tempat Dilahirkan Lainnya diisi
+        // Tempat Dilahirkan
         if ($request->filled('birth_place_other') && $request->input('birth_place_type') === 'Lainnya') {
             $data['birth_place_type'] = $request->input('birth_place_other');
-            $data['birth_helper'] = $request->input('birth_place_other');
-        } else {
-            $data['birth_helper'] = $request->input('birth_place_type');
         }
+
+        // Penolong Kelahiran
+        if ($request->filled('birth_helper_other') && $request->input('birth_helper') === 'Lainnya') {
+            $data['birth_helper'] = $request->input('birth_helper_other');
+        } elseif ($request->filled('birth_helper')) {
+            $data['birth_helper'] = $request->input('birth_helper');
+        } else {
+            $data['birth_helper'] = $request->input('birth_place_type') ?: 'Bidan';
+        }
+
+        // Sinkronisasi Berat Bayi (Gram & Kg)
+        if ($request->filled('weight_gram')) {
+            $data['weight_gram'] = (int) $request->input('weight_gram');
+            $data['weight_kg'] = round($data['weight_gram'] / 1000, 2);
+        } elseif ($request->filled('weight_kg')) {
+            $data['weight_kg'] = (float) $request->input('weight_kg');
+            $data['weight_gram'] = (int) round($data['weight_kg'] * 1000);
+        }
+
+        // Otomatisasi Hari Lahir jika belum terisi
+        if (empty($data['birth_day']) && !empty($data['birth_date'])) {
+            $days = [
+                'Sunday' => 'Minggu',
+                'Monday' => 'Senin',
+                'Tuesday' => 'Selasa',
+                'Wednesday' => 'Rabu',
+                'Thursday' => 'Kamis',
+                'Friday' => 'Jumat',
+                'Saturday' => 'Sabtu'
+            ];
+            $dayNameEn = date('l', strtotime($data['birth_date']));
+            $data['birth_day'] = $days[$dayNameEn] ?? null;
+        }
+
+        // Otomatisasi Umur Orang Tua jika belum terisi namun tanggal lahir ada
+        if (empty($data['father_age']) && !empty($data['father_birth_date'])) {
+            try {
+                $data['father_age'] = \Carbon\Carbon::parse($data['father_birth_date'])->age;
+            } catch (\Exception $e) {
+                // Abaikan jika format error
+            }
+        }
+        if (empty($data['mother_age']) && !empty($data['mother_birth_date'])) {
+            try {
+                $data['mother_age'] = \Carbon\Carbon::parse($data['mother_birth_date'])->age;
+            } catch (\Exception $e) {
+                // Abaikan jika format error
+            }
+        }
+
+        // Default Kewarganegaraan & Kebangsaan jika kosong
+        $data['father_citizenship'] = $data['father_citizenship'] ?? 'WNI';
+        $data['father_nationality'] = $data['father_nationality'] ?? 'INDONESIA';
+        $data['mother_citizenship'] = $data['mother_citizenship'] ?? 'WNI';
+        $data['mother_nationality'] = $data['mother_nationality'] ?? 'INDONESIA';
 
         // Simpan File Dokumen
         $fileFields = ['doc_birth_cert', 'doc_family_card', 'doc_marriage_cert', 'doc_parents_ktp', 'doc_witness_ktp'];
