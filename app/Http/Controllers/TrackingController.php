@@ -91,6 +91,12 @@ class TrackingController extends Controller
             $data = DeathCertificate::where('registration_no', $registrationNo)->firstOrFail();
         }
 
+        // Tidak dapat mencetak tanda terima saat status permohonan dalam revisi
+        if ($data->status === 'revision') {
+            return redirect()->route('tracking.show', ['type' => $type, 'registrationNo' => $registrationNo])
+                ->with('error', 'Tanda terima permohonan tidak dapat dicetak selama permohonan dalam status revisi berkas.');
+        }
+
         // Keamanan Akses Data Sensitif Berbasis KK
         if (!Auth::check()) {
             return redirect()->guest(route('warga.login'))

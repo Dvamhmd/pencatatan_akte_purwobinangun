@@ -71,10 +71,10 @@
                     </div>
                 @elseif($data->status === 'revision')
                     <div class="p-4 bg-orange-50 border border-orange-200 rounded-xl mb-4 text-xs text-orange-800 flex items-start gap-3">
-                        <i class="fa-solid fa-triangle-exclamation text-orange-600 text-xl mt-0.5"></i>
+                        <i class="fa-solid fa-triangle-exclamation text-orange-600 text-xl mt-0.5 shrink-0"></i>
                         <div>
                             <h5 class="font-bold text-sm text-orange-900">Permohonan Perlu Revisi Berkas</h5>
-                            <p class="mt-1 text-orange-700">{{ $data->rejection_note ?? 'Terdapat berkas yang perlu diperbaiki atau dilengkapi sesuai catatan petugas.' }}</p>
+                            <p class="mt-1 text-orange-700 leading-relaxed">{{ $data->rejection_note ?? 'Terdapat berkas yang perlu diperbaiki atau dilengkapi sesuai catatan petugas.' }}</p>
                         </div>
                     </div>
                 @endif
@@ -147,9 +147,22 @@
                 <a href="{{ route('tracking.index') }}" class="text-xs font-semibold text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5">
                     <i class="fa-solid fa-arrow-left"></i> Lacak Nomor Lain
                 </a>
-                <a href="{{ route('tracking.print_receipt', ['type' => $type, 'registrationNo' => $data->registration_no]) }}" target="_blank" class="bg-[#0b7c89] hover:bg-[#065b65] text-white font-bold text-xs px-5 py-2.5 rounded-lg shadow-sm transition flex items-center gap-2">
-                    <i class="fa-solid fa-print"></i> Cetak Tanda Terima Permohonan
-                </a>
+                <div class="flex flex-wrap items-center gap-2">
+                    @if($data->status === 'revision' && $type === 'birth')
+                        <a href="{{ route('birth.create', ['revision' => $data->registration_no]) }}" class="bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs px-5 py-2.5 rounded-lg shadow-sm transition flex items-center gap-2">
+                            <i class="fa-solid fa-pen-to-square"></i> Revisi Berkas
+                        </a>
+                    @endif
+                    @if($data->status === 'revision')
+                        <button type="button" disabled title="Tanda terima permohonan tidak dapat dicetak selama permohonan dalam status revisi berkas" class="bg-slate-200 text-slate-400 cursor-not-allowed font-bold text-xs px-5 py-2.5 rounded-lg border border-slate-300 transition flex items-center gap-2">
+                            <i class="fa-solid fa-print"></i> Cetak Tanda Terima Permohonan
+                        </button>
+                    @else
+                        <a href="{{ route('tracking.print_receipt', ['type' => $type, 'registrationNo' => $data->registration_no]) }}" target="_blank" class="bg-[#0b7c89] hover:bg-[#065b65] text-white font-bold text-xs px-5 py-2.5 rounded-lg shadow-sm transition flex items-center gap-2">
+                            <i class="fa-solid fa-print"></i> Cetak Tanda Terima Permohonan
+                        </a>
+                    @endif
+                </div>
             </div>
 
         </div>

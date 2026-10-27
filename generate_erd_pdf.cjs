@@ -20,11 +20,11 @@ if (!browserPath) {
 
 console.log('Using browser:', browserPath);
 console.log('HTML source:', htmlPath);
-console.log('PDF destination:', pdfPath);
+console.log('DF destination:', pdfPath);
 
 const fileUrl = 'file:///' + htmlPath.replace(/\\/g, '/');
 
-const args = [
+const argPs = [
     '--headless=new',
     '--disable-gpu',
     '--no-pdf-header-footer',

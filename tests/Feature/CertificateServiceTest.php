@@ -71,6 +71,7 @@ class CertificateServiceTest extends TestCase
             'doc_family_card' => UploadedFile::fake()->create('kk.jpg', 100),
             'doc_marriage_cert' => UploadedFile::fake()->create('buku_nikah.pdf', 100),
             'doc_parents_ktp' => UploadedFile::fake()->create('ktp.jpg', 100),
+            'doc_witness_ktp' => UploadedFile::fake()->create('pengantar_rt_rw.pdf', 100),
         ]);
 
         $this->assertDatabaseHas('birth_certificates', [
@@ -139,6 +140,7 @@ class CertificateServiceTest extends TestCase
             'doc_family_card' => UploadedFile::fake()->create('kk.jpg', 100),
             'doc_marriage_cert' => UploadedFile::fake()->create('buku_nikah.pdf', 100),
             'doc_parents_ktp' => UploadedFile::fake()->create('ktp.jpg', 100),
+            'doc_witness_ktp' => UploadedFile::fake()->create('pengantar_rt_rw.pdf', 100),
         ]);
 
         $this->assertDatabaseHas('birth_certificates', [
@@ -160,6 +162,158 @@ class CertificateServiceTest extends TestCase
 
         $birth = BirthCertificate::where('child_nik', '3404050101260001')->first();
         $this->assertNotNull($birth);
+        $response->assertRedirect(route('birth.success', ['registration_no' => $birth->registration_no]));
+    }
+
+    public function test_birth_certificate_can_be_submitted_with_witnesses_details(): void
+    {
+        $warga = User::create([
+            'name' => 'Keluarga Saksi Test',
+            'nik' => '3404051205900888',
+            'family_card_no' => '3404050101900888',
+            'role' => 'warga',
+            'status' => 'active',
+            'password' => bcrypt('password123'),
+        ]);
+
+        $response = $this->actingAs($warga)->post('/akte-kelahiran/buat', [
+            'child_name' => 'Bayi Dengan Saksi',
+            'child_nik' => '3404050101260888',
+            'gender' => 'L',
+            'birth_place_type' => 'RS/SB',
+            'birth_place' => 'Sleman',
+            'birth_day' => 'Senin',
+            'birth_date' => '2026-08-03',
+            'birth_time' => '08:45',
+            'birth_type' => 'Tunggal',
+            'birth_order' => 1,
+            'birth_helper' => 'Dokter',
+            'weight_gram' => 3200,
+            'length_cm' => 49.0,
+
+            'applicant_nik' => '3404051205900888',
+            'applicant_name' => 'Keluarga Saksi Test',
+            'address' => 'Kemiri Kemiri',
+            'applicant_phone' => '081234567890',
+            'father_name' => 'Ayah Test',
+            'father_nik' => '3404051205900777',
+            'father_birth_date' => '1985-01-01',
+            'father_job' => 'Wiraswasta',
+            'mother_name' => 'Ibu Test',
+            'mother_nik' => '3404051205900666',
+            'mother_birth_date' => '1988-02-02',
+            'mother_job' => 'PNS',
+
+            // Saksi 1 (Sesuai Lampiran F-2.01)
+            'witness_1_nik' => '3404162303870002',
+            'witness_1_name' => 'PURNOMO RAHAYU',
+            'witness_1_birth_date' => '1987-03-23',
+            'witness_1_age' => 37,
+            'witness_1_gender' => 'L',
+            'witness_1_job' => 'Perangkat Desa',
+            'witness_1_address' => 'Kemiri Kemiri',
+            'witness_1_rt' => '3',
+            'witness_1_rw' => '8',
+            'witness_1_village' => 'Purwobinangun',
+            'witness_1_district' => 'Pakem',
+            'witness_1_city' => 'Sleman',
+            'witness_1_province' => 'Di Yogyakarta',
+
+            // Saksi 2 (Sesuai Lampiran F-2.01)
+            'witness_2_nik' => '3404160704760001',
+            'witness_2_name' => 'HARI PUJIANTO',
+            'witness_2_birth_date' => '1976-04-07',
+            'witness_2_age' => 48,
+            'witness_2_gender' => 'L',
+            'witness_2_job' => 'Perangkat Desa',
+            'witness_2_address' => 'Sudimoro Wringin',
+            'witness_2_rt' => '1',
+            'witness_2_rw' => '15',
+            'witness_2_village' => 'Purwobinangun',
+            'witness_2_district' => 'Pakem',
+            'witness_2_city' => 'Sleman',
+            'witness_2_province' => 'Di Yogyakarta',
+
+            'doc_birth_cert' => UploadedFile::fake()->create('surat_lahir.pdf', 100),
+            'doc_family_card' => UploadedFile::fake()->create('kk.jpg', 100),
+            'doc_marriage_cert' => UploadedFile::fake()->create('buku_nikah.pdf', 100),
+            'doc_parents_ktp' => UploadedFile::fake()->create('ktp.jpg', 100),
+            'doc_witness_ktp' => UploadedFile::fake()->create('pengantar_rt_rw.pdf', 100),
+        ]);
+
+        $this->assertDatabaseHas('birth_certificates', [
+            'child_nik' => '3404050101260888',
+            'witness_1_nik' => '3404162303870002',
+            'witness_1_name' => 'PURNOMO RAHAYU',
+            'witness_1_gender' => 'L',
+            'witness_1_rt' => '3',
+            'witness_1_rw' => '8',
+            'witness_2_nik' => '3404160704760001',
+            'witness_2_name' => 'HARI PUJIANTO',
+            'witness_2_gender' => 'L',
+            'witness_2_rt' => '1',
+            'witness_2_rw' => '15',
+        ]);
+
+        $birth = BirthCertificate::where('child_nik', '3404050101260888')->first();
+        $this->assertNotNull($birth);
+        $this->assertEquals(37, $birth->witness_1_age);
+        $this->assertEquals(48, $birth->witness_2_age);
+
+        $response->assertRedirect(route('birth.success', ['registration_no' => $birth->registration_no]));
+    }
+
+    public function test_birth_certificate_can_be_submitted_with_applicant_signature(): void
+    {
+        Storage::fake('public');
+
+        $warga = User::create([
+            'name' => 'Pemohon Tanda Tangan',
+            'nik' => '3404051001950009',
+            'family_card_no' => '3404050101950009',
+            'role' => 'warga',
+            'status' => 'active',
+            'password' => bcrypt('password123'),
+        ]);
+
+        // 1x1 transparent PNG data URI
+        $dummySignatureDataUri = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+
+        $response = $this->actingAs($warga)->post('/akte-kelahiran/buat', [
+            'applicant_name' => 'Pemohon Tanda Tangan',
+            'applicant_nik' => '3404051001950009',
+            'applicant_phone' => '081234567899',
+            'address' => 'Padukuhan Kemiri RT 01 / RW 02',
+            'child_name' => 'Bayi Bertanda Tangan',
+            'child_nik' => '3404050101260999',
+            'gender' => 'L',
+            'birth_place' => 'Sleman',
+            'birth_place_type' => 'Rumah Sakit',
+            'birth_date' => '2026-02-15',
+            'birth_time' => '10:00',
+            'birth_order' => 1,
+            'birth_type' => 'Tunggal',
+            'birth_helper' => 'Dokter',
+            'father_name' => 'Ayah Test',
+            'father_nik' => '3404051001850777',
+            'father_birth_date' => '1985-01-10',
+            'father_job' => 'PNS',
+            'mother_name' => 'Ibu Test',
+            'mother_nik' => '3404051205900777',
+            'mother_birth_date' => '1990-05-12',
+            'mother_job' => 'PNS',
+            'applicant_signature' => $dummySignatureDataUri,
+            'doc_birth_cert' => UploadedFile::fake()->create('surat_lahir.pdf', 100),
+            'doc_family_card' => UploadedFile::fake()->create('kk.jpg', 100),
+            'doc_marriage_cert' => UploadedFile::fake()->create('buku_nikah.pdf', 100),
+            'doc_parents_ktp' => UploadedFile::fake()->create('ktp.jpg', 100),
+            'doc_witness_ktp' => UploadedFile::fake()->create('pengantar_rt_rw.pdf', 100),
+        ]);
+
+        $birth = BirthCertificate::where('child_nik', '3404050101260999')->first();
+        $this->assertNotNull($birth);
+        $this->assertNotNull($birth->applicant_signature);
+        Storage::disk('public')->assertExists($birth->applicant_signature);
         $response->assertRedirect(route('birth.success', ['registration_no' => $birth->registration_no]));
     }
 
@@ -640,5 +794,112 @@ class CertificateServiceTest extends TestCase
         $this->assertEquals('Sudah Diambil', $death->fresh()->status_label);
         Mail::assertNothingSent();
         Http::assertNothingSent();
+    }
+
+    public function test_birth_certificate_revision_flow(): void
+    {
+        Storage::fake('public');
+
+        $warga = User::create([
+            'name' => 'Warga Revisi',
+            'email' => 'warga.revisi@gmail.com',
+            'nik' => '3404051205900010',
+            'family_card_no' => '3404050101900010',
+            'role' => 'warga',
+            'password' => bcrypt('password123'),
+        ]);
+
+        $birth = BirthCertificate::create([
+            'user_id' => $warga->id,
+            'registration_no' => 'AKL-20261027-0001',
+            'family_card_no' => $warga->family_card_no,
+            'applicant_name' => 'Warga Revisi',
+            'applicant_nik' => '3404051205900010',
+            'applicant_phone' => '081234567890',
+            'applicant_relation' => 'Ayah Kandung',
+            'child_name' => 'Bayi Perlu Revisi',
+            'gender' => 'L',
+            'birth_place' => 'Sleman',
+            'birth_date' => '2026-10-01',
+            'birth_order' => 1,
+            'birth_type' => 'Tunggal',
+            'birth_place_type' => 'RS/SB',
+            'father_name' => 'Ayah Lama',
+            'father_nik' => '3404051205900010',
+            'father_birth_date' => '1990-05-12',
+            'father_job' => 'Wiraswasta',
+            'mother_name' => 'Ibu Lama',
+            'mother_nik' => '3404055205920002',
+            'mother_birth_date' => '1992-05-12',
+            'mother_job' => 'Ibu Rumah Tangga',
+            'address' => 'Kadilobo RT 01 RW 01',
+            'status' => 'revision',
+            'rejection_note' => 'Mohon perbaiki nama lengkap anak dan perbarui foto KTP.',
+            'doc_parents_ktp' => 'uploads/birth_certs/old_ktp.jpg',
+            'doc_family_card' => 'uploads/birth_certs/old_kk.jpg',
+            'doc_birth_cert' => 'uploads/birth_certs/old_lahir.jpg',
+            'doc_marriage_cert' => 'uploads/birth_certs/old_nikah.jpg',
+            'doc_witness_ktp' => 'uploads/birth_certs/old_pengantar.jpg',
+            'applicant_signature' => 'signatures/old_sig.png',
+        ]);
+
+        // 1. Pada halaman lacak, pastikan tombol 'Revisi Berkas' muncul dan tombol Cetak Tanda Terima di-disable
+        $trackingResponse = $this->actingAs($warga)->get('/lacak/birth/' . $birth->registration_no);
+        $trackingResponse->assertStatus(200);
+        $trackingResponse->assertSee('Revisi Berkas');
+        $trackingResponse->assertSee(route('birth.create', ['revision' => $birth->registration_no]));
+        $trackingResponse->assertSee('disabled');
+        $trackingResponse->assertSee('Cetak Tanda Terima Permohonan');
+
+        // Akses langsung ke cetak tanda terima saat status permohonan 'revision' dilarang dan diredirect
+        $printAttempt = $this->actingAs($warga)->get(route('tracking.print_receipt', ['type' => 'birth', 'registrationNo' => $birth->registration_no]));
+        $printAttempt->assertRedirect(route('tracking.show', ['type' => 'birth', 'registrationNo' => $birth->registration_no]));
+        $printAttempt->assertSessionHas('error');
+
+        // 2. Pada halaman /akte-kelahiran/buat?revision=AKL-20261027-0001
+        $createResponse = $this->actingAs($warga)->get(route('birth.create', ['revision' => $birth->registration_no]));
+        $createResponse->assertStatus(200);
+        $createResponse->assertDontSee('Mode Revisi Berkas Permohonan');
+        $createResponse->assertSee('Catatan Perbaikan dari Petugas / Admin Kalurahan');
+        $createResponse->assertSee('Mohon perbaiki nama lengkap anak dan perbarui foto KTP.');
+        $createResponse->assertSee('revision_registration_no');
+        $createResponse->assertSee('AKL-20261027-0001');
+
+        // 3. Warga mengirim form revisi (perbaikan nama anak) tanpa harus mengunggah ulang dokumen yang sudah ada
+        $revisionPayload = [
+            'revision_registration_no' => 'AKL-20261027-0001',
+            'applicant_name' => 'Warga Revisi',
+            'applicant_nik' => '3404051205900010',
+            'applicant_phone' => '081234567890',
+            'applicant_relation' => 'Ayah Kandung',
+            'address' => 'Kadilobo RT 01 RW 01',
+            'child_name' => 'Bayi Sudah Direvisi',
+            'gender' => 'L',
+            'birth_place' => 'Sleman',
+            'birth_date' => '2026-10-01',
+            'birth_order' => 1,
+            'birth_type' => 'Tunggal',
+            'birth_place_type' => 'RS/SB',
+            'father_name' => 'Ayah Lama',
+            'father_nik' => '3404051205900010',
+            'father_birth_date' => '1990-05-12',
+            'father_job' => 'Wiraswasta',
+            'mother_name' => 'Ibu Lama',
+            'mother_nik' => '3404055205920002',
+            'mother_birth_date' => '1992-05-12',
+            'mother_job' => 'Ibu Rumah Tangga',
+        ];
+
+        $submitResponse = $this->actingAs($warga)->post(route('birth.store'), $revisionPayload);
+        $submitResponse->assertRedirect(route('birth.success', ['registration_no' => 'AKL-20261027-0001']));
+
+        // Pastikan tidak ada data duplikat yang dibuat
+        $this->assertEquals(1, BirthCertificate::where('registration_no', 'AKL-20261027-0001')->count());
+
+        $refreshed = $birth->fresh();
+        $this->assertEquals('Bayi Sudah Direvisi', $refreshed->child_name);
+        $this->assertEquals('pending', $refreshed->status);
+        $this->assertEquals('uploads/birth_certs/old_ktp.jpg', $refreshed->doc_parents_ktp);
+        $this->assertEquals('signatures/old_sig.png', $refreshed->applicant_signature);
     }
 }

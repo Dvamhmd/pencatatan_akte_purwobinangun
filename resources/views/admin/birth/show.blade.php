@@ -116,10 +116,68 @@
                 </div>
             </div>
 
-            <!-- 3. Berkas Dokumen Terunggah -->
+            <!-- 3. Data Saksi Kelahiran (Saksi 1 & Saksi 2) -->
             <div class="bg-white rounded-xl shadow-xs border border-slate-200 p-5">
                 <h4 class="text-xs font-bold uppercase tracking-wider text-[#0b7c89] pb-2 border-b border-slate-100 flex items-center gap-2 mb-4">
-                    <i class="fa-solid fa-folder-open text-base"></i> 3. Berkas Lampiran Pendukung
+                    <i class="fa-solid fa-user-group text-base"></i> 3. Data Saksi Kelahiran
+                </h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-xs">
+                    <!-- Saksi 1 -->
+                    <div class="p-4 bg-slate-50 rounded-lg border border-slate-200/70 space-y-2">
+                        <p class="font-bold text-teal-800 pb-1 border-b border-teal-100 flex items-center justify-between">
+                            <span><i class="fa-solid fa-user mr-1 text-teal-600"></i> Saksi 1</span>
+                            <span class="text-[10px] bg-teal-100 text-teal-800 px-2 py-0.5 rounded font-normal">Bagian SAKSI 1</span>
+                        </p>
+                        <div><span class="text-slate-500 text-[11px] block">1. NIK Saksi 1:</span> <span class="font-mono font-bold">{{ $birth->witness_1_nik ?: '-' }}</span></div>
+                        <div><span class="text-slate-500 text-[11px] block">2. Nama Lengkap:</span> <span class="font-medium">{{ $birth->witness_1_name ?: '-' }}</span></div>
+                        <div><span class="text-slate-500 text-[11px] block">3. Tgl Lahir / Umur:</span> <span class="font-medium">{{ $birth->witness_1_birth_date ? $birth->witness_1_birth_date->translatedFormat('d F Y') : '-' }} {{ $birth->witness_1_age ? '(' . $birth->witness_1_age . ' tahun)' : '' }}</span></div>
+                        <div><span class="text-slate-500 text-[11px] block">4. Jenis Kelamin:</span> <span class="font-medium">{{ $birth->witness_1_gender === 'L' ? 'Laki-laki' : ($birth->witness_1_gender === 'P' ? 'Perempuan' : '-') }}</span></div>
+                        <div><span class="text-slate-500 text-[11px] block">5. Pekerjaan:</span> <span class="font-medium">{{ $birth->witness_1_job ?: '-' }}</span></div>
+                        <div class="pt-1 border-t border-slate-200/60">
+                            <span class="text-slate-500 text-[11px] block">6. Alamat Domisili:</span>
+                            <span class="font-medium block">
+                                {{ $birth->witness_1_address ?: '-' }}
+                                @if($birth->witness_1_rt || $birth->witness_1_rw)
+                                    (RT {{ $birth->witness_1_rt ?? '-' }} / RW {{ $birth->witness_1_rw ?? '-' }})
+                                @endif
+                                @if($birth->witness_1_village || $birth->witness_1_district)
+                                    <br><span class="text-slate-600 text-[11px]">{{ $birth->witness_1_village ?? '' }}, {{ $birth->witness_1_district ?? '' }}, {{ $birth->witness_1_city ?? '' }} {{ $birth->witness_1_province ? '('.$birth->witness_1_province.')' : '' }}</span>
+                                @endif
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Saksi 2 -->
+                    <div class="p-4 bg-slate-50 rounded-lg border border-slate-200/70 space-y-2">
+                        <p class="font-bold text-teal-800 pb-1 border-b border-teal-100 flex items-center justify-between">
+                            <span><i class="fa-solid fa-user mr-1 text-teal-600"></i> Saksi 2</span>
+                            <span class="text-[10px] bg-teal-100 text-teal-800 px-2 py-0.5 rounded font-normal">Bagian SAKSI 2</span>
+                        </p>
+                        <div><span class="text-slate-500 text-[11px] block">1. NIK Saksi 2:</span> <span class="font-mono font-bold">{{ $birth->witness_2_nik ?: '-' }}</span></div>
+                        <div><span class="text-slate-500 text-[11px] block">2. Nama Lengkap:</span> <span class="font-medium">{{ $birth->witness_2_name ?: '-' }}</span></div>
+                        <div><span class="text-slate-500 text-[11px] block">3. Tgl Lahir / Umur:</span> <span class="font-medium">{{ $birth->witness_2_birth_date ? $birth->witness_2_birth_date->translatedFormat('d F Y') : '-' }} {{ $birth->witness_2_age ? '(' . $birth->witness_2_age . ' tahun)' : '' }}</span></div>
+                        <div><span class="text-slate-500 text-[11px] block">4. Jenis Kelamin:</span> <span class="font-medium">{{ $birth->witness_2_gender === 'L' ? 'Laki-laki' : ($birth->witness_2_gender === 'P' ? 'Perempuan' : '-') }}</span></div>
+                        <div><span class="text-slate-500 text-[11px] block">5. Pekerjaan:</span> <span class="font-medium">{{ $birth->witness_2_job ?: '-' }}</span></div>
+                        <div class="pt-1 border-t border-slate-200/60">
+                            <span class="text-slate-500 text-[11px] block">6. Alamat Domisili:</span>
+                            <span class="font-medium block">
+                                {{ $birth->witness_2_address ?: '-' }}
+                                @if($birth->witness_2_rt || $birth->witness_2_rw)
+                                    (RT {{ $birth->witness_2_rt ?? '-' }} / RW {{ $birth->witness_2_rw ?? '-' }})
+                                @endif
+                                @if($birth->witness_2_village || $birth->witness_2_district)
+                                    <br><span class="text-slate-600 text-[11px]">{{ $birth->witness_2_village ?? '' }}, {{ $birth->witness_2_district ?? '' }}, {{ $birth->witness_2_city ?? '' }} {{ $birth->witness_2_province ? '('.$birth->witness_2_province.')' : '' }}</span>
+                                @endif
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Berkas Dokumen Terunggah -->
+            <div class="bg-white rounded-xl shadow-xs border border-slate-200 p-5">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-[#0b7c89] pb-2 border-b border-slate-100 flex items-center gap-2 mb-4">
+                    <i class="fa-solid fa-folder-open text-base"></i> 4. Berkas Lampiran Pendukung
                 </h4>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                     
@@ -129,6 +187,7 @@
                             'Kartu Keluarga (KK)' => $birth->doc_family_card,
                             'Buku Nikah / Akta Perkawinan' => $birth->doc_marriage_cert,
                             'KTP Kedua Orang Tua' => $birth->doc_parents_ktp,
+                            'Surat Pengantar RT/RW' => $birth->doc_witness_ktp,
                         ];
                     @endphp
 
@@ -232,6 +291,20 @@
                 <div><span class="text-slate-400 block text-[11px]">Email Warga:</span> <span class="font-medium text-slate-800">{{ $birth->applicant_email ?: '-' }}</span></div>
                 <div><span class="text-slate-400 block text-[11px]">Kontak / WhatsApp:</span> <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $birth->applicant_phone) }}" target="_blank" class="text-[#0b7c89] font-bold hover:underline">{{ $birth->applicant_phone }}</a></div>
                 <div><span class="text-slate-400 block text-[11px]">Wilayah Padukuhan:</span> <span>Padukuhan {{ $birth->padukuhan }}, RT {{ $birth->rt }} / RW {{ $birth->rw }}</span></div>
+                
+                <!-- Tanda Tangan Digital Pemohon -->
+                <div class="pt-2.5 border-t border-slate-100">
+                    <span class="text-slate-400 block text-[11px] mb-1.5 flex items-center gap-1">
+                        <i class="fa-solid fa-signature text-[#0b7c89]"></i> Tanda Tangan Digital Pemohon:
+                    </span>
+                    @if($birth->applicant_signature)
+                        <div class="p-2 bg-slate-50 rounded-lg border border-slate-200 inline-block max-w-full">
+                            <img src="{{ asset('storage/' . $birth->applicant_signature) }}" alt="Tanda Tangan Pemohon" class="h-16 max-w-full object-contain mx-auto bg-white rounded p-1 border border-slate-200/60 shadow-2xs">
+                        </div>
+                    @else
+                        <span class="text-slate-400 italic text-[11px]">Belum dibubuhkan</span>
+                    @endif
+                </div>
             </div>
 
         </div>

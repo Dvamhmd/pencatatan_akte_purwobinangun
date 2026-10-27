@@ -494,17 +494,6 @@
                     </ul>
                 </div>
 
-                <!-- Banner Maklumat Pelayanan -->
-                <div class="bg-gradient-to-br from-[#095b8c] to-[#059cb8] text-white rounded-xl p-4 shadow-sm">
-                    <div class="flex items-center gap-2 mb-1.5">
-                        <i class="fa-solid fa-stamp text-amber-300 text-base"></i>
-                        <h4 class="font-bold text-xs">Pelayanan Gratis & Cepat</h4>
-                    </div>
-                    <p class="text-[11px] text-teal-100 leading-relaxed">
-                        Seluruh pengurusan surat pengantar Akte Kelahiran dan Kematian di Kalurahan Purwobinangun <strong>TIDAK DIPUNGUT BIAYA (GRATIS)</strong>.
-                    </p>
-                </div>
-
             </aside>
 
             <!-- Main Content Area -->

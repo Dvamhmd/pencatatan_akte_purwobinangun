@@ -5,18 +5,22 @@
 @section('content')
 @php
     $pekerjaanList = $pekerjaanList ?? [
-        'Belum / Tidak Bekerja', 'Mengurus Rumah Tangga', 'Pelajar / Mahasiswa', 'Pensiunan',
-        'Pegawai Negeri Sipil (PNS)', 'Tentara Nasional Indonesia (TNI)', 'Kepolisian RI (POLRI)',
-        'Karyawan Swasta', 'Karyawan BUMN', 'Karyawan BUMD', 'Karyawan Honorer', 'Buruh Harian Lepas',
-        'Buruh Tani / Perkebunan', 'Buruh Nelayan / Perikanan', 'Buruh Peternakan', 'Pembantu Rumah Tangga',
-        'Petani / Pekebun', 'Peternak', 'Nelayan / Perikanan', 'Perdagangan / Pedagang', 'Wiraswasta',
-        'Industri', 'Konstruksi', 'Transportasi', 'Sopir', 'Mekanik', 'Tukang Listrik', 'Tukang Kayu',
-        'Tukang Batu', 'Tukang Jahit', 'Tukang Las / Pandai Besi', 'Tukang Cukur / Penata Rambut',
-        'Penata Rias', 'Penata Busana', 'Juru Masak', 'Dosen', 'Guru', 'Dokter', 'Bidan', 'Perawat',
-        'Apoteker', 'Psikiater / Psikolog', 'Pilot', 'Pelaut', 'Pengacara', 'Notaris', 'Arsitek',
-        'Akuntan', 'Konsultan', 'Wartawan', 'Peneliti', 'Seniman', 'Perangkat Desa', 'Kepala Desa',
-        'Tokoh Agama / Rohaniwan', 'Anggota Legislatif (DPR / DPD / DPRD)', 'Lainnya'
+        'Akuntan', 'Anggota Legislatif (DPR / DPD / DPRD)', 'Apoteker', 'Arsitek',
+        'Belum / Tidak Bekerja', 'Bidan', 'Buruh Harian Lepas', 'Buruh Nelayan / Perikanan',
+        'Buruh Peternakan', 'Buruh Tani / Perkebunan', 'Dokter', 'Dosen', 'Guru',
+        'Industri', 'Juru Masak', 'Karyawan BUMD', 'Karyawan BUMN', 'Karyawan Honorer',
+        'Karyawan Swasta', 'Kepala Desa', 'Kepolisian RI (POLRI)', 'Konstruksi',
+        'Konsultan', 'Lainnya', 'Mekanik', 'Mengurus Rumah Tangga', 'Nelayan / Perikanan',
+        'Notaris', 'Pegawai Negeri Sipil (PNS)', 'Pelajar / Mahasiswa', 'Pelaut',
+        'Pembantu Rumah Tangga', 'Penata Busana', 'Penata Rias', 'Peneliti',
+        'Pengacara', 'Pensiunan', 'Perangkat Desa', 'Perdagangan / Pedagang',
+        'Perawat', 'Petani / Pekebun', 'Peternak', 'Pilot', 'Psikiater / Psikolog',
+        'Seniman', 'Sopir', 'Tentara Nasional Indonesia (TNI)', 'Tokoh Agama / Rohaniwan',
+        'Transportasi', 'Tukang Batu', 'Tukang Cukur / Penata Rambut', 'Tukang Jahit',
+        'Tukang Kayu', 'Tukang Las / Pandai Besi', 'Tukang Listrik', 'Wartawan',
+        'Wiraswasta'
     ];
+    sort($pekerjaanList);
 @endphp
 <style>
     /* Pop-up Modal Top Layer & Smooth Transitions */
@@ -167,12 +171,12 @@
                             <span class="step-label text-[10px] sm:text-xs font-medium text-slate-400 mt-1.5 text-center whitespace-nowrap" id="step-label-2">Orang Tua</span>
                         </div>
 
-                        <!-- Step 3: Pemohon -->
+                        <!-- Step 3: Pelapor -->
                         <div class="step-indicator flex flex-col items-center">
-                            <button type="button" onclick="goToStepIfAllowed(3)" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm transition-all duration-200 shadow-xs bg-white text-slate-400 border-2 border-slate-300 cursor-pointer hover:border-slate-400 hover:text-slate-600" id="step-circle-3" title="Langkah 3: Identitas Pemohon">
+                            <button type="button" onclick="goToStepIfAllowed(3)" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm transition-all duration-200 shadow-xs bg-white text-slate-400 border-2 border-slate-300 cursor-pointer hover:border-slate-400 hover:text-slate-600" id="step-circle-3" title="Langkah 3: Identitas Pelapor">
                                 <span class="step-num">3</span>
                             </button>
-                            <span class="step-label text-[10px] sm:text-xs font-medium text-slate-400 mt-1.5 text-center whitespace-nowrap" id="step-label-3">Pemohon</span>
+                            <span class="step-label text-[10px] sm:text-xs font-medium text-slate-400 mt-1.5 text-center whitespace-nowrap" id="step-label-3">Pelapor</span>
                         </div>
 
                         <!-- Step 4: Saksi -->
@@ -199,6 +203,34 @@
         <form id="birth-application-form" action="{{ route('birth.store') }}" method="POST" enctype="multipart/form-data" class="p-5 md:p-8">
             @csrf
 
+            @if(isset($revisionBirth) && $revisionBirth)
+                <input type="hidden" name="revision_registration_no" value="{{ $revisionBirth->registration_no }}">
+                
+                <!-- Card Kuning Pastel: Peringatan Catatan Revisi dari Admin -->
+                <div class="mb-6 p-4 sm:p-5 bg-amber-50 border-2 border-amber-300 rounded-2xl shadow-xs text-amber-950 flex items-start gap-3.5 transition">
+                    <div class="w-10 h-10 rounded-xl bg-amber-200/80 border border-amber-300 flex items-center justify-center shrink-0 text-amber-800 text-lg shadow-2xs mt-0.5">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <div class="flex-1 min-w-0 space-y-2">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-xs font-mono font-bold text-amber-900 bg-amber-100/90 px-2.5 py-0.5 rounded-md border border-amber-200">
+                                No. Registrasi: {{ $revisionBirth->registration_no }}
+                            </span>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-amber-900">
+                                Catatan Perbaikan dari Petugas / Admin Kalurahan:
+                            </h4>
+                            <div class="mt-1.5 p-3 bg-white/95 rounded-xl border border-amber-200 text-xs sm:text-sm font-semibold text-amber-950 leading-relaxed shadow-2xs">
+                                <i class="fa-solid fa-quote-left text-amber-400 mr-1 text-xs"></i>
+                                {{ $revisionBirth->rejection_note ?? 'Silakan periksa dan perbaiki isian data serta unggahan berkas Anda sesuai petunjuk petugas sebelum mengirim kembali permohonan.' }}
+                                <i class="fa-solid fa-quote-right text-amber-400 ml-1 text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <!-- ======================================================= -->
             <!-- LANGKAH 1: BIODATA BAYI                                   -->
             <!-- ======================================================= -->
@@ -215,7 +247,7 @@
                             <label for="child_name" class="block text-xs font-semibold text-slate-700 mb-1">
                                 1. Nama Lengkap Bayi / Anak <span class="text-rose-500">*</span>
                             </label>
-                            <input type="text" id="child_name" name="child_name" value="{{ old('child_name') }}" required placeholder="Masukkan Nama Lengkap Bayi/Anak" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition font-medium">
+                            <input type="text" id="child_name" name="child_name" value="{{ old('child_name', $revisionBirth->child_name ?? '') }}" required placeholder="Masukkan Nama Lengkap Bayi/Anak" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition font-medium">
                             <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-child_name">Nama lengkap anak wajib diisi.</span>
                         </div>
 
@@ -224,7 +256,7 @@
                             <label for="child_nik" class="block text-xs font-semibold text-slate-700 mb-1">
                                 2. NIK Bayi / Anak <span class="text-slate-400 font-normal">(Opsional jika belum memiliki NIK)</span>
                             </label>
-                            <input type="text" id="child_nik" name="child_nik" value="{{ old('child_nik') }}" maxlength="16" placeholder="Masukkan 16 Digit NIK Anak (Bila Ada)" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition">
+                            <input type="text" id="child_nik" name="child_nik" value="{{ old('child_nik', $revisionBirth->child_nik ?? '') }}" maxlength="16" placeholder="Masukkan 16 Digit NIK Anak (Bila Ada)" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition">
                             <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-child_nik">NIK anak harus berupa 16 digit angka.</span>
                         </div>
 
@@ -235,13 +267,13 @@
                             </label>
                             <div class="grid grid-cols-2 gap-3">
                                 <label class="flex items-center justify-center gap-2 p-2.5 rounded-lg border border-slate-300 hover:border-[#095b8c] cursor-pointer transition bg-white has-[:checked]:bg-blue-50 has-[:checked]:border-blue-500 has-[:checked]:text-blue-700">
-                                    <input type="radio" name="gender" value="L" checked class="text-[#095b8c] focus:ring-[#095b8c]">
+                                    <input type="radio" name="gender" value="L" {{ old('gender', $revisionBirth->gender ?? 'L') === 'L' ? 'checked' : '' }} class="text-[#095b8c] focus:ring-[#095b8c]">
                                     <i class="fa-solid fa-mars text-blue-600"></i>
                                     <span class="text-xs font-semibold">1. Laki-laki</span>
                                 </label>
 
                                 <label class="flex items-center justify-center gap-2 p-2.5 rounded-lg border border-slate-300 hover:border-[#095b8c] cursor-pointer transition bg-white has-[:checked]:bg-pink-50 has-[:checked]:border-pink-500 has-[:checked]:text-pink-700">
-                                    <input type="radio" name="gender" value="P" class="text-[#095b8c] focus:ring-[#095b8c]">
+                                    <input type="radio" name="gender" value="P" {{ old('gender', $revisionBirth->gender ?? '') === 'P' ? 'checked' : '' }} class="text-[#095b8c] focus:ring-[#095b8c]">
                                     <i class="fa-solid fa-venus text-pink-600"></i>
                                     <span class="text-xs font-semibold">2. Perempuan</span>
                                 </label>
@@ -254,11 +286,11 @@
                                 4. Tempat Dilahirkan <span class="text-rose-500">*</span>
                             </label>
                             <select id="birth_place_type" name="birth_place_type" required class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white">
-                                <option value="RS/SB" selected>1. RS/SB (Rumah Sakit / Bersalin)</option>
-                                <option value="Puskesmas">2. Puskesmas</option>
-                                <option value="Polindes">3. Polindes</option>
-                                <option value="Rumah">4. Rumah</option>
-                                <option value="Lainnya">5. Lainnya</option>
+                                <option value="RS/SB" {{ old('birth_place_type', $revisionBirth->birth_place_type ?? 'RS/SB') === 'RS/SB' ? 'selected' : '' }}>1. RS/SB (Rumah Sakit / Bersalin)</option>
+                                <option value="Puskesmas" {{ old('birth_place_type', $revisionBirth->birth_place_type ?? '') === 'Puskesmas' ? 'selected' : '' }}>2. Puskesmas</option>
+                                <option value="Polindes" {{ old('birth_place_type', $revisionBirth->birth_place_type ?? '') === 'Polindes' ? 'selected' : '' }}>3. Polindes</option>
+                                <option value="Rumah" {{ old('birth_place_type', $revisionBirth->birth_place_type ?? '') === 'Rumah' ? 'selected' : '' }}>4. Rumah</option>
+                                <option value="Lainnya" {{ old('birth_place_type', $revisionBirth->birth_place_type ?? '') === 'Lainnya' ? 'selected' : '' }}>5. Lainnya</option>
                             </select>
 
                             <!-- Input Kustom jika Tempat Dilahirkan Lainnya -->
@@ -272,7 +304,7 @@
                             <label for="birth_place" class="block text-xs font-semibold text-slate-700 mb-1">
                                 5. Tempat Kelahiran (Kabupaten / Kota) <span class="text-rose-500">*</span>
                             </label>
-                            <input type="text" id="birth_place" name="birth_place" value="{{ old('birth_place', 'Sleman') }}" required placeholder="Masukkan Kabupaten / Kota Kelahiran" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition">
+                            <input type="text" id="birth_place" name="birth_place" value="{{ old('birth_place', $revisionBirth->birth_place ?? 'Sleman') }}" required placeholder="Masukkan Kabupaten / Kota Kelahiran" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition">
                             <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-birth_place">Tempat kelahiran wajib diisi.</span>
                         </div>
 
@@ -281,7 +313,7 @@
                             <label class="block text-xs font-semibold text-slate-700 mb-1">
                                 6. Tanggal Lahir <span class="text-rose-500">*</span>
                             </label>
-                            <input type="date" id="birth_date" name="birth_date" value="{{ old('birth_date') }}" required class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white cursor-pointer">
+                            <input type="date" id="birth_date" name="birth_date" value="{{ old('birth_date', isset($revisionBirth->birth_date) ? ($revisionBirth->birth_date instanceof \DateTimeInterface ? $revisionBirth->birth_date->format('Y-m-d') : substr((string)$revisionBirth->birth_date, 0, 10)) : '') }}" required class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white cursor-pointer">
                             <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-birth_date">Tanggal lahir wajib diisi.</span>
                         </div>
 
@@ -290,7 +322,7 @@
                             <label for="birth_time" class="block text-xs font-semibold text-slate-700 mb-1">
                                 7. Pukul Kelahiran <span class="text-slate-400 font-normal">(Opsional)</span>
                             </label>
-                            <input type="time" id="birth_time" name="birth_time" value="{{ old('birth_time') }}" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white cursor-pointer">
+                            <input type="time" id="birth_time" name="birth_time" value="{{ old('birth_time', $revisionBirth->birth_time ?? '') }}" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white cursor-pointer">
                         </div>
 
                         <!-- 8. Jenis Kelahiran -->
@@ -317,7 +349,7 @@
                             <label for="birth_order" class="block text-xs font-semibold text-slate-700 mb-1">
                                 9. Kelahiran Anak Ke <span class="text-rose-500">*</span>
                             </label>
-                            <input type="number" id="birth_order" name="birth_order" min="1" max="25" value="{{ old('birth_order', 1) }}" required placeholder="Kelahiran Anak ke-" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition">
+                            <input type="number" id="birth_order" name="birth_order" min="1" max="25" value="{{ old('birth_order', $revisionBirth->birth_order ?? 1) }}" required placeholder="Kelahiran Anak ke-" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition">
                             <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-birth_order">Kelahiran anak ke- wajib diisi.</span>
                         </div>
 
@@ -346,7 +378,7 @@
                                 11. Berat Bayi <span class="text-slate-400 font-normal">(Opsional)</span>
                             </label>
                             <div class="relative">
-                                <input type="number" step="1" min="100" max="10000" id="weight_gram" name="weight_gram" value="{{ old('weight_gram') }}" placeholder="Contoh: 3200" class="w-full text-xs px-3.5 pr-14 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c]" style="-moz-appearance: textfield; appearance: textfield;">
+                                <input type="number" step="1" min="100" max="10000" id="weight_gram" name="weight_gram" value="{{ old('weight_gram', $revisionBirth->weight_gram ?? '') }}" placeholder="Contoh: 3200" class="w-full text-xs px-3.5 pr-14 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c]" style="-moz-appearance: textfield; appearance: textfield;">
                                 <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-semibold">gram</span>
                             </div>
                             <span class="text-[10px] text-slate-500 mt-0.5 block">Berat badan bayi saat lahir dalam satuan gram</span>
@@ -358,7 +390,7 @@
                                 12. Panjang Bayi <span class="text-slate-400 font-normal">(Opsional)</span>
                             </label>
                             <div class="relative">
-                                <input type="number" step="0.1" min="20" max="100" id="length_cm" name="length_cm" value="{{ old('length_cm') }}" placeholder="Contoh: 49.5" class="w-full text-xs px-3.5 pr-10 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c]" style="-moz-appearance: textfield; appearance: textfield;">
+                                <input type="number" step="0.1" min="20" max="100" id="length_cm" name="length_cm" value="{{ old('length_cm', $revisionBirth->length_cm ?? '') }}" placeholder="Contoh: 49.5" class="w-full text-xs px-3.5 pr-10 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c]" style="-moz-appearance: textfield; appearance: textfield;">
                                 <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-semibold">cm</span>
                             </div>
                             <span class="text-[10px] text-slate-500 mt-0.5 block">Panjang badan bayi saat lahir dalam satuan cm</span>
@@ -385,8 +417,136 @@
                         <i class="fa-solid fa-users text-amber-500"></i> Data Kedua Orang Tua
                     </h4>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-5">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
                         
+                        <!-- ================= Data Ayah Kandung (Sesuai Formulir F-2.01) ================= -->
+                        <div class="bg-slate-50/70 p-4 sm:p-5 rounded-xl border border-slate-200 space-y-4">
+                            <div>
+                                <div class="flex items-center justify-between pb-2 border-b border-slate-200/80 mb-3.5">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-6 h-6 rounded-md bg-blue-100 text-blue-700 flex items-center justify-center text-xs shrink-0">
+                                            <i class="fa-solid fa-user-tie"></i>
+                                        </div>
+                                        <h5 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Data Ayah Kandung</h5>
+                                    </div>
+                                    <span class="text-[10px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full font-semibold border border-blue-200">Bagian AYAH</span>
+                                </div>
+
+                                <div class="space-y-3">
+                                    <!-- 1. NIK Ayah -->
+                                    <div>
+                                        <label for="father_nik" class="block text-xs font-semibold text-slate-700 mb-1">
+                                            1. NIK Ayah (16 Digit) <span class="text-rose-500">*</span>
+                                        </label>
+                                        <input type="text" id="father_nik" name="father_nik" value="{{ old('father_nik', $defaultFather['nik'] ?? '') }}" maxlength="16" required placeholder="Masukkan NIK Ayah (16 Angka)" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition font-mono">
+                                        <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-father_nik">NIK Ayah wajib 16 digit angka.</span>
+                                    </div>
+
+                                    <!-- 2. Nama Lengkap Ayah -->
+                                    <div>
+                                        <label for="father_name" class="block text-xs font-semibold text-slate-700 mb-1">
+                                            2. Nama Lengkap Ayah <span class="text-rose-500">*</span>
+                                        </label>
+                                        <input type="text" id="father_name" name="father_name" value="{{ old('father_name', $defaultFather['name'] ?? '') }}" required placeholder="Masukkan Nama Lengkap Ayah" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition">
+                                        <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-father_name">Nama lengkap ayah wajib diisi.</span>
+                                    </div>
+
+                                    <!-- 3. Tanggal Lahir / Umur Ayah -->
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                            3. Tanggal Lahir / Umur Ayah <span class="text-rose-500">*</span>
+                                        </label>
+                                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                            <div class="sm:col-span-2">
+                                                <input type="date" id="father_birth_date" name="father_birth_date" value="{{ old('father_birth_date', $defaultFather['birth_date'] ?? '') }}" required class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition bg-white">
+                                            </div>
+                                            <div>
+                                                <div class="relative">
+                                                    <input type="number" id="father_age" name="father_age" value="{{ old('father_age') }}" placeholder="Umur" min="1" max="130" readonly tabindex="-1" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none transition bg-slate-100 text-slate-600 cursor-not-allowed pr-9 font-medium" title="Umur otomatis terhitung dari tanggal lahir">
+                                                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-slate-400 font-medium">Thn</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-father_birth_date">Tanggal lahir ayah wajib diisi.</span>
+                                    </div>
+
+                                    <!-- 4. Pekerjaan Ayah -->
+                                    <div>
+                                        <label for="father_job" class="block text-xs font-semibold text-slate-700 mb-1">
+                                            4. Pekerjaan Ayah <span class="text-rose-500">*</span>
+                                        </label>
+                                        <select id="father_job" name="father_job" required class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition bg-white">
+                                            <option value="">-- Pilih Kategori Pekerjaan Ayah --</option>
+                                            @foreach ($pekerjaanList as $job)
+                                                <option value="{{ $job }}" {{ old('father_job') == $job ? 'selected' : '' }}>{{ $job }}</option>
+                                            @endforeach
+                                        </select>
+                                        <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-father_job">Pekerjaan ayah wajib dipilih.</span>
+                                    </div>
+
+                                    <!-- 5. Alamat Ayah -->
+                                    <div class="pt-2 border-t border-slate-200/80 space-y-2.5">
+                                        <label class="block text-xs font-semibold text-slate-700">
+                                            5. Alamat Ayah
+                                        </label>
+                                        <div>
+                                            <input type="text" id="father_address" name="father_address" value="{{ old('father_address', $defaultFather['address'] ?? '') }}" placeholder="Alamat (Jalan / Dusun)" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white">
+                                        </div>
+
+                                        <div class="grid grid-cols-2 gap-2">
+                                            <div>
+                                                <input type="text" id="father_rt" name="father_rt" value="{{ old('father_rt', $defaultFather['rt'] ?? '01') }}" maxlength="5" placeholder="RT" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition text-center bg-white font-mono">
+                                            </div>
+                                            <div>
+                                                <input type="text" id="father_rw" name="father_rw" value="{{ old('father_rw', $defaultFather['rw'] ?? '01') }}" maxlength="5" placeholder="RW" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition text-center bg-white font-mono">
+                                            </div>
+                                        </div>
+
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                            <div>
+                                                <label class="block text-[11px] text-slate-500 mb-0.5">a. Desa / Kelurahan</label>
+                                                <input type="text" id="father_village" name="father_village" value="{{ old('father_village', $defaultFather['village'] ?? 'Purwobinangun') }}" placeholder="Desa/Kelurahan" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white">
+                                            </div>
+                                            <div>
+                                                <label class="block text-[11px] text-slate-500 mb-0.5">b. Kecamatan</label>
+                                                <input type="text" id="father_district" name="father_district" value="{{ old('father_district', $defaultFather['district'] ?? 'Pakem') }}" placeholder="Kecamatan" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white">
+                                            </div>
+                                        </div>
+
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                            <div>
+                                                <label class="block text-[11px] text-slate-500 mb-0.5">c. Kabupaten / Kota</label>
+                                                <input type="text" id="father_city" name="father_city" value="{{ old('father_city', $defaultFather['city'] ?? 'Sleman') }}" placeholder="Kabupaten/Kota" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white">
+                                            </div>
+                                            <div>
+                                                <label class="block text-[11px] text-slate-500 mb-0.5">d. Propinsi</label>
+                                                <input type="text" id="father_province" name="father_province" value="{{ old('father_province', $defaultFather['province'] ?? 'D.I. Yogyakarta') }}" placeholder="Propinsi" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 6 & 7. Kewarganegaraan & Kebangsaan Ayah -->
+                                    <div class="pt-2 border-t border-slate-200/80 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                        <div>
+                                            <label for="father_citizenship" class="block text-xs font-semibold text-slate-700 mb-1">
+                                                6. Kewarganegaraan
+                                            </label>
+                                            <select id="father_citizenship" name="father_citizenship" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white">
+                                                <option value="WNI" {{ old('father_citizenship', $defaultFather['citizenship'] ?? 'WNI') === 'WNI' ? 'selected' : '' }}>1. WNI</option>
+                                                <option value="WNA" {{ old('father_citizenship', $defaultFather['citizenship'] ?? '') === 'WNA' ? 'selected' : '' }}>2. WNA</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label for="father_nationality" class="block text-xs font-semibold text-slate-700 mb-1">
+                                                7. Kebangsaan
+                                            </label>
+                                            <input type="text" id="father_nationality" name="father_nationality" value="{{ old('father_nationality', $defaultFather['nationality'] ?? 'INDONESIA') }}" placeholder="Contoh: INDONESIA" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition uppercase bg-white">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- ================= Data Ibu Kandung (Sesuai Formulir F-2.01) ================= -->
                         <div class="bg-slate-50/70 p-4 sm:p-5 rounded-xl border border-slate-200 space-y-4">
                             <div>
@@ -430,7 +590,7 @@
                                             </div>
                                             <div>
                                                 <div class="relative">
-                                                    <input type="number" id="mother_age" name="mother_age" value="{{ old('mother_age') }}" placeholder="Umur" min="1" max="130" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white pr-9">
+                                                    <input type="number" id="mother_age" name="mother_age" value="{{ old('mother_age') }}" placeholder="Umur" min="1" max="130" readonly tabindex="-1" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none transition bg-slate-100 text-slate-600 cursor-not-allowed pr-9 font-medium" title="Umur otomatis terhitung dari tanggal lahir">
                                                     <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-slate-400 font-medium">Thn</span>
                                                 </div>
                                             </div>
@@ -525,136 +685,6 @@
                             </div>
                         </div>
 
-                        <!-- ================= Data Ayah Kandung (Sesuai Formulir F-2.01) ================= -->
-                        <div class="bg-slate-50/70 p-4 sm:p-5 rounded-xl border border-slate-200 space-y-4">
-                            <div>
-                                <div class="flex items-center justify-between pb-2 border-b border-slate-200/80 mb-3.5">
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-6 h-6 rounded-md bg-blue-100 text-blue-700 flex items-center justify-center text-xs shrink-0">
-                                            <i class="fa-solid fa-user-tie"></i>
-                                        </div>
-                                        <h5 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Data Ayah Kandung</h5>
-                                    </div>
-                                    <button type="button" id="btn-copy-mother-address" class="text-[10px] sm:text-[11px] font-semibold text-[#095b8c] hover:text-white bg-blue-50 hover:bg-[#095b8c] border border-blue-200 px-2 py-1 rounded-md transition flex items-center gap-1 cursor-pointer" title="Salin alamat dari data Ibu">
-                                        <i class="fa-solid fa-copy"></i> Samakan Alamat dgn Ibu
-                                    </button>
-                                </div>
-
-                                <div class="space-y-3">
-                                    <!-- 1. NIK Ayah -->
-                                    <div>
-                                        <label for="father_nik" class="block text-xs font-semibold text-slate-700 mb-1">
-                                            1. NIK Ayah (16 Digit) <span class="text-rose-500">*</span>
-                                        </label>
-                                        <input type="text" id="father_nik" name="father_nik" value="{{ old('father_nik', $defaultFather['nik'] ?? '') }}" maxlength="16" required placeholder="Masukkan NIK Ayah (16 Angka)" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition font-mono">
-                                        <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-father_nik">NIK Ayah wajib 16 digit angka.</span>
-                                    </div>
-
-                                    <!-- 2. Nama Lengkap Ayah -->
-                                    <div>
-                                        <label for="father_name" class="block text-xs font-semibold text-slate-700 mb-1">
-                                            2. Nama Lengkap Ayah <span class="text-rose-500">*</span>
-                                        </label>
-                                        <input type="text" id="father_name" name="father_name" value="{{ old('father_name', $defaultFather['name'] ?? '') }}" required placeholder="Masukkan Nama Lengkap Ayah" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition">
-                                        <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-father_name">Nama lengkap ayah wajib diisi.</span>
-                                    </div>
-
-                                    <!-- 3. Tanggal Lahir / Umur Ayah -->
-                                    <div>
-                                        <label class="block text-xs font-semibold text-slate-700 mb-1">
-                                            3. Tanggal Lahir / Umur Ayah <span class="text-rose-500">*</span>
-                                        </label>
-                                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                                            <div class="sm:col-span-2">
-                                                <input type="date" id="father_birth_date" name="father_birth_date" value="{{ old('father_birth_date', $defaultFather['birth_date'] ?? '') }}" required class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition bg-white">
-                                            </div>
-                                            <div>
-                                                <div class="relative">
-                                                    <input type="number" id="father_age" name="father_age" value="{{ old('father_age') }}" placeholder="Umur" min="1" max="130" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white pr-9">
-                                                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-slate-400 font-medium">Thn</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-father_birth_date">Tanggal lahir ayah wajib diisi.</span>
-                                    </div>
-
-                                    <!-- 4. Pekerjaan Ayah -->
-                                    <div>
-                                        <label for="father_job" class="block text-xs font-semibold text-slate-700 mb-1">
-                                            4. Pekerjaan Ayah <span class="text-rose-500">*</span>
-                                        </label>
-                                        <select id="father_job" name="father_job" required class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition bg-white">
-                                            <option value="">-- Pilih Kategori Pekerjaan Ayah --</option>
-                                            @foreach ($pekerjaanList as $job)
-                                                <option value="{{ $job }}" {{ old('father_job') == $job ? 'selected' : '' }}>{{ $job }}</option>
-                                            @endforeach
-                                        </select>
-                                        <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-father_job">Pekerjaan ayah wajib dipilih.</span>
-                                    </div>
-
-                                    <!-- 5. Alamat Ayah -->
-                                    <div class="pt-2 border-t border-slate-200/80 space-y-2.5">
-                                        <label class="block text-xs font-semibold text-slate-700">
-                                            5. Alamat Ayah
-                                        </label>
-                                        <div>
-                                            <input type="text" id="father_address" name="father_address" value="{{ old('father_address', $defaultFather['address'] ?? '') }}" placeholder="Alamat (Jalan / Dusun)" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white">
-                                        </div>
-
-                                        <div class="grid grid-cols-2 gap-2">
-                                            <div>
-                                                <input type="text" id="father_rt" name="father_rt" value="{{ old('father_rt', $defaultFather['rt'] ?? '01') }}" maxlength="5" placeholder="RT" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition text-center bg-white font-mono">
-                                            </div>
-                                            <div>
-                                                <input type="text" id="father_rw" name="father_rw" value="{{ old('father_rw', $defaultFather['rw'] ?? '01') }}" maxlength="5" placeholder="RW" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition text-center bg-white font-mono">
-                                            </div>
-                                        </div>
-
-                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                            <div>
-                                                <label class="block text-[11px] text-slate-500 mb-0.5">a. Desa / Kelurahan</label>
-                                                <input type="text" id="father_village" name="father_village" value="{{ old('father_village', $defaultFather['village'] ?? 'Purwobinangun') }}" placeholder="Desa/Kelurahan" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white">
-                                            </div>
-                                            <div>
-                                                <label class="block text-[11px] text-slate-500 mb-0.5">b. Kecamatan</label>
-                                                <input type="text" id="father_district" name="father_district" value="{{ old('father_district', $defaultFather['district'] ?? 'Pakem') }}" placeholder="Kecamatan" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white">
-                                            </div>
-                                        </div>
-
-                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                            <div>
-                                                <label class="block text-[11px] text-slate-500 mb-0.5">c. Kabupaten / Kota</label>
-                                                <input type="text" id="father_city" name="father_city" value="{{ old('father_city', $defaultFather['city'] ?? 'Sleman') }}" placeholder="Kabupaten/Kota" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white">
-                                            </div>
-                                            <div>
-                                                <label class="block text-[11px] text-slate-500 mb-0.5">d. Propinsi</label>
-                                                <input type="text" id="father_province" name="father_province" value="{{ old('father_province', $defaultFather['province'] ?? 'D.I. Yogyakarta') }}" placeholder="Propinsi" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- 6 & 7. Kewarganegaraan & Kebangsaan Ayah -->
-                                    <div class="pt-2 border-t border-slate-200/80 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                                        <div>
-                                            <label for="father_citizenship" class="block text-xs font-semibold text-slate-700 mb-1">
-                                                6. Kewarganegaraan
-                                            </label>
-                                            <select id="father_citizenship" name="father_citizenship" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white">
-                                                <option value="WNI" {{ old('father_citizenship', $defaultFather['citizenship'] ?? 'WNI') === 'WNI' ? 'selected' : '' }}>1. WNI</option>
-                                                <option value="WNA" {{ old('father_citizenship', $defaultFather['citizenship'] ?? '') === 'WNA' ? 'selected' : '' }}>2. WNA</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label for="father_nationality" class="block text-xs font-semibold text-slate-700 mb-1">
-                                                7. Kebangsaan
-                                            </label>
-                                            <input type="text" id="father_nationality" name="father_nationality" value="{{ old('father_nationality', $defaultFather['nationality'] ?? 'INDONESIA') }}" placeholder="Contoh: INDONESIA" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition uppercase bg-white">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
 
                     <!-- Informasi Kecil di Bawah Section -->
@@ -678,84 +708,133 @@
             </div>
 
             <!-- ======================================================= -->
-            <!-- LANGKAH 3: IDENTITAS DIRI PEMOHON                         -->
+            <!-- LANGKAH 3: IDENTITAS DIRI PELAPOR                         -->
             <!-- ======================================================= -->
             <div id="step-3" class="space-y-6 hidden">
                 <div class="space-y-4">
                     <h4 class="text-xs font-bold uppercase tracking-wider text-[#095b8c] flex items-center gap-2 pb-2 border-b border-teal-100">
-                        <i class="fa-solid fa-user-pen text-amber-500"></i> Identitas Diri Pemohon
+                        <i class="fa-solid fa-user-pen text-amber-500"></i> Identitas Diri Pelapor
                     </h4>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Nama Lengkap Pemohon -->
-                        <div>
-                            <label for="applicant_name" class="block text-xs font-semibold text-slate-700 mb-1">
-                                Nama Lengkap Pemohon <span class="text-rose-500">*</span>
-                            </label>
-                            <input type="text" id="applicant_name" name="applicant_name" value="{{ old('applicant_name', $user->name ?? '') }}" required placeholder="Masukkan Nama Lengkap Pemohon" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition">
-                            <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-applicant_name">Nama lengkap pemohon wajib diisi.</span>
-                        </div>
-
-                        <!-- NIK Pemohon -->
+                        <!-- 1. NIK Pelapor -->
                         <div>
                             <label for="applicant_nik" class="block text-xs font-semibold text-slate-700 mb-1">
-                                NIK Pemohon (16 Digit) <span class="text-rose-500">*</span>
+                                1. NIK Pelapor (16 Digit) <span class="text-rose-500">*</span>
                             </label>
-                            <input type="text" id="applicant_nik" name="applicant_nik" value="{{ old('applicant_nik', $user->nik ?? '') }}" maxlength="16" required placeholder="Masukkan NIK Pemohon (16 Angka)" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition">
-                            <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-applicant_nik">NIK wajib 16 digit angka.</span>
+                            <input type="text" id="applicant_nik" name="applicant_nik" value="{{ old('applicant_nik', $defaultApplicant['nik'] ?? ($user->nik ?? '')) }}" maxlength="16" required placeholder="Masukkan NIK Pelapor (16 Angka)" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition font-mono bg-white">
+                            <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-applicant_nik">NIK Pelapor wajib 16 digit angka.</span>
                         </div>
 
-                        <!-- Hubungan Pemohon -->
+                        <!-- 2. Nama Lengkap Pelapor -->
                         <div>
-                            <label for="applicant_relation" class="block text-xs font-semibold text-slate-700 mb-1">
-                                Hubungan dengan Bayi
+                            <label for="applicant_name" class="block text-xs font-semibold text-slate-700 mb-1">
+                                2. Nama Lengkap Pelapor <span class="text-rose-500">*</span>
                             </label>
-                            <select id="applicant_relation" name="applicant_relation" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white">
-                                <option value="Ayah Kandung" selected>Ayah Kandung</option>
-                                <option value="Ibu Kandung">Ibu Kandung</option>
-                                <option value="Wali / Keluarga">Wali / Keluarga</option>
-                                <option value="Lainnya">Lainnya</option>
+                            <input type="text" id="applicant_name" name="applicant_name" value="{{ old('applicant_name', $defaultApplicant['name'] ?? ($user->name ?? '')) }}" required placeholder="Masukkan Nama Lengkap Pelapor" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition bg-white">
+                            <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-applicant_name">Nama lengkap pelapor wajib diisi.</span>
+                        </div>
+
+                        <!-- 3. Tanggal Lahir / Umur Pelapor -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                3. Tanggal Lahir / Umur Pelapor <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                <div class="sm:col-span-2">
+                                    <input type="date" id="applicant_birth_date" name="applicant_birth_date" value="{{ old('applicant_birth_date', $defaultApplicant['birth_date'] ?? '') }}" required class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition bg-white">
+                                </div>
+                                <div>
+                                    <div class="relative">
+                                        <input type="number" id="applicant_age" name="applicant_age" value="{{ old('applicant_age') }}" placeholder="Umur" min="1" max="130" readonly tabindex="-1" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none transition bg-slate-100 text-slate-600 cursor-not-allowed pr-9 font-medium" title="Umur otomatis terhitung dari tanggal lahir">
+                                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-slate-400 font-medium">Thn</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-applicant_birth_date">Tanggal lahir pelapor wajib diisi.</span>
+                        </div>
+
+                        <!-- 4. Jenis Kelamin Pelapor -->
+                        <div>
+                            <label for="applicant_gender" class="block text-xs font-semibold text-slate-700 mb-1">
+                                4. Jenis Kelamin Pelapor <span class="text-rose-500">*</span>
+                            </label>
+                            <select id="applicant_gender" name="applicant_gender" required class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition bg-white">
+                                <option value="">-- Pilih Jenis Kelamin --</option>
+                                <option value="L" {{ old('applicant_gender', $defaultApplicant['gender'] ?? '') === 'L' || old('applicant_gender') === 'Laki-laki' ? 'selected' : '' }}>1. LAKI-LAKI</option>
+                                <option value="P" {{ old('applicant_gender', $defaultApplicant['gender'] ?? '') === 'P' || old('applicant_gender') === 'Perempuan' ? 'selected' : '' }}>2. PEREMPUAN</option>
                             </select>
+                            <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-applicant_gender">Jenis kelamin pelapor wajib dipilih.</span>
                         </div>
 
-                        <!-- Nomor HP / WhatsApp -->
-                        <div>
-                            <label for="applicant_phone" class="block text-xs font-semibold text-slate-700 mb-1">
-                                No. HP / WhatsApp Aktif <span class="text-rose-500">*</span>
+                        <!-- 5. Pekerjaan Pelapor -->
+                        <div class="md:col-span-2">
+                            <label for="applicant_job" class="block text-xs font-semibold text-slate-700 mb-1">
+                                5. Pekerjaan Pelapor <span class="text-rose-500">*</span>
                             </label>
-                            <input type="text" id="applicant_phone" name="applicant_phone" value="{{ old('applicant_phone', $user->phone ?? '') }}" required placeholder="Masukkan Nomor HP / WhatsApp Aktif" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition">
-                            <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-applicant_phone">Nomor HP/WA aktif wajib diisi.</span>
-                        </div>
-
-                        <!-- Padukuhan & RT/RW -->
-                        <div>
-                            <label for="padukuhan" class="block text-xs font-semibold text-slate-700 mb-1">
-                                Padukuhan Domisili di Purwobinangun
-                            </label>
-                            <select id="padukuhan" name="padukuhan" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white">
-                                <option value="">-- Pilih Padukuhan (Opsional) --</option>
-                                @foreach($padukuhanList as $pad)
-                                    <option value="{{ $pad }}" {{ old('padukuhan') === $pad ? 'selected' : '' }}>Padukuhan {{ $pad }}</option>
+                            <select id="applicant_job" name="applicant_job" required class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition bg-white">
+                                <option value="">-- Pilih Kategori Pekerjaan Pelapor --</option>
+                                @foreach ($pekerjaanList as $job)
+                                    <option value="{{ $job }}" {{ old('applicant_job', $defaultApplicant['job'] ?? '') == $job ? 'selected' : '' }}>{{ $job }}</option>
                                 @endforeach
                             </select>
+                            <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-applicant_job">Pekerjaan pelapor wajib dipilih.</span>
+                        </div>
+                    </div>
+
+                    <!-- 6. Alamat Pelapor -->
+                    <div class="pt-2 border-t border-slate-200/80 space-y-2.5">
+                        <label class="block text-xs font-semibold text-slate-700">
+                            6. Alamat Pelapor <span class="text-rose-500">*</span>
+                        </label>
+                        <div>
+                            <input type="text" id="address" name="address" value="{{ old('address', $defaultApplicant['address'] ?? ($user->address ?? '')) }}" required placeholder="Alamat (Jalan / Dusun)" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white">
+                            <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-address">Alamat jalan/dusun pelapor wajib diisi.</span>
                         </div>
 
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">RT / RW</label>
-                            <div class="grid grid-cols-2 gap-2">
-                                <input type="text" id="rt" name="rt" value="{{ old('rt', $user->rt ?? '01') }}" placeholder="RT" class="text-xs px-3 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] text-center">
-                                <input type="text" id="rw" name="rw" value="{{ old('rw', $user->rw ?? '01') }}" placeholder="RW" class="text-xs px-3 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] text-center">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[11px] text-slate-500 mb-0.5">RT</label>
+                                <input type="text" id="rt" name="rt" value="{{ old('rt', $defaultApplicant['rt'] ?? ($user->rt ?? '01')) }}" maxlength="5" placeholder="RT" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition text-center bg-white font-mono">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-slate-500 mb-0.5">RW</label>
+                                <input type="text" id="rw" name="rw" value="{{ old('rw', $defaultApplicant['rw'] ?? ($user->rw ?? '01')) }}" maxlength="5" placeholder="RW" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition text-center bg-white font-mono">
                             </div>
                         </div>
 
-                        <!-- Alamat Lengkap -->
-                        <div class="md:col-span-2">
-                            <label for="address" class="block text-xs font-semibold text-slate-700 mb-1">
-                                Alamat Lengkap <span class="text-rose-500">*</span>
-                            </label>
-                            <textarea id="address" name="address" rows="2" required placeholder="Masukkan Alamat Lengkap" class="w-full text-xs px-3.5 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition">{{ old('address', $user->address ?? '') }}</textarea>
-                            <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-address">Alamat lengkap pemohon wajib diisi.</span>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[11px] text-slate-500 mb-0.5">a. Desa / Kelurahan</label>
+                                <input type="text" id="applicant_village" name="applicant_village" value="{{ old('applicant_village', $defaultApplicant['village'] ?? 'Purwobinangun') }}" placeholder="Desa/Kelurahan" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-slate-500 mb-0.5">b. Kecamatan</label>
+                                <input type="text" id="applicant_district" name="applicant_district" value="{{ old('applicant_district', $defaultApplicant['district'] ?? 'Pakem') }}" placeholder="Kecamatan" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white">
+                            </div>
                         </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[11px] text-slate-500 mb-0.5">c. Kabupaten / Kota</label>
+                                <input type="text" id="applicant_city" name="applicant_city" value="{{ old('applicant_city', $defaultApplicant['city'] ?? 'Sleman') }}" placeholder="Kabupaten/Kota" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-slate-500 mb-0.5">d. Propinsi</label>
+                                <input type="text" id="applicant_province" name="applicant_province" value="{{ old('applicant_province', $defaultApplicant['province'] ?? 'D.I. Yogyakarta') }}" placeholder="Propinsi" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Field Tersembunyi (Disimpan Otomatis dari Profil/Default) -->
+                    <input type="hidden" id="applicant_phone" name="applicant_phone" value="{{ old('applicant_phone', $defaultApplicant['phone'] ?? ($user->phone ?? '')) }}">
+                    <input type="hidden" id="applicant_relation" name="applicant_relation" value="{{ old('applicant_relation', $defaultApplicant['relation'] ?? 'Pelapor') }}">
+                    <input type="hidden" id="padukuhan" name="padukuhan" value="{{ old('padukuhan', $user->sub_village ?? '') }}">
+
+                    <!-- Informasi Kecil di Bawah Section -->
+                    <div class="flex items-center gap-2 text-[11px] text-slate-500 bg-slate-50 px-3.5 py-2.5 rounded-lg border border-slate-200">
+                        <i class="fa-solid fa-circle-info text-[#095b8c] text-xs shrink-0"></i>
+                        <span>Data pelapor diisi otomatis sesuai profil akun warga. Silakan periksa dan sesuaikan data apabila diperlukan.</span>
                     </div>
 
                     <!-- Tombol Navigasi Langkah 3 -->
@@ -794,35 +873,57 @@
                                 </div>
 
                                 <div class="space-y-3">
-                                    <!-- NIK Saksi 1 -->
+                                    <!-- 1. NIK Saksi 1 -->
                                     <div>
                                         <label for="witness_1_nik" class="block text-xs font-semibold text-slate-700 mb-1">
-                                            NIK Saksi 1 (16 Digit) <span class="text-slate-400 font-normal">(Opsional)</span>
+                                            1. NIK Saksi 1 (16 Digit) <span class="text-slate-400 font-normal">(Opsional)</span>
                                         </label>
                                         <input type="text" id="witness_1_nik" name="witness_1_nik" value="{{ old('witness_1_nik') }}" maxlength="16" placeholder="Masukkan NIK Saksi 1 (16 Angka)" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition font-mono">
                                         <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-witness_1_nik">NIK Saksi 1 harus 16 digit angka.</span>
                                     </div>
 
-                                    <!-- Nama Lengkap Saksi 1 -->
+                                    <!-- 2. Nama Lengkap Saksi 1 -->
                                     <div>
                                         <label for="witness_1_name" class="block text-xs font-semibold text-slate-700 mb-1">
-                                            Nama Lengkap Saksi 1
+                                            2. Nama Lengkap Saksi 1
                                         </label>
                                         <input type="text" id="witness_1_name" name="witness_1_name" value="{{ old('witness_1_name') }}" placeholder="Masukkan Nama Lengkap Saksi 1" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition">
                                     </div>
 
-                                    <!-- Tanggal Lahir Saksi 1 -->
+                                    <!-- 3. Tanggal Lahir / Umur Saksi 1 -->
                                     <div>
-                                        <label for="witness_1_birth_date" class="block text-xs font-semibold text-slate-700 mb-1">
-                                            Tanggal Lahir Saksi 1
+                                        <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                            3. Tanggal Lahir / Umur Saksi 1
                                         </label>
-                                        <input type="date" id="witness_1_birth_date" name="witness_1_birth_date" value="{{ old('witness_1_birth_date') }}" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition bg-white">
+                                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                            <div class="sm:col-span-2">
+                                                <input type="date" id="witness_1_birth_date" name="witness_1_birth_date" value="{{ old('witness_1_birth_date') }}" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition bg-white">
+                                            </div>
+                                            <div>
+                                                <div class="relative">
+                                                    <input type="number" id="witness_1_age" name="witness_1_age" value="{{ old('witness_1_age') }}" placeholder="Umur" min="1" max="130" readonly tabindex="-1" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none transition bg-slate-100 text-slate-600 cursor-not-allowed pr-9 font-medium" title="Umur otomatis terhitung dari tanggal lahir">
+                                                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-slate-400 font-medium">Thn</span>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
 
-                                    <!-- Pekerjaan Saksi 1 -->
+                                    <!-- 4. Jenis Kelamin Saksi 1 -->
+                                    <div>
+                                        <label for="witness_1_gender" class="block text-xs font-semibold text-slate-700 mb-1">
+                                            4. Jenis Kelamin Saksi 1
+                                        </label>
+                                        <select id="witness_1_gender" name="witness_1_gender" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition bg-white">
+                                            <option value="">-- Pilih Jenis Kelamin Saksi 1 --</option>
+                                            <option value="L" {{ old('witness_1_gender') === 'L' ? 'selected' : '' }}>1. LAKI-LAKI</option>
+                                            <option value="P" {{ old('witness_1_gender') === 'P' ? 'selected' : '' }}>2. PEREMPUAN</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- 5. Pekerjaan Saksi 1 -->
                                     <div>
                                         <label for="witness_1_job" class="block text-xs font-semibold text-slate-700 mb-1">
-                                            Pekerjaan Saksi 1
+                                            5. Pekerjaan Saksi 1
                                         </label>
                                         <select id="witness_1_job" name="witness_1_job" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition bg-white">
                                             <option value="">-- Pilih Pekerjaan Saksi 1 --</option>
@@ -832,12 +933,47 @@
                                         </select>
                                     </div>
 
-                                    <!-- Alamat Saksi 1 -->
-                                    <div>
-                                        <label for="witness_1_address" class="block text-xs font-semibold text-slate-700 mb-1">
-                                            Alamat Domisili Saksi 1
+                                    <!-- 6. Alamat Saksi 1 -->
+                                    <div class="pt-2 border-t border-slate-200/80 space-y-2.5">
+                                        <label class="block text-xs font-semibold text-slate-700">
+                                            6. Alamat Saksi 1
                                         </label>
-                                        <textarea id="witness_1_address" name="witness_1_address" rows="2" placeholder="Masukkan Alamat Saksi 1" class="w-full text-xs px-3.5 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition">{{ old('witness_1_address') }}</textarea>
+                                        <div>
+                                            <input type="text" id="witness_1_address" name="witness_1_address" value="{{ old('witness_1_address') }}" placeholder="Alamat (Jalan / Dusun)" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white">
+                                        </div>
+
+                                        <div class="grid grid-cols-2 gap-2">
+                                            <div>
+                                                <label class="block text-[11px] text-slate-500 mb-0.5">RT</label>
+                                                <input type="text" id="witness_1_rt" name="witness_1_rt" value="{{ old('witness_1_rt') }}" maxlength="5" placeholder="RT" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition text-center bg-white font-mono">
+                                            </div>
+                                            <div>
+                                                <label class="block text-[11px] text-slate-500 mb-0.5">RW</label>
+                                                <input type="text" id="witness_1_rw" name="witness_1_rw" value="{{ old('witness_1_rw') }}" maxlength="5" placeholder="RW" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition text-center bg-white font-mono">
+                                            </div>
+                                        </div>
+
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                            <div>
+                                                <label class="block text-[11px] text-slate-500 mb-0.5">a. Desa / Kelurahan</label>
+                                                <input type="text" id="witness_1_village" name="witness_1_village" value="{{ old('witness_1_village', 'Purwobinangun') }}" placeholder="Desa/Kelurahan" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white">
+                                            </div>
+                                            <div>
+                                                <label class="block text-[11px] text-slate-500 mb-0.5">b. Kecamatan</label>
+                                                <input type="text" id="witness_1_district" name="witness_1_district" value="{{ old('witness_1_district', 'Pakem') }}" placeholder="Kecamatan" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white">
+                                            </div>
+                                        </div>
+
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                            <div>
+                                                <label class="block text-[11px] text-slate-500 mb-0.5">c. Kabupaten / Kota</label>
+                                                <input type="text" id="witness_1_city" name="witness_1_city" value="{{ old('witness_1_city', 'Sleman') }}" placeholder="Kabupaten/Kota" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white">
+                                            </div>
+                                            <div>
+                                                <label class="block text-[11px] text-slate-500 mb-0.5">d. Propinsi</label>
+                                                <input type="text" id="witness_1_province" name="witness_1_province" value="{{ old('witness_1_province', 'D.I. Yogyakarta') }}" placeholder="Propinsi" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white">
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -854,35 +990,57 @@
                                 </div>
 
                                 <div class="space-y-3">
-                                    <!-- NIK Saksi 2 -->
+                                    <!-- 1. NIK Saksi 2 -->
                                     <div>
                                         <label for="witness_2_nik" class="block text-xs font-semibold text-slate-700 mb-1">
-                                            NIK Saksi 2 (16 Digit) <span class="text-slate-400 font-normal">(Opsional)</span>
+                                            1. NIK Saksi 2 (16 Digit) <span class="text-slate-400 font-normal">(Opsional)</span>
                                         </label>
                                         <input type="text" id="witness_2_nik" name="witness_2_nik" value="{{ old('witness_2_nik') }}" maxlength="16" placeholder="Masukkan NIK Saksi 2 (16 Angka)" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition font-mono">
                                         <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-witness_2_nik">NIK Saksi 2 harus 16 digit angka.</span>
                                     </div>
 
-                                    <!-- Nama Lengkap Saksi 2 -->
+                                    <!-- 2. Nama Lengkap Saksi 2 -->
                                     <div>
                                         <label for="witness_2_name" class="block text-xs font-semibold text-slate-700 mb-1">
-                                            Nama Lengkap Saksi 2
+                                            2. Nama Lengkap Saksi 2
                                         </label>
                                         <input type="text" id="witness_2_name" name="witness_2_name" value="{{ old('witness_2_name') }}" placeholder="Masukkan Nama Lengkap Saksi 2" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition">
                                     </div>
 
-                                    <!-- Tanggal Lahir Saksi 2 -->
+                                    <!-- 3. Tanggal Lahir / Umur Saksi 2 -->
                                     <div>
-                                        <label for="witness_2_birth_date" class="block text-xs font-semibold text-slate-700 mb-1">
-                                            Tanggal Lahir Saksi 2
+                                        <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                            3. Tanggal Lahir / Umur Saksi 2
                                         </label>
-                                        <input type="date" id="witness_2_birth_date" name="witness_2_birth_date" value="{{ old('witness_2_birth_date') }}" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition bg-white">
+                                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                            <div class="sm:col-span-2">
+                                                <input type="date" id="witness_2_birth_date" name="witness_2_birth_date" value="{{ old('witness_2_birth_date') }}" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition bg-white">
+                                            </div>
+                                            <div>
+                                                <div class="relative">
+                                                    <input type="number" id="witness_2_age" name="witness_2_age" value="{{ old('witness_2_age') }}" placeholder="Umur" min="1" max="130" readonly tabindex="-1" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none transition bg-slate-100 text-slate-600 cursor-not-allowed pr-9 font-medium" title="Umur otomatis terhitung dari tanggal lahir">
+                                                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-slate-400 font-medium">Thn</span>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
 
-                                    <!-- Pekerjaan Saksi 2 -->
+                                    <!-- 4. Jenis Kelamin Saksi 2 -->
+                                    <div>
+                                        <label for="witness_2_gender" class="block text-xs font-semibold text-slate-700 mb-1">
+                                            4. Jenis Kelamin Saksi 2
+                                        </label>
+                                        <select id="witness_2_gender" name="witness_2_gender" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition bg-white">
+                                            <option value="">-- Pilih Jenis Kelamin Saksi 2 --</option>
+                                            <option value="L" {{ old('witness_2_gender') === 'L' ? 'selected' : '' }}>1. LAKI-LAKI</option>
+                                            <option value="P" {{ old('witness_2_gender') === 'P' ? 'selected' : '' }}>2. PEREMPUAN</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- 5. Pekerjaan Saksi 2 -->
                                     <div>
                                         <label for="witness_2_job" class="block text-xs font-semibold text-slate-700 mb-1">
-                                            Pekerjaan Saksi 2
+                                            5. Pekerjaan Saksi 2
                                         </label>
                                         <select id="witness_2_job" name="witness_2_job" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition bg-white">
                                             <option value="">-- Pilih Pekerjaan Saksi 2 --</option>
@@ -892,12 +1050,47 @@
                                         </select>
                                     </div>
 
-                                    <!-- Alamat Saksi 2 -->
-                                    <div>
-                                        <label for="witness_2_address" class="block text-xs font-semibold text-slate-700 mb-1">
-                                            Alamat Domisili Saksi 2
+                                    <!-- 6. Alamat Saksi 2 -->
+                                    <div class="pt-2 border-t border-slate-200/80 space-y-2.5">
+                                        <label class="block text-xs font-semibold text-slate-700">
+                                            6. Alamat Saksi 2
                                         </label>
-                                        <textarea id="witness_2_address" name="witness_2_address" rows="2" placeholder="Masukkan Alamat Saksi 2" class="w-full text-xs px-3.5 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] focus:border-[#095b8c] transition">{{ old('witness_2_address') }}</textarea>
+                                        <div>
+                                            <input type="text" id="witness_2_address" name="witness_2_address" value="{{ old('witness_2_address') }}" placeholder="Alamat (Jalan / Dusun)" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white">
+                                        </div>
+
+                                        <div class="grid grid-cols-2 gap-2">
+                                            <div>
+                                                <label class="block text-[11px] text-slate-500 mb-0.5">RT</label>
+                                                <input type="text" id="witness_2_rt" name="witness_2_rt" value="{{ old('witness_2_rt') }}" maxlength="5" placeholder="RT" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition text-center bg-white font-mono">
+                                            </div>
+                                            <div>
+                                                <label class="block text-[11px] text-slate-500 mb-0.5">RW</label>
+                                                <input type="text" id="witness_2_rw" name="witness_2_rw" value="{{ old('witness_2_rw') }}" maxlength="5" placeholder="RW" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition text-center bg-white font-mono">
+                                            </div>
+                                        </div>
+
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                            <div>
+                                                <label class="block text-[11px] text-slate-500 mb-0.5">a. Desa / Kelurahan</label>
+                                                <input type="text" id="witness_2_village" name="witness_2_village" value="{{ old('witness_2_village', 'Purwobinangun') }}" placeholder="Desa/Kelurahan" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white">
+                                            </div>
+                                            <div>
+                                                <label class="block text-[11px] text-slate-500 mb-0.5">b. Kecamatan</label>
+                                                <input type="text" id="witness_2_district" name="witness_2_district" value="{{ old('witness_2_district', 'Pakem') }}" placeholder="Kecamatan" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white">
+                                            </div>
+                                        </div>
+
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                            <div>
+                                                <label class="block text-[11px] text-slate-500 mb-0.5">c. Kabupaten / Kota</label>
+                                                <input type="text" id="witness_2_city" name="witness_2_city" value="{{ old('witness_2_city', 'Sleman') }}" placeholder="Kabupaten/Kota" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white">
+                                            </div>
+                                            <div>
+                                                <label class="block text-[11px] text-slate-500 mb-0.5">d. Propinsi</label>
+                                                <input type="text" id="witness_2_province" name="witness_2_province" value="{{ old('witness_2_province', 'D.I. Yogyakarta') }}" placeholder="Propinsi" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#095b8c] transition bg-white">
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -937,7 +1130,7 @@
                         <span class="text-[10px] text-slate-500 bg-slate-100 px-2 py-0.5 rounded font-medium">Format: PDF, JPG, PNG (Maks. 3MB)</span>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         
                         <!-- 1. Dokumen KTP -->
                         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col justify-between hover:border-[#095b8c] transition h-full" style="min-height: 270px;">
@@ -945,7 +1138,7 @@
                                 <label class="block text-xs font-bold text-slate-800 mb-0.5 flex items-center gap-1.5">
                                     <i class="fa-solid fa-id-card text-[#095b8c]"></i> 1. Dokumen KTP <span class="text-rose-500">*</span>
                                 </label>
-                                <p class="text-[11px] text-slate-500 leading-tight">Foto / Scan KTP-el Pemohon atau Orang Tua</p>
+                                <p class="text-[11px] text-slate-500 leading-tight">Foto / Scan KTP-el Pelapor atau Orang Tua</p>
                             </div>
                             
                             <div class="mt-auto w-full">
@@ -965,9 +1158,9 @@
                                     <div id="img-preview-wrap-ktp" class="w-full bg-slate-100 rounded-lg overflow-hidden border border-slate-200 relative group hidden shrink-0" style="height: 115px; min-height: 115px; max-height: 115px; width: 100%; position: relative; overflow: hidden;">
                                         <img id="img-preview-ktp" src="" alt="Preview KTP" class="w-full h-full object-cover object-center block" style="width: 100%; height: 115px; min-height: 115px; max-height: 115px; object-fit: cover; object-position: center; display: block;">
                                         <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center" style="position: absolute; inset: 0;">
-                                            <label for="doc_parents_ktp" class="cursor-pointer bg-white text-slate-800 text-[11px] font-bold px-3 py-1.5 rounded-md shadow-sm hover:bg-slate-100">
-                                                <i class="fa-solid fa-arrow-rotate-right"></i> Ganti Berkas
-                                            </label>
+                                            <button type="button" onclick="viewFullImage('ktp')" class="cursor-pointer bg-white text-slate-800 text-[11px] font-bold px-3 py-1.5 rounded-md shadow-sm hover:bg-slate-100 transition flex items-center gap-1.5">
+                                                <i class="fa-solid fa-eye text-[#095b8c]"></i> Lihat Gambar
+                                            </button>
                                         </div>
                                     </div>
                                     <div id="pdf-preview-wrap-ktp" class="w-full bg-rose-50 rounded-lg flex flex-col items-center justify-center border border-rose-200 text-rose-700 hidden shrink-0" style="height: 115px; min-height: 115px; max-height: 115px; width: 100%;">
@@ -1015,9 +1208,9 @@
                                     <div id="img-preview-wrap-kk" class="w-full bg-slate-100 rounded-lg overflow-hidden border border-slate-200 relative group hidden shrink-0" style="height: 115px; min-height: 115px; max-height: 115px; width: 100%; position: relative; overflow: hidden;">
                                         <img id="img-preview-kk" src="" alt="Preview Kartu Keluarga" class="w-full h-full object-cover object-center block" style="width: 100%; height: 115px; min-height: 115px; max-height: 115px; object-fit: cover; object-position: center; display: block;">
                                         <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center" style="position: absolute; inset: 0;">
-                                            <label for="doc_family_card" class="cursor-pointer bg-white text-slate-800 text-[11px] font-bold px-3 py-1.5 rounded-md shadow-sm hover:bg-slate-100">
-                                                <i class="fa-solid fa-arrow-rotate-right"></i> Ganti Berkas
-                                            </label>
+                                            <button type="button" onclick="viewFullImage('kk')" class="cursor-pointer bg-white text-slate-800 text-[11px] font-bold px-3 py-1.5 rounded-md shadow-sm hover:bg-slate-100 transition flex items-center gap-1.5">
+                                                <i class="fa-solid fa-eye text-[#095b8c]"></i> Lihat Gambar
+                                            </button>
                                         </div>
                                     </div>
                                     <div id="pdf-preview-wrap-kk" class="w-full bg-rose-50 rounded-lg flex flex-col items-center justify-center border border-rose-200 text-rose-700 hidden shrink-0" style="height: 115px; min-height: 115px; max-height: 115px; width: 100%;">
@@ -1065,9 +1258,9 @@
                                     <div id="img-preview-wrap-lahir" class="w-full bg-slate-100 rounded-lg overflow-hidden border border-slate-200 relative group hidden shrink-0" style="height: 115px; min-height: 115px; max-height: 115px; width: 100%; position: relative; overflow: hidden;">
                                         <img id="img-preview-lahir" src="" alt="Preview Surat Kelahiran" class="w-full h-full object-cover object-center block" style="width: 100%; height: 115px; min-height: 115px; max-height: 115px; object-fit: cover; object-position: center; display: block;">
                                         <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center" style="position: absolute; inset: 0;">
-                                            <label for="doc_birth_cert" class="cursor-pointer bg-white text-slate-800 text-[11px] font-bold px-3 py-1.5 rounded-md shadow-sm hover:bg-slate-100">
-                                                <i class="fa-solid fa-arrow-rotate-right"></i> Ganti Berkas
-                                            </label>
+                                            <button type="button" onclick="viewFullImage('lahir')" class="cursor-pointer bg-white text-slate-800 text-[11px] font-bold px-3 py-1.5 rounded-md shadow-sm hover:bg-slate-100 transition flex items-center gap-1.5">
+                                                <i class="fa-solid fa-eye text-[#095b8c]"></i> Lihat Gambar
+                                            </button>
                                         </div>
                                     </div>
                                     <div id="pdf-preview-wrap-lahir" class="w-full bg-rose-50 rounded-lg flex flex-col items-center justify-center border border-rose-200 text-rose-700 hidden shrink-0" style="height: 115px; min-height: 115px; max-height: 115px; width: 100%;">
@@ -1115,9 +1308,9 @@
                                     <div id="img-preview-wrap-nikah" class="w-full bg-slate-100 rounded-lg overflow-hidden border border-slate-200 relative group hidden shrink-0" style="height: 115px; min-height: 115px; max-height: 115px; width: 100%; position: relative; overflow: hidden;">
                                         <img id="img-preview-nikah" src="" alt="Preview Buku Nikah" class="w-full h-full object-cover object-center block" style="width: 100%; height: 115px; min-height: 115px; max-height: 115px; object-fit: cover; object-position: center; display: block;">
                                         <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center" style="position: absolute; inset: 0;">
-                                            <label for="doc_marriage_cert" class="cursor-pointer bg-white text-slate-800 text-[11px] font-bold px-3 py-1.5 rounded-md shadow-sm hover:bg-slate-100">
-                                                <i class="fa-solid fa-arrow-rotate-right"></i> Ganti Berkas
-                                            </label>
+                                            <button type="button" onclick="viewFullImage('nikah')" class="cursor-pointer bg-white text-slate-800 text-[11px] font-bold px-3 py-1.5 rounded-md shadow-sm hover:bg-slate-100 transition flex items-center gap-1.5">
+                                                <i class="fa-solid fa-eye text-[#095b8c]"></i> Lihat Gambar
+                                            </button>
                                         </div>
                                     </div>
                                     <div id="pdf-preview-wrap-nikah" class="w-full bg-rose-50 rounded-lg flex flex-col items-center justify-center border border-rose-200 text-rose-700 hidden shrink-0" style="height: 115px; min-height: 115px; max-height: 115px; width: 100%;">
@@ -1136,6 +1329,102 @@
                                 </div>
 
                                 <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-doc_marriage_cert">Buku Nikah / Akta Perkawinan wajib diunggah.</span>
+                            </div>
+                        </div>
+
+                        <!-- 5. Surat Pengantar RT/RW -->
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col justify-between hover:border-[#095b8c] transition h-full" style="min-height: 270px;">
+                            <div class="h-14 mb-2 flex flex-col justify-start shrink-0" style="height: 48px; min-height: 48px;">
+                                <label class="block text-xs font-bold text-slate-800 mb-0.5 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-file-shield text-[#095b8c]"></i> 5. Surat Pengantar RT/RW <span class="text-rose-500">*</span>
+                                </label>
+                                <p class="text-[11px] text-slate-500 leading-tight">Foto / Scan Surat Pengantar dari Ketua RT atau RW setempat</p>
+                            </div>
+
+                            <div class="mt-auto w-full">
+                                <input type="file" id="doc_witness_ktp" name="doc_witness_ktp" accept=".jpg,.jpeg,.png,.pdf" required class="hidden file-input" data-card="pengantar">
+                                
+                                <!-- Box Upload Standar -->
+                                <label for="doc_witness_ktp" id="placeholder-pengantar" class="cursor-pointer flex flex-col items-center justify-center text-center bg-white hover:bg-teal-50 text-[#095b8c] border-2 border-dashed border-teal-300 hover:border-[#095b8c] rounded-xl w-full p-3 transition shadow-2xs" style="height: 175px; min-height: 175px; max-height: 175px; box-sizing: border-box;">
+                                    <div class="w-10 h-10 rounded-full bg-teal-50 text-[#095b8c] flex items-center justify-center mb-2 border border-teal-200">
+                                        <i class="fa-solid fa-cloud-arrow-up text-base"></i>
+                                    </div>
+                                    <span class="block text-xs font-bold">Pilih Berkas Pengantar</span>
+                                    <span class="block text-[10px] text-slate-400 mt-1">JPG, PNG, PDF (Maks. 3MB)</span>
+                                </label>
+
+                                <!-- Box Preview Dokumen (Ukuran Fixed) -->
+                                <div id="preview-box-pengantar" class="hidden bg-white border border-teal-200 rounded-xl p-2.5 shadow-xs w-full flex flex-col justify-between" style="height: 175px; min-height: 175px; max-height: 175px; box-sizing: border-box; overflow: hidden;">
+                                    <div id="img-preview-wrap-pengantar" class="w-full bg-slate-100 rounded-lg overflow-hidden border border-slate-200 relative group hidden shrink-0" style="height: 115px; min-height: 115px; max-height: 115px; width: 100%; position: relative; overflow: hidden;">
+                                        <img id="img-preview-pengantar" src="" alt="Preview Surat Pengantar RT/RW" class="w-full h-full object-cover object-center block" style="width: 100%; height: 115px; min-height: 115px; max-height: 115px; object-fit: cover; object-position: center; display: block;">
+                                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center" style="position: absolute; inset: 0;">
+                                            <button type="button" onclick="viewFullImage('pengantar')" class="cursor-pointer bg-white text-slate-800 text-[11px] font-bold px-3 py-1.5 rounded-md shadow-sm hover:bg-slate-100 transition flex items-center gap-1.5">
+                                                <i class="fa-solid fa-eye text-[#095b8c]"></i> Lihat Gambar
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div id="pdf-preview-wrap-pengantar" class="w-full bg-rose-50 rounded-lg flex flex-col items-center justify-center border border-rose-200 text-rose-700 hidden shrink-0" style="height: 115px; min-height: 115px; max-height: 115px; width: 100%;">
+                                        <i class="fa-solid fa-file-pdf text-3xl mb-1.5"></i>
+                                        <span class="text-[11px] font-bold uppercase tracking-wider">Dokumen PDF</span>
+                                    </div>
+                                    <div class="flex items-center justify-between gap-2 pt-1 border-t border-slate-100 shrink-0" style="height: 35px; min-height: 35px; max-height: 35px; box-sizing: border-box;">
+                                        <div class="truncate flex-1 min-w-0">
+                                            <p id="file-name-pengantar" class="text-xs font-bold text-slate-800 truncate"></p>
+                                            <p id="file-size-pengantar" class="text-[10px] text-slate-500"></p>
+                                        </div>
+                                        <label for="doc_witness_ktp" class="shrink-0 text-[11px] font-bold text-[#095b8c] hover:text-[#04869e] cursor-pointer bg-teal-50 px-2 py-1 rounded border border-teal-200 transition">
+                                            <i class="fa-solid fa-pen-to-square"></i> Ganti
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-doc_witness_ktp">Surat Pengantar RT/RW wajib diunggah.</span>
+                            </div>
+                        </div>
+
+                        <!-- 6. Tanda Tangan Digital Pemohon -->
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col justify-between hover:border-[#095b8c] transition h-full" style="min-height: 270px;">
+                            <div class="h-14 mb-2 flex flex-col justify-start shrink-0" style="height: 48px; min-height: 48px;">
+                                <div class="flex items-center justify-between gap-1">
+                                    <label class="block text-xs font-bold text-slate-800 mb-0.5 flex items-center gap-1.5 truncate">
+                                        <i class="fa-solid fa-signature text-[#095b8c]"></i> 6. Tanda Tangan <span class="text-rose-500">*</span>
+                                    </label>
+                                    <span id="badge-signature-status" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-50 text-amber-700 border border-amber-200 shrink-0">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Belum Ada
+                                    </span>
+                                </div>
+                                <p class="text-[11px] text-slate-500 leading-tight">Goreskan tanda tangan digital pemohon</p>
+                            </div>
+
+                            <div class="mt-auto w-full">
+                                <input type="hidden" name="applicant_signature" id="applicant_signature" value="">
+
+                                <!-- Box Tanda Tangan (Ukuran sama persis: 175px) -->
+                                <div class="bg-white border-2 border-dashed border-teal-300 rounded-xl p-3 flex flex-col items-center justify-between w-full shadow-2xs" style="height: 175px; min-height: 175px; max-height: 175px; box-sizing: border-box;">
+                                    <div class="w-full flex-1 flex flex-col items-center justify-center overflow-hidden">
+                                        <img id="signature-preview-img" src="" alt="Pratinjau Tanda Tangan" class="max-h-[85px] max-w-full object-contain hidden">
+                                        <div id="signature-preview-empty" class="flex flex-col items-center justify-center text-center">
+                                            <div class="w-10 h-10 rounded-full bg-teal-50 text-[#095b8c] flex items-center justify-center mb-1.5 border border-teal-200">
+                                                <i class="fa-solid fa-signature text-base"></i>
+                                            </div>
+                                            <span class="block text-xs font-bold text-[#095b8c]">Belum Ditandatangani</span>
+                                            <span class="block text-[10px] text-slate-400 mt-0.5">Klik tombol untuk tanda tangan</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="w-full pt-2 border-t border-slate-100 flex items-center justify-between gap-2 shrink-0">
+                                        <div class="truncate flex-1 min-w-0">
+                                            <p id="signature-applicant-name" class="text-xs font-bold text-slate-800 truncate">-</p>
+                                            <p id="signature-applicant-nik" class="text-[10px] text-slate-500 font-mono truncate">-</p>
+                                        </div>
+                                        <button type="button" id="btn-open-signature-modal" class="shrink-0 text-[11px] font-bold text-[#095b8c] hover:text-[#04869e] cursor-pointer bg-teal-50 px-2.5 py-1.5 rounded-lg border border-teal-200 transition flex items-center gap-1.5">
+                                            <i class="fa-solid fa-pen-nib text-amber-500 text-[10px]"></i>
+                                            <span id="btn-open-signature-text">Tanda Tangan</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <span class="text-[11px] text-rose-500 hidden error-text mt-1 block" id="error-applicant_signature">Tanda tangan digital wajib dibubuhkan.</span>
                             </div>
                         </div>
 
@@ -1205,7 +1494,7 @@
             <div class="p-3 bg-teal-50/80 rounded-xl border border-teal-200/80 flex items-start gap-2.5 text-xs text-teal-900">
                 <i class="fa-solid fa-circle-info text-[#095b8c] text-sm mt-0.5 shrink-0"></i>
                 <p class="text-[11px] leading-relaxed text-slate-700">
-                    Pastikan seluruh data kelahiran bayi, orang tua, identitas pemohon, saksi, dan berkas persyaratan telah terisi dengan benar sebelum dikirimkan.
+                    Pastikan seluruh data kelahiran bayi, orang tua, identitas pelapor, saksi, dan berkas persyaratan telah terisi dengan benar sebelum dikirimkan.
                 </p>
             </div>
 
@@ -1348,34 +1637,38 @@
                 </div>
             </div>
 
-            <!-- 3. Rincian Identitas Pemohon (Langkah 3) -->
+            <!-- 3. Rincian Identitas Pelapor (Langkah 3) -->
             <div class="bg-slate-50/90 p-4 rounded-xl border border-slate-200 space-y-3">
                 <div class="flex items-center justify-between pb-2 border-b border-slate-200/80">
                     <h4 class="text-xs font-bold uppercase tracking-wider text-[#095b8c] flex items-center gap-2">
-                        <i class="fa-solid fa-user-pen text-amber-500"></i> Identitas Pemohon
+                        <i class="fa-solid fa-user-pen text-amber-500"></i> Identitas Pelapor
                     </h4>
                     <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-100 text-[#095b8c]">Langkah 3</span>
                 </div>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
                     <div class="bg-white p-3 rounded-lg border border-slate-200/70 shadow-2xs">
-                        <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider mb-0.5">Nama Pemohon</span>
-                        <span id="modal-applicant-name-val" class="font-bold text-slate-900 text-xs block break-words">-</span>
-                    </div>
-                    <div class="bg-white p-3 rounded-lg border border-slate-200/70 shadow-2xs">
-                        <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider mb-0.5">NIK Pemohon</span>
+                        <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider mb-0.5">1. NIK Pelapor</span>
                         <span id="modal-applicant-nik-val" class="font-bold text-slate-900 text-xs block font-mono">-</span>
                     </div>
                     <div class="bg-white p-3 rounded-lg border border-slate-200/70 shadow-2xs">
-                        <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider mb-0.5">No. HP / WhatsApp</span>
-                        <span id="modal-applicant-phone-val" class="font-bold text-emerald-700 text-xs block">-</span>
+                        <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider mb-0.5">2. Nama Pelapor</span>
+                        <span id="modal-applicant-name-val" class="font-bold text-slate-900 text-xs block break-words">-</span>
                     </div>
                     <div class="bg-white p-3 rounded-lg border border-slate-200/70 shadow-2xs">
-                        <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider mb-0.5">Hubungan dengan Bayi</span>
-                        <span id="modal-applicant-relation-val" class="font-bold text-slate-800 text-xs block">-</span>
+                        <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider mb-0.5">3. Tgl Lahir / Umur</span>
+                        <span id="modal-applicant-birth-date-val" class="font-bold text-slate-800 text-xs block">-</span>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg border border-slate-200/70 shadow-2xs">
+                        <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider mb-0.5">4. Jenis Kelamin</span>
+                        <span id="modal-applicant-gender-val" class="font-bold text-slate-800 text-xs block">-</span>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg border border-slate-200/70 shadow-2xs sm:col-span-2">
+                        <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider mb-0.5">5. Pekerjaan</span>
+                        <span id="modal-applicant-job-val" class="font-bold text-slate-800 text-xs block">-</span>
                     </div>
                     <div class="sm:col-span-2 bg-white p-3 rounded-lg border border-slate-200/70 shadow-2xs">
-                        <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider mb-0.5">Alamat Lengkap</span>
+                        <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider mb-0.5">6. Alamat Lengkap</span>
                         <span id="modal-applicant-address-val" class="font-medium text-slate-800 text-xs leading-relaxed block">-</span>
                     </div>
                 </div>
@@ -1407,16 +1700,20 @@
                         </div>
                         <div class="grid grid-cols-2 gap-1 pt-0.5">
                             <div>
-                                <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">Tgl Lahir</span>
+                                <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">Tgl Lahir / Umur</span>
                                 <span id="modal-witness1-birth-date-val" class="font-medium text-slate-800 text-xs block">-</span>
                             </div>
                             <div>
-                                <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">Pekerjaan</span>
-                                <span id="modal-witness1-job-val" class="font-medium text-slate-800 text-xs block break-words">-</span>
+                                <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">Jenis Kelamin</span>
+                                <span id="modal-witness1-gender-val" class="font-medium text-slate-800 text-xs block">-</span>
                             </div>
                         </div>
                         <div>
-                            <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">Alamat</span>
+                            <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">Pekerjaan</span>
+                            <span id="modal-witness1-job-val" class="font-medium text-slate-800 text-xs block break-words">-</span>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">Alamat Domisili</span>
                             <span id="modal-witness1-address-val" class="font-medium text-slate-800 text-xs block break-words">-</span>
                         </div>
                     </div>
@@ -1437,16 +1734,20 @@
                         </div>
                         <div class="grid grid-cols-2 gap-1 pt-0.5">
                             <div>
-                                <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">Tgl Lahir</span>
+                                <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">Tgl Lahir / Umur</span>
                                 <span id="modal-witness2-birth-date-val" class="font-medium text-slate-800 text-xs block">-</span>
                             </div>
                             <div>
-                                <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">Pekerjaan</span>
-                                <span id="modal-witness2-job-val" class="font-medium text-slate-800 text-xs block break-words">-</span>
+                                <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">Jenis Kelamin</span>
+                                <span id="modal-witness2-gender-val" class="font-medium text-slate-800 text-xs block">-</span>
                             </div>
                         </div>
                         <div>
-                            <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">Alamat</span>
+                            <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">Pekerjaan</span>
+                            <span id="modal-witness2-job-val" class="font-medium text-slate-800 text-xs block break-words">-</span>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">Alamat Domisili</span>
                             <span id="modal-witness2-address-val" class="font-medium text-slate-800 text-xs block break-words">-</span>
                         </div>
                     </div>
@@ -1475,7 +1776,7 @@
                         </div>
                         <div class="min-w-0 flex-1">
                             <div class="flex items-center justify-between gap-2">
-                                <span class="text-[11px] font-bold text-[#095b8c] uppercase tracking-wide">1. KTP Pemohon / Orang Tua</span>
+                                <span class="text-[11px] font-bold text-[#095b8c] uppercase tracking-wide">1. KTP Pelapor / Orang Tua</span>
                                 <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 shrink-0">
                                     <i class="fa-solid fa-check text-[9px]"></i> Terlampir
                                 </span>
@@ -1544,6 +1845,52 @@
                         </div>
                     </div>
 
+                    <!-- 5. Surat Pengantar RT/RW Card Modal -->
+                    <div class="flex items-center gap-3.5 p-3 bg-slate-50/80 hover:bg-slate-50 rounded-xl border border-slate-200 transition">
+                        <div class="w-13 h-13 rounded-lg overflow-hidden border border-slate-200 shrink-0 bg-slate-100 flex items-center justify-center shadow-2xs" style="width: 52px; height: 52px; min-width: 52px; min-height: 52px;">
+                            <img id="modal-thumb-pengantar" src="" alt="Thumbnail Surat Pengantar RT/RW" class="w-full h-full object-cover object-center block hidden" style="width: 52px; height: 52px; min-width: 52px; min-height: 52px; max-width: 52px; max-height: 52px; object-fit: cover; object-position: center;">
+                            <div id="modal-pdf-pengantar" class="w-full h-full bg-rose-50 flex flex-col items-center justify-center text-rose-600 hidden" style="width: 52px; height: 52px; min-width: 52px; min-height: 52px;">
+                                <i class="fa-solid fa-file-pdf text-xl mb-0.5"></i>
+                                <span class="text-[8px] font-bold uppercase">PDF</span>
+                            </div>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-[11px] font-bold text-[#095b8c] uppercase tracking-wide">5. Surat Pengantar RT/RW</span>
+                                <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 shrink-0">
+                                    <i class="fa-solid fa-check text-[9px]"></i> Terlampir
+                                </span>
+                            </div>
+                            <p id="modal-file-pengantar" class="text-xs font-medium text-slate-700 truncate mt-0.5">-</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 6. Tanda Tangan Digital Pemohon (Pratinjau) -->
+            <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-[#095b8c] flex items-center gap-2">
+                        <i class="fa-solid fa-signature text-amber-500"></i> Tanda Tangan Digital Pemohon
+                    </h4>
+                    <span id="modal-signature-status-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">Belum Ada</span>
+                </div>
+
+                <div class="p-3 bg-slate-50/80 rounded-xl border border-slate-200 flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-32 h-14 bg-white rounded-lg border border-slate-200 flex items-center justify-center overflow-hidden shrink-0 shadow-2xs">
+                            <img id="modal-signature-img" src="" alt="Pratinjau Tanda Tangan" class="max-h-full max-w-full object-contain hidden">
+                            <span id="modal-signature-empty" class="text-[10px] text-slate-400 italic">Belum ditandatangani</span>
+                        </div>
+                        <div>
+                            <p id="modal-signature-name" class="text-xs font-bold text-slate-800">-</p>
+                            <p id="modal-signature-nik" class="text-[11px] text-slate-500 font-mono">-</p>
+                        </div>
+                    </div>
+                    <button type="button" id="btn-modal-re-sign" class="text-[11px] font-bold text-[#095b8c] hover:text-[#04869e] bg-teal-50 px-2.5 py-1.5 rounded-lg border border-teal-200 transition cursor-pointer">
+                        <i class="fa-solid fa-pen-nib"></i> Ubah TTD
+                    </button>
                 </div>
             </div>
 
@@ -1559,6 +1906,99 @@
             <button type="button" id="btn-confirm-submit" class="w-full sm:w-auto bg-[#095b8c] hover:bg-[#07476e] active:scale-[0.98] text-white font-extrabold text-xs sm:text-sm px-6 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2.5 cursor-pointer border border-[#07476e]">
                 <i class="fa-solid fa-paper-plane text-xs text-teal-200"></i>
                 <span>Konfirmasi & Kirim Permohonan</span>
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- MODAL POP-UP: TANDA TANGAN DIGITAL PEMOHON                                -->
+<!-- ========================================================================= -->
+<div id="signature-modal" class="modal-overlay fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 md:p-6 overflow-y-auto">
+    <div id="signature-modal-dialog" class="modal-dialog-box bg-white rounded-2xl shadow-2xl border border-slate-200/80 max-w-lg w-full overflow-hidden my-auto flex flex-col">
+        
+        <!-- Header Pop-up Tanda Tangan -->
+        <div class="bg-[#095b8c] text-white px-5 sm:px-6 py-4 flex items-center justify-between shrink-0 shadow-xs">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-white/15 backdrop-blur-xs flex items-center justify-center text-amber-300 border border-white/20 shrink-0">
+                    <i class="fa-solid fa-file-signature text-lg"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-xs sm:text-sm uppercase tracking-wide">Tanda Tangan Digital</h3>
+                    <p class="text-[11px] text-teal-100">Bubuhkan tanda tangan pemohon langsung di layar</p>
+                </div>
+            </div>
+            <button type="button" id="btn-close-signature-modal" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-teal-100 hover:text-white flex items-center justify-center transition cursor-pointer shrink-0">
+                <i class="fa-solid fa-xmark text-base"></i>
+            </button>
+        </div>
+
+        <!-- Body Pop-up Tanda Tangan -->
+        <div class="p-5 sm:p-6 space-y-4 overflow-y-auto custom-modal-scroll flex-1 min-h-0">
+            
+            <!-- Applicant identity chip -->
+            <div class="p-3 bg-teal-50/70 rounded-xl border border-teal-200/70 flex items-center justify-between text-xs">
+                <div>
+                    <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Pemohon / Pelapor</span>
+                    <strong id="signature-modal-applicant-name" class="text-slate-800 text-xs">-</strong>
+                </div>
+                <div class="text-right">
+                    <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">NIK Pemohon</span>
+                    <span id="signature-modal-applicant-nik" class="font-mono font-bold text-[#095b8c] text-xs">-</span>
+                </div>
+            </div>
+
+            <!-- Canvas Pad Area -->
+            <div class="space-y-2">
+                <div class="flex items-center justify-between text-xs">
+                    <span class="font-semibold text-slate-700 flex items-center gap-1.5">
+                        <i class="fa-solid fa-pencil text-amber-500"></i> Area Goresan Tanda Tangan:
+                    </span>
+                    <button type="button" id="btn-clear-signature" class="text-[11px] text-rose-600 hover:text-rose-800 font-semibold flex items-center gap-1 hover:underline cursor-pointer">
+                        <i class="fa-solid fa-eraser"></i> Hapus / Ulangi
+                    </button>
+                </div>
+
+                <div class="relative w-full rounded-xl border-2 border-dashed border-slate-300 hover:border-[#095b8c] bg-white overflow-hidden transition-colors shadow-inner" style="touch-action: none;">
+                    <canvas id="signature-pad" class="w-full block bg-white cursor-crosshair" style="height: 200px; touch-action: none;"></canvas>
+                    
+                    <!-- Guide baseline line -->
+                    <div class="pointer-events-none absolute left-6 right-6 bottom-9 border-b border-dashed border-slate-200 flex items-center justify-between text-[10px] text-slate-300">
+                        <span>x</span>
+                        <span>Garis Panduan Tanda Tangan</span>
+                    </div>
+
+                    <div id="signature-instruction" class="pointer-events-none absolute inset-0 flex items-center justify-center text-slate-400 text-xs">
+                        <span class="bg-white/90 px-3 py-1 rounded-full border border-slate-200 shadow-2xs">
+                            <i class="fa-solid fa-hand-pointer mr-1 text-[#095b8c]"></i> Tanda tangani di area ini (Gunakan Jari / Mouse / Stylus)
+                        </span>
+                    </div>
+                </div>
+
+                <span class="text-[11px] text-rose-500 hidden error-text block" id="error-signature-pad">
+                    Harap bubuhkan tanda tangan sebelum menyimpan permohonan.
+                </span>
+            </div>
+
+            <!-- Security Notice -->
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-[11px] text-slate-600 flex items-start gap-2">
+                <i class="fa-solid fa-shield-halved text-[#095b8c] text-sm mt-0.5 shrink-0"></i>
+                <p>
+                    Tanda tangan ini sah dan disimpan terenkripsi sebagai bukti pertanggungjawaban yuridis atas berkas formulir kelahiran yang diajukan ke Pemerintah Kalurahan Purwobinangun.
+                </p>
+            </div>
+
+        </div>
+
+        <!-- Footer Modal Tanda Tangan -->
+        <div class="px-5 sm:px-6 py-4 bg-slate-50/95 border-t border-slate-200/90 flex flex-col-reverse sm:flex-row items-center justify-between gap-3 shrink-0">
+            <button type="button" id="btn-cancel-signature" class="w-full sm:w-auto bg-white hover:bg-slate-100 text-slate-700 font-semibold text-xs px-4 py-2.5 rounded-xl border border-slate-300 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs">
+                <span>Batal</span>
+            </button>
+            <button type="button" id="btn-save-signature" class="w-full sm:w-auto bg-[#095b8c] hover:bg-[#07476e] active:scale-[0.98] text-white font-extrabold text-xs sm:text-sm px-6 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer border border-[#07476e]">
+                <i class="fa-solid fa-check text-teal-200"></i>
+                <span id="btn-save-signature-text">Simpan Tanda Tangan</span>
             </button>
         </div>
 
@@ -1610,7 +2050,7 @@
                     <span id="modal-child-name" class="font-bold text-slate-800">-</span>
                 </div>
                 <div class="flex justify-between items-center py-1 border-b border-slate-200">
-                    <span class="text-slate-500">Nama Pemohon:</span>
+                    <span class="text-slate-500">Nama Pelapor:</span>
                     <span id="modal-applicant-name" class="font-semibold text-slate-800">-</span>
                 </div>
                 <div class="flex justify-between items-center py-1">
@@ -1659,8 +2099,14 @@ document.addEventListener('DOMContentLoaded', function () {
     // Storage Keys (Scoped per User to prevent cross-account draft leaks)
     const CURRENT_USER_ID = '{{ Auth::id() ?? "guest" }}';
     const CURRENT_USER_NIK = '{{ Auth::user()->nik ?? "" }}';
-    const DRAFT_KEY = 'purwobinangun_birth_form_draft_' + CURRENT_USER_ID;
-    const DB_NAME = 'PurwobinangunBirthDB_' + CURRENT_USER_ID;
+    const REVISION_DATA = @json($revisionData ?? null);
+    const IS_REVISION_MODE = !!REVISION_DATA;
+    const DRAFT_KEY = IS_REVISION_MODE 
+        ? ('purwobinangun_birth_form_draft_' + CURRENT_USER_ID + '_rev_' + REVISION_DATA.registration_no)
+        : ('purwobinangun_birth_form_draft_' + CURRENT_USER_ID);
+    const DB_NAME = IS_REVISION_MODE
+        ? ('PurwobinangunBirthDB_' + CURRENT_USER_ID + '_rev_' + REVISION_DATA.registration_no)
+        : ('PurwobinangunBirthDB_' + CURRENT_USER_ID);
     const STORE_NAME = 'birthDraftFiles';
 
     // Clear legacy unscoped drafts to avoid cross-user data leakage
@@ -1727,36 +2173,60 @@ document.addEventListener('DOMContentLoaded', function () {
     const motherNationality = document.getElementById('mother_nationality');
     const marriageDate = document.getElementById('marriage_date');
 
-    const btnCopyMotherAddress = document.getElementById('btn-copy-mother-address');
 
-    // Step 3: Identitas Diri Pemohon
+    // Step 3: Identitas Diri Pelapor
     const applicantName = document.getElementById('applicant_name');
     const applicantNik = document.getElementById('applicant_nik');
+    const applicantBirthDate = document.getElementById('applicant_birth_date');
+    const applicantAge = document.getElementById('applicant_age');
+    const applicantGender = document.getElementById('applicant_gender');
+    const applicantJob = document.getElementById('applicant_job');
     const applicantRelation = document.getElementById('applicant_relation');
     const address = document.getElementById('address');
     const applicantPhone = document.getElementById('applicant_phone');
     const padukuhan = document.getElementById('padukuhan');
     const rt = document.getElementById('rt');
     const rw = document.getElementById('rw');
+    const applicantVillage = document.getElementById('applicant_village');
+    const applicantDistrict = document.getElementById('applicant_district');
+    const applicantCity = document.getElementById('applicant_city');
+    const applicantProvince = document.getElementById('applicant_province');
 
     // Step 4: Data Saksi Kelahiran
     const witness1Nik = document.getElementById('witness_1_nik');
     const witness1Name = document.getElementById('witness_1_name');
     const witness1BirthDate = document.getElementById('witness_1_birth_date');
+    const witness1Age = document.getElementById('witness_1_age');
+    const witness1Gender = document.getElementById('witness_1_gender');
     const witness1Job = document.getElementById('witness_1_job');
     const witness1Address = document.getElementById('witness_1_address');
+    const witness1Rt = document.getElementById('witness_1_rt');
+    const witness1Rw = document.getElementById('witness_1_rw');
+    const witness1Village = document.getElementById('witness_1_village');
+    const witness1District = document.getElementById('witness_1_district');
+    const witness1City = document.getElementById('witness_1_city');
+    const witness1Province = document.getElementById('witness_1_province');
 
     const witness2Nik = document.getElementById('witness_2_nik');
     const witness2Name = document.getElementById('witness_2_name');
     const witness2BirthDate = document.getElementById('witness_2_birth_date');
+    const witness2Age = document.getElementById('witness_2_age');
+    const witness2Gender = document.getElementById('witness_2_gender');
     const witness2Job = document.getElementById('witness_2_job');
     const witness2Address = document.getElementById('witness_2_address');
+    const witness2Rt = document.getElementById('witness_2_rt');
+    const witness2Rw = document.getElementById('witness_2_rw');
+    const witness2Village = document.getElementById('witness_2_village');
+    const witness2District = document.getElementById('witness_2_district');
+    const witness2City = document.getElementById('witness_2_city');
+    const witness2Province = document.getElementById('witness_2_province');
 
     // Step 5: Dokumen Persyaratan & Pernyataan
     const docKtp = document.getElementById('doc_parents_ktp');
     const docKk = document.getElementById('doc_family_card');
     const docLahir = document.getElementById('doc_birth_cert');
     const docNikah = document.getElementById('doc_marriage_cert');
+    const docPengantar = document.getElementById('doc_witness_ktp');
     const declarationCheck = document.getElementById('declaration_check');
 
     // Preview Modal Elements
@@ -1765,12 +2235,26 @@ document.addEventListener('DOMContentLoaded', function () {
     const btnModalEdit = document.getElementById('btn-modal-edit');
     const btnConfirmSubmit = document.getElementById('btn-confirm-submit');
 
+    // Signature Modal Elements
+    const signatureModal = document.getElementById('signature-modal');
+    const btnCloseSignatureModal = document.getElementById('btn-close-signature-modal');
+    const btnCancelSignature = document.getElementById('btn-cancel-signature');
+    const btnSaveSignature = document.getElementById('btn-save-signature');
+    const btnClearSignature = document.getElementById('btn-clear-signature');
+    const signatureCanvas = document.getElementById('signature-pad');
+    const signatureInput = document.getElementById('applicant_signature');
+    const btnOpenSignatureModal = document.getElementById('btn-open-signature-modal');
+    const btnModalReSign = document.getElementById('btn-modal-re-sign');
+
     // Success Modal Element
     const successModal = document.getElementById('success-modal');
 
     // Teleport pop-up modal elements directly to document.body to ensure top-layer positioning
     if (previewModal && previewModal.parentElement !== document.body) {
         document.body.appendChild(previewModal);
+    }
+    if (signatureModal && signatureModal.parentElement !== document.body) {
+        document.body.appendChild(signatureModal);
     }
     if (successModal && successModal.parentElement !== document.body) {
         document.body.appendChild(successModal);
@@ -2066,26 +2550,51 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 applicant_name: applicantName ? applicantName.value : '',
                 applicant_nik: applicantNik ? applicantNik.value : '',
+                applicant_birth_date: applicantBirthDate ? applicantBirthDate.value : '',
+                applicant_age: applicantAge ? applicantAge.value : '',
+                applicant_gender: applicantGender ? applicantGender.value : '',
+                applicant_job: applicantJob ? applicantJob.value : '',
                 applicant_relation: applicantRelation ? applicantRelation.value : '',
                 applicant_phone: applicantPhone ? applicantPhone.value : '',
                 padukuhan: padukuhan ? padukuhan.value : '',
                 rt: rt ? rt.value : '',
                 rw: rw ? rw.value : '',
                 address: address ? address.value : '',
+                applicant_village: applicantVillage ? applicantVillage.value : '',
+                applicant_district: applicantDistrict ? applicantDistrict.value : '',
+                applicant_city: applicantCity ? applicantCity.value : '',
+                applicant_province: applicantProvince ? applicantProvince.value : '',
 
                 witness_1_nik: witness1Nik ? witness1Nik.value : '',
                 witness_1_name: witness1Name ? witness1Name.value : '',
                 witness_1_birth_date: witness1BirthDate ? witness1BirthDate.value : '',
+                witness_1_age: witness1Age ? witness1Age.value : '',
+                witness_1_gender: witness1Gender ? witness1Gender.value : '',
                 witness_1_job: witness1Job ? witness1Job.value : '',
                 witness_1_address: witness1Address ? witness1Address.value : '',
+                witness_1_rt: witness1Rt ? witness1Rt.value : '',
+                witness_1_rw: witness1Rw ? witness1Rw.value : '',
+                witness_1_village: witness1Village ? witness1Village.value : '',
+                witness_1_district: witness1District ? witness1District.value : '',
+                witness_1_city: witness1City ? witness1City.value : '',
+                witness_1_province: witness1Province ? witness1Province.value : '',
 
                 witness_2_nik: witness2Nik ? witness2Nik.value : '',
                 witness_2_name: witness2Name ? witness2Name.value : '',
                 witness_2_birth_date: witness2BirthDate ? witness2BirthDate.value : '',
+                witness_2_age: witness2Age ? witness2Age.value : '',
+                witness_2_gender: witness2Gender ? witness2Gender.value : '',
                 witness_2_job: witness2Job ? witness2Job.value : '',
                 witness_2_address: witness2Address ? witness2Address.value : '',
+                witness_2_rt: witness2Rt ? witness2Rt.value : '',
+                witness_2_rw: witness2Rw ? witness2Rw.value : '',
+                witness_2_village: witness2Village ? witness2Village.value : '',
+                witness_2_district: witness2District ? witness2District.value : '',
+                witness_2_city: witness2City ? witness2City.value : '',
+                witness_2_province: witness2Province ? witness2Province.value : '',
 
-                declaration_check: declarationCheck ? declarationCheck.checked : false
+                declaration_check: declarationCheck ? declarationCheck.checked : false,
+                applicant_signature: signatureInput ? signatureInput.value : ''
             };
             localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
         } catch (e) {
@@ -2093,22 +2602,68 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    function showExistingFilePreview(inputId, fileUrl, cardKey) {
+        const input = document.getElementById(inputId);
+        if (!input || !fileUrl) return;
+        input.removeAttribute('required');
+        input.dataset.hasExisting = 'true';
+
+        const placeholder = document.getElementById(`placeholder-${cardKey}`);
+        const previewBox = document.getElementById(`preview-box-${cardKey}`);
+        const imgWrap = document.getElementById(`img-preview-wrap-${cardKey}`);
+        const imgEl = document.getElementById(`img-preview-${cardKey}`);
+        const pdfWrap = document.getElementById(`pdf-preview-wrap-${cardKey}`);
+        const fileNameEl = document.getElementById(`file-name-${cardKey}`);
+        const fileSizeEl = document.getElementById(`file-size-${cardKey}`);
+
+        const fileName = fileUrl.split('/').pop();
+        if (fileNameEl) fileNameEl.textContent = fileName;
+        if (fileSizeEl) fileSizeEl.textContent = 'Berkas Tersimpan (Sebelumnya)';
+
+        const isPdf = fileUrl.toLowerCase().includes('.pdf');
+        if (isPdf) {
+            if (imgWrap) imgWrap.classList.add('hidden');
+            if (pdfWrap) pdfWrap.classList.remove('hidden');
+        } else {
+            if (imgEl) imgEl.src = fileUrl;
+            if (imgWrap) imgWrap.classList.remove('hidden');
+            if (pdfWrap) pdfWrap.classList.add('hidden');
+        }
+
+        if (placeholder) placeholder.classList.add('hidden');
+        if (previewBox) previewBox.classList.remove('hidden');
+    }
+
     function restoreFormDraft() {
         try {
-            const rawDraft = localStorage.getItem(DRAFT_KEY);
-            if (!rawDraft) return;
-            const draft = JSON.parse(rawDraft);
+            let draft = null;
+            if (IS_REVISION_MODE && REVISION_DATA) {
+                draft = Object.assign({}, REVISION_DATA);
+                const rawDraft = localStorage.getItem(DRAFT_KEY);
+                if (rawDraft) {
+                    try {
+                        const localEdits = JSON.parse(rawDraft);
+                        if (localEdits) Object.assign(draft, localEdits);
+                    } catch (e) {}
+                }
+            } else {
+                const rawDraft = localStorage.getItem(DRAFT_KEY);
+                if (!rawDraft) return;
+                draft = JSON.parse(rawDraft);
+            }
             if (!draft) return;
 
-            if (draft.user_id && draft.user_id !== CURRENT_USER_ID) {
-                localStorage.removeItem(DRAFT_KEY);
-                clearDraftFilesFromDB();
-                return;
-            }
-            if (CURRENT_USER_NIK && draft.user_nik && draft.user_nik !== CURRENT_USER_NIK) {
-                localStorage.removeItem(DRAFT_KEY);
-                clearDraftFilesFromDB();
-                return;
+            if (!IS_REVISION_MODE) {
+                if (draft.user_id && draft.user_id !== CURRENT_USER_ID) {
+                    localStorage.removeItem(DRAFT_KEY);
+                    clearDraftFilesFromDB();
+                    return;
+                }
+                if (CURRENT_USER_NIK && draft.user_nik && draft.user_nik !== CURRENT_USER_NIK) {
+                    localStorage.removeItem(DRAFT_KEY);
+                    clearDraftFilesFromDB();
+                    return;
+                }
             }
 
             // Step 1
@@ -2197,33 +2752,81 @@ document.addEventListener('DOMContentLoaded', function () {
             if (marriageDate && draft.marriage_date !== undefined) marriageDate.value = draft.marriage_date;
 
             // Step 3
-            if (applicantName && draft.applicant_name !== undefined) applicantName.value = draft.applicant_name;
-            if (applicantNik && draft.applicant_nik !== undefined) applicantNik.value = draft.applicant_nik;
+            if (applicantName && draft.applicant_name !== undefined && (draft.applicant_name !== '' || !applicantName.value)) applicantName.value = draft.applicant_name;
+            if (applicantNik && draft.applicant_nik !== undefined && (draft.applicant_nik !== '' || !applicantNik.value)) applicantNik.value = draft.applicant_nik;
+            if (applicantBirthDate && draft.applicant_birth_date !== undefined && (draft.applicant_birth_date !== '' || !applicantBirthDate.value)) applicantBirthDate.value = draft.applicant_birth_date;
+            if (applicantAge && draft.applicant_age !== undefined && draft.applicant_age !== '') applicantAge.value = draft.applicant_age;
+            if (applicantGender && draft.applicant_gender !== undefined) applicantGender.value = draft.applicant_gender;
+            if (applicantJob && draft.applicant_job !== undefined) applicantJob.value = draft.applicant_job;
             if (applicantRelation && draft.applicant_relation !== undefined) applicantRelation.value = draft.applicant_relation;
             if (applicantPhone && draft.applicant_phone !== undefined) applicantPhone.value = draft.applicant_phone;
             if (padukuhan && draft.padukuhan !== undefined) padukuhan.value = draft.padukuhan;
             if (rt && draft.rt !== undefined) rt.value = draft.rt;
             if (rw && draft.rw !== undefined) rw.value = draft.rw;
             if (address && draft.address !== undefined) address.value = draft.address;
+            if (applicantVillage && draft.applicant_village !== undefined) applicantVillage.value = draft.applicant_village;
+            if (applicantDistrict && draft.applicant_district !== undefined) applicantDistrict.value = draft.applicant_district;
+            if (applicantCity && draft.applicant_city !== undefined) applicantCity.value = draft.applicant_city;
+            if (applicantProvince && draft.applicant_province !== undefined) applicantProvince.value = draft.applicant_province;
 
             // Step 4
             if (witness1Nik && draft.witness_1_nik !== undefined) witness1Nik.value = draft.witness_1_nik;
             if (witness1Name && draft.witness_1_name !== undefined) witness1Name.value = draft.witness_1_name;
             if (witness1BirthDate && draft.witness_1_birth_date !== undefined) witness1BirthDate.value = draft.witness_1_birth_date;
+            if (witness1Age && draft.witness_1_age !== undefined) witness1Age.value = draft.witness_1_age;
+            if (witness1Gender && draft.witness_1_gender !== undefined) witness1Gender.value = draft.witness_1_gender;
             if (witness1Job && draft.witness_1_job !== undefined) witness1Job.value = draft.witness_1_job;
             if (witness1Address && draft.witness_1_address !== undefined) witness1Address.value = draft.witness_1_address;
+            if (witness1Rt && draft.witness_1_rt !== undefined) witness1Rt.value = draft.witness_1_rt;
+            if (witness1Rw && draft.witness_1_rw !== undefined) witness1Rw.value = draft.witness_1_rw;
+            if (witness1Village && draft.witness_1_village !== undefined) witness1Village.value = draft.witness_1_village;
+            if (witness1District && draft.witness_1_district !== undefined) witness1District.value = draft.witness_1_district;
+            if (witness1City && draft.witness_1_city !== undefined) witness1City.value = draft.witness_1_city;
+            if (witness1Province && draft.witness_1_province !== undefined) witness1Province.value = draft.witness_1_province;
 
             if (witness2Nik && draft.witness_2_nik !== undefined) witness2Nik.value = draft.witness_2_nik;
             if (witness2Name && draft.witness_2_name !== undefined) witness2Name.value = draft.witness_2_name;
             if (witness2BirthDate && draft.witness_2_birth_date !== undefined) witness2BirthDate.value = draft.witness_2_birth_date;
+            if (witness2Age && draft.witness_2_age !== undefined) witness2Age.value = draft.witness_2_age;
+            if (witness2Gender && draft.witness_2_gender !== undefined) witness2Gender.value = draft.witness_2_gender;
             if (witness2Job && draft.witness_2_job !== undefined) witness2Job.value = draft.witness_2_job;
             if (witness2Address && draft.witness_2_address !== undefined) witness2Address.value = draft.witness_2_address;
+            if (witness2Rt && draft.witness_2_rt !== undefined) witness2Rt.value = draft.witness_2_rt;
+            if (witness2Rw && draft.witness_2_rw !== undefined) witness2Rw.value = draft.witness_2_rw;
+            if (witness2Village && draft.witness_2_village !== undefined) witness2Village.value = draft.witness_2_village;
+            if (witness2District && draft.witness_2_district !== undefined) witness2District.value = draft.witness_2_district;
+            if (witness2City && draft.witness_2_city !== undefined) witness2City.value = draft.witness_2_city;
+            if (witness2Province && draft.witness_2_province !== undefined) witness2Province.value = draft.witness_2_province;
 
             // Step 5
             if (declarationCheck && draft.declaration_check !== undefined) declarationCheck.checked = draft.declaration_check;
+            if (draft.applicant_signature) {
+                applySignatureData(draft.applicant_signature);
+            }
 
             if (draft.currentStep) {
                 setStep(draft.currentStep, false);
+            }
+
+            if (IS_REVISION_MODE && REVISION_DATA) {
+                const docMap = [
+                    { id: 'doc_parents_ktp', url: REVISION_DATA.doc_parents_ktp, card: 'ktp' },
+                    { id: 'doc_family_card', url: REVISION_DATA.doc_family_card, card: 'kk' },
+                    { id: 'doc_birth_cert', url: REVISION_DATA.doc_birth_cert, card: 'lahir' },
+                    { id: 'doc_marriage_cert', url: REVISION_DATA.doc_marriage_cert, card: 'nikah' },
+                    { id: 'doc_witness_ktp', url: REVISION_DATA.doc_witness_ktp, card: 'pengantar' },
+                ];
+
+                docMap.forEach(item => {
+                    if (item.url) {
+                        showExistingFilePreview(item.id, item.url, item.card);
+                    }
+                });
+
+                const btnSubmitText = document.getElementById('btn-submit-text');
+                if (btnSubmitText) {
+                    btnSubmitText.textContent = 'Kirim Revisi Berkas Permohonan';
+                }
             }
         } catch (e) {
             console.warn('Gagal memulihkan draft dari localStorage:', e);
@@ -2231,7 +2834,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     async function restoreDraftFiles() {
-        const fileInputIds = ['doc_parents_ktp', 'doc_family_card', 'doc_birth_cert', 'doc_marriage_cert'];
+        const fileInputIds = ['doc_parents_ktp', 'doc_family_card', 'doc_birth_cert', 'doc_marriage_cert', 'doc_witness_ktp'];
         for (const inputId of fileInputIds) {
             const input = document.getElementById(inputId);
             if (!input) continue;
@@ -2277,53 +2880,105 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     if (fatherBirthDate && fatherAge) {
-        fatherBirthDate.addEventListener('change', function () {
-            if (this.value) {
-                const calculated = calculateAgeFromDate(this.value);
-                if (calculated !== '') fatherAge.value = calculated;
-                saveFormDraft();
+        const updateFatherAge = function () {
+            if (fatherBirthDate.value) {
+                const calculated = calculateAgeFromDate(fatherBirthDate.value);
+                fatherAge.value = calculated !== '' ? calculated : '';
+            } else {
+                fatherAge.value = '';
             }
-        });
-        if (fatherBirthDate.value && !fatherAge.value) {
+            saveFormDraft();
+        };
+
+        fatherBirthDate.addEventListener('change', updateFatherAge);
+        fatherBirthDate.addEventListener('input', updateFatherAge);
+
+        if (fatherBirthDate.value) {
             const calculated = calculateAgeFromDate(fatherBirthDate.value);
             if (calculated !== '') fatherAge.value = calculated;
         }
     }
 
     if (motherBirthDate && motherAge) {
-        motherBirthDate.addEventListener('change', function () {
-            if (this.value) {
-                const calculated = calculateAgeFromDate(this.value);
-                if (calculated !== '') motherAge.value = calculated;
-                saveFormDraft();
+        const updateMotherAge = function () {
+            if (motherBirthDate.value) {
+                const calculated = calculateAgeFromDate(motherBirthDate.value);
+                motherAge.value = calculated !== '' ? calculated : '';
+            } else {
+                motherAge.value = '';
             }
-        });
-        if (motherBirthDate.value && !motherAge.value) {
+            saveFormDraft();
+        };
+
+        motherBirthDate.addEventListener('change', updateMotherAge);
+        motherBirthDate.addEventListener('input', updateMotherAge);
+
+        if (motherBirthDate.value) {
             const calculated = calculateAgeFromDate(motherBirthDate.value);
             if (calculated !== '') motherAge.value = calculated;
         }
     }
 
-    if (btnCopyMotherAddress) {
-        btnCopyMotherAddress.addEventListener('click', function () {
-            if (motherAddress && fatherAddress) fatherAddress.value = motherAddress.value;
-            if (motherRt && fatherRt) fatherRt.value = motherRt.value;
-            if (motherRw && fatherRw) fatherRw.value = motherRw.value;
-            if (motherVillage && fatherVillage) fatherVillage.value = motherVillage.value;
-            if (motherDistrict && fatherDistrict) fatherDistrict.value = motherDistrict.value;
-            if (motherCity && fatherCity) fatherCity.value = motherCity.value;
-            if (motherProvince && fatherProvince) fatherProvince.value = motherProvince.value;
+    if (applicantBirthDate && applicantAge) {
+        const updateApplicantAge = function () {
+            if (applicantBirthDate.value) {
+                const calculated = calculateAgeFromDate(applicantBirthDate.value);
+                applicantAge.value = calculated !== '' ? calculated : '';
+            } else {
+                applicantAge.value = '';
+            }
             saveFormDraft();
-            
-            const originalText = btnCopyMotherAddress.innerHTML;
-            btnCopyMotherAddress.innerHTML = '<i class="fa-solid fa-check text-emerald-600"></i> Tersalin!';
-            btnCopyMotherAddress.classList.add('bg-emerald-50', 'text-emerald-700', 'border-emerald-300');
-            setTimeout(() => {
-                btnCopyMotherAddress.innerHTML = originalText;
-                btnCopyMotherAddress.classList.remove('bg-emerald-50', 'text-emerald-700', 'border-emerald-300');
-            }, 1800);
-        });
+        };
+
+        applicantBirthDate.addEventListener('change', updateApplicantAge);
+        applicantBirthDate.addEventListener('input', updateApplicantAge);
+
+        if (applicantBirthDate.value) {
+            const calculated = calculateAgeFromDate(applicantBirthDate.value);
+            if (calculated !== '') applicantAge.value = calculated;
+        }
     }
+
+    if (witness1BirthDate && witness1Age) {
+        const updateWitness1Age = function () {
+            if (witness1BirthDate.value) {
+                const calculated = calculateAgeFromDate(witness1BirthDate.value);
+                witness1Age.value = calculated !== '' ? calculated : '';
+            } else {
+                witness1Age.value = '';
+            }
+            saveFormDraft();
+        };
+
+        witness1BirthDate.addEventListener('change', updateWitness1Age);
+        witness1BirthDate.addEventListener('input', updateWitness1Age);
+
+        if (witness1BirthDate.value) {
+            const calculated = calculateAgeFromDate(witness1BirthDate.value);
+            if (calculated !== '') witness1Age.value = calculated;
+        }
+    }
+
+    if (witness2BirthDate && witness2Age) {
+        const updateWitness2Age = function () {
+            if (witness2BirthDate.value) {
+                const calculated = calculateAgeFromDate(witness2BirthDate.value);
+                witness2Age.value = calculated !== '' ? calculated : '';
+            } else {
+                witness2Age.value = '';
+            }
+            saveFormDraft();
+        };
+
+        witness2BirthDate.addEventListener('change', updateWitness2Age);
+        witness2BirthDate.addEventListener('input', updateWitness2Age);
+
+        if (witness2BirthDate.value) {
+            const calculated = calculateAgeFromDate(witness2BirthDate.value);
+            if (calculated !== '') witness2Age.value = calculated;
+        }
+    }
+
 
     // Populate & Open Preview Modal
     function openPreviewModal() {
@@ -2402,45 +3057,101 @@ document.addEventListener('DOMContentLoaded', function () {
         if (document.getElementById('modal-mother-citizenship-val')) document.getElementById('modal-mother-citizenship-val').textContent = `${motherCitizenship ? motherCitizenship.value : 'WNI'} / ${motherNationality ? motherNationality.value : 'INDONESIA'}`;
         if (document.getElementById('modal-marriage-date-val')) document.getElementById('modal-marriage-date-val').textContent = marriageDate && marriageDate.value ? marriageDate.value : '-';
 
-        // Step 3: Pemohon
+        // Step 3: Pelapor
+        let aAgeStr = '';
+        if (applicantAge && applicantAge.value) {
+            aAgeStr = ` (${applicantAge.value} thn)`;
+        }
         document.getElementById('modal-applicant-name-val').textContent = applicantName ? applicantName.value.trim() || '-' : '-';
         document.getElementById('modal-applicant-nik-val').textContent = applicantNik ? applicantNik.value.trim() || '-' : '-';
-        document.getElementById('modal-applicant-phone-val').textContent = applicantPhone ? applicantPhone.value.trim() || '-' : '-';
-        document.getElementById('modal-applicant-relation-val').textContent = applicantRelation ? applicantRelation.value : '-';
+        if (document.getElementById('modal-applicant-birth-date-val')) {
+            document.getElementById('modal-applicant-birth-date-val').textContent = (applicantBirthDate ? applicantBirthDate.value || '-' : '-') + aAgeStr;
+        }
+        if (document.getElementById('modal-applicant-gender-val')) {
+            const gVal = applicantGender ? applicantGender.value : '';
+            document.getElementById('modal-applicant-gender-val').textContent = gVal === 'L' ? '1. LAKI-LAKI' : (gVal === 'P' ? '2. PEREMPUAN' : (gVal || '-'));
+        }
+        if (document.getElementById('modal-applicant-job-val')) {
+            document.getElementById('modal-applicant-job-val').textContent = applicantJob ? applicantJob.value.trim() || '-' : '-';
+        }
+        if (document.getElementById('modal-applicant-phone-val')) {
+            document.getElementById('modal-applicant-phone-val').textContent = applicantPhone ? applicantPhone.value.trim() || '-' : '-';
+        }
+        if (document.getElementById('modal-applicant-relation-val')) {
+            document.getElementById('modal-applicant-relation-val').textContent = applicantRelation ? applicantRelation.value : '-';
+        }
 
         let fullAddress = address ? address.value.trim() : '';
-        if (padukuhan && padukuhan.value) {
-            fullAddress += `, Padukuhan ${padukuhan.value}`;
-        }
         if (rt && rw && (rt.value || rw.value)) {
             fullAddress += ` (RT ${rt.value || '-'}/RW ${rw.value || '-'})`;
+        }
+        if (applicantVillage && applicantVillage.value) fullAddress += `, ${applicantVillage.value}`;
+        if (applicantDistrict && applicantDistrict.value) fullAddress += `, ${applicantDistrict.value}`;
+        if (applicantCity && applicantCity.value) fullAddress += `, ${applicantCity.value}`;
+        if (applicantProvince && applicantProvince.value) fullAddress += `, ${applicantProvince.value}`;
+        if (padukuhan && padukuhan.value) {
+            fullAddress += ` [Padukuhan ${padukuhan.value}]`;
         }
         document.getElementById('modal-applicant-address-val').textContent = fullAddress || '-';
 
         // Step 4: Saksi
+        const w1AgeStr = witness1Age && witness1Age.value ? ` (${witness1Age.value} thn)` : '';
+        const w2AgeStr = witness2Age && witness2Age.value ? ` (${witness2Age.value} thn)` : '';
+
+        const w1GenderVal = witness1Gender ? (witness1Gender.value === 'L' ? '1. Laki-laki' : (witness1Gender.value === 'P' ? '2. Perempuan' : '')) : '';
+        const w2GenderVal = witness2Gender ? (witness2Gender.value === 'L' ? '1. Laki-laki' : (witness2Gender.value === 'P' ? '2. Perempuan' : '')) : '';
+
+        let fullW1Address = witness1Address ? witness1Address.value.trim() : '';
+        if (witness1Rt && witness1Rw && (witness1Rt.value || witness1Rw.value)) {
+            fullW1Address += ` (RT ${witness1Rt.value || '-'}/RW ${witness1Rw.value || '-'})`;
+        }
+        if (witness1Village && witness1Village.value) fullW1Address += `, ${witness1Village.value}`;
+        if (witness1District && witness1District.value) fullW1Address += `, ${witness1District.value}`;
+        if (witness1City && witness1City.value) fullW1Address += `, ${witness1City.value}`;
+        if (witness1Province && witness1Province.value) fullW1Address += `, ${witness1Province.value}`;
+
+        let fullW2Address = witness2Address ? witness2Address.value.trim() : '';
+        if (witness2Rt && witness2Rw && (witness2Rt.value || witness2Rw.value)) {
+            fullW2Address += ` (RT ${witness2Rt.value || '-'}/RW ${witness2Rw.value || '-'})`;
+        }
+        if (witness2Village && witness2Village.value) fullW2Address += `, ${witness2Village.value}`;
+        if (witness2District && witness2District.value) fullW2Address += `, ${witness2District.value}`;
+        if (witness2City && witness2City.value) fullW2Address += `, ${witness2City.value}`;
+        if (witness2Province && witness2Province.value) fullW2Address += `, ${witness2Province.value}`;
+
         document.getElementById('modal-witness1-name-val').textContent = witness1Name ? witness1Name.value.trim() || 'Tidak diisi' : 'Tidak diisi';
         document.getElementById('modal-witness1-nik-val').textContent = witness1Nik ? witness1Nik.value.trim() || '-' : '-';
-        document.getElementById('modal-witness1-birth-date-val').textContent = witness1BirthDate ? witness1BirthDate.value || '-' : '-';
+        document.getElementById('modal-witness1-birth-date-val').textContent = (witness1BirthDate ? witness1BirthDate.value || '-' : '-') + w1AgeStr;
+        if (document.getElementById('modal-witness1-gender-val')) {
+            document.getElementById('modal-witness1-gender-val').textContent = w1GenderVal || '-';
+        }
         document.getElementById('modal-witness1-job-val').textContent = witness1Job ? witness1Job.value || '-' : '-';
-        document.getElementById('modal-witness1-address-val').textContent = witness1Address ? witness1Address.value.trim() || '-' : '-';
+        document.getElementById('modal-witness1-address-val').textContent = fullW1Address || '-';
 
         document.getElementById('modal-witness2-name-val').textContent = witness2Name ? witness2Name.value.trim() || 'Tidak diisi' : 'Tidak diisi';
         document.getElementById('modal-witness2-nik-val').textContent = witness2Nik ? witness2Nik.value.trim() || '-' : '-';
-        document.getElementById('modal-witness2-birth-date-val').textContent = witness2BirthDate ? witness2BirthDate.value || '-' : '-';
+        document.getElementById('modal-witness2-birth-date-val').textContent = (witness2BirthDate ? witness2BirthDate.value || '-' : '-') + w2AgeStr;
+        if (document.getElementById('modal-witness2-gender-val')) {
+            document.getElementById('modal-witness2-gender-val').textContent = w2GenderVal || '-';
+        }
         document.getElementById('modal-witness2-job-val').textContent = witness2Job ? witness2Job.value || '-' : '-';
-        document.getElementById('modal-witness2-address-val').textContent = witness2Address ? witness2Address.value.trim() || '-' : '-';
+        document.getElementById('modal-witness2-address-val').textContent = fullW2Address || '-';
 
         // Step 5: Dokumen
         document.getElementById('modal-file-ktp').textContent = docKtp.files[0]?.name || '-';
         document.getElementById('modal-file-kk').textContent = docKk.files[0]?.name || '-';
         document.getElementById('modal-file-lahir').textContent = docLahir.files[0]?.name || '-';
         document.getElementById('modal-file-nikah').textContent = docNikah.files[0]?.name || '-';
+        if (document.getElementById('modal-file-pengantar')) {
+            document.getElementById('modal-file-pengantar').textContent = docPengantar?.files[0]?.name || '-';
+        }
 
         const docKeys = [
             { key: 'ktp', input: docKtp },
             { key: 'kk', input: docKk },
             { key: 'lahir', input: docLahir },
-            { key: 'nikah', input: docNikah }
+            { key: 'nikah', input: docNikah },
+            { key: 'pengantar', input: docPengantar }
         ];
 
         docKeys.forEach(item => {
@@ -2459,6 +3170,40 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (modalPdf) modalPdf.classList.remove('hidden');
             }
         });
+
+        // Step 5: Tanda Tangan Digital Pemohon
+        const modalSigImg = document.getElementById('modal-signature-img');
+        const modalSigEmpty = document.getElementById('modal-signature-empty');
+        const modalSigBadge = document.getElementById('modal-signature-status-badge');
+        const modalSigName = document.getElementById('modal-signature-name');
+        const modalSigNik = document.getElementById('modal-signature-nik');
+
+        const curApplicantName = applicantName ? applicantName.value.trim() : '';
+        const curApplicantNik = applicantNik ? applicantNik.value.trim() : '';
+        if (modalSigName) modalSigName.textContent = curApplicantName || '-';
+        if (modalSigNik) modalSigNik.textContent = curApplicantNik ? 'NIK: ' + curApplicantNik : '-';
+
+        if (signatureInput && signatureInput.value) {
+            if (modalSigImg) {
+                modalSigImg.src = signatureInput.value;
+                modalSigImg.classList.remove('hidden');
+            }
+            if (modalSigEmpty) modalSigEmpty.classList.add('hidden');
+            if (modalSigBadge) {
+                modalSigBadge.textContent = 'Sudah Ditandatangani';
+                modalSigBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800';
+            }
+        } else {
+            if (modalSigImg) {
+                modalSigImg.src = '';
+                modalSigImg.classList.add('hidden');
+            }
+            if (modalSigEmpty) modalSigEmpty.classList.remove('hidden');
+            if (modalSigBadge) {
+                modalSigBadge.textContent = 'Belum Ada';
+                modalSigBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800';
+            }
+        }
 
         showModal(previewModal);
     }
@@ -2591,32 +3336,50 @@ document.addEventListener('DOMContentLoaded', function () {
         let valid = true;
         let firstInvalid = null;
 
-        ['applicant_name', 'applicant_nik', 'address', 'applicant_phone'].forEach(field => {
+        ['applicant_name', 'applicant_nik', 'applicant_birth_date', 'applicant_gender', 'applicant_job', 'address'].forEach(field => {
             const err = document.getElementById(`error-${field}`);
             if (err) err.classList.add('hidden');
         });
 
-        if (!applicantName.value.trim()) {
-            document.getElementById('error-applicant_name').classList.remove('hidden');
-            valid = false;
-            if (!firstInvalid) firstInvalid = applicantName;
-        }
-
-        const nikVal = applicantNik.value.trim();
+        const nikVal = applicantNik ? applicantNik.value.trim() : '';
         if (!nikVal || nikVal.length !== 16 || isNaN(nikVal)) {
-            document.getElementById('error-applicant_nik').classList.remove('hidden');
+            const err = document.getElementById('error-applicant_nik');
+            if (err) err.classList.remove('hidden');
             valid = false;
             if (!firstInvalid) firstInvalid = applicantNik;
         }
 
-        if (!applicantPhone.value.trim()) {
-            document.getElementById('error-applicant_phone').classList.remove('hidden');
+        if (!applicantName || !applicantName.value.trim()) {
+            const err = document.getElementById('error-applicant_name');
+            if (err) err.classList.remove('hidden');
             valid = false;
-            if (!firstInvalid) firstInvalid = applicantPhone;
+            if (!firstInvalid) firstInvalid = applicantName;
         }
 
-        if (!address.value.trim()) {
-            document.getElementById('error-address').classList.remove('hidden');
+        if (!applicantBirthDate || !applicantBirthDate.value) {
+            const err = document.getElementById('error-applicant_birth_date');
+            if (err) err.classList.remove('hidden');
+            valid = false;
+            if (!firstInvalid) firstInvalid = applicantBirthDate;
+        }
+
+        if (!applicantGender || !applicantGender.value) {
+            const err = document.getElementById('error-applicant_gender');
+            if (err) err.classList.remove('hidden');
+            valid = false;
+            if (!firstInvalid) firstInvalid = applicantGender;
+        }
+
+        if (!applicantJob || !applicantJob.value.trim()) {
+            const err = document.getElementById('error-applicant_job');
+            if (err) err.classList.remove('hidden');
+            valid = false;
+            if (!firstInvalid) firstInvalid = applicantJob;
+        }
+
+        if (!address || !address.value.trim()) {
+            const err = document.getElementById('error-address');
+            if (err) err.classList.remove('hidden');
             valid = false;
             if (!firstInvalid) firstInvalid = address;
         }
@@ -2668,33 +3431,39 @@ document.addEventListener('DOMContentLoaded', function () {
         let valid = true;
         let firstInvalid = null;
 
-        ['doc_parents_ktp', 'doc_family_card', 'doc_birth_cert', 'doc_marriage_cert', 'declaration'].forEach(field => {
+        ['doc_parents_ktp', 'doc_family_card', 'doc_birth_cert', 'doc_marriage_cert', 'doc_witness_ktp', 'declaration'].forEach(field => {
             const err = document.getElementById(`error-${field}`);
             if (err) err.classList.add('hidden');
         });
 
-        if (!docKtp.files || docKtp.files.length === 0) {
+        if ((!docKtp.files || docKtp.files.length === 0) && docKtp.dataset.hasExisting !== 'true') {
             document.getElementById('error-doc_parents_ktp').classList.remove('hidden');
             valid = false;
             if (!firstInvalid) firstInvalid = document.getElementById('placeholder-ktp');
         }
 
-        if (!docKk.files || docKk.files.length === 0) {
+        if ((!docKk.files || docKk.files.length === 0) && docKk.dataset.hasExisting !== 'true') {
             document.getElementById('error-doc_family_card').classList.remove('hidden');
             valid = false;
             if (!firstInvalid) firstInvalid = document.getElementById('placeholder-kk');
         }
 
-        if (!docLahir.files || docLahir.files.length === 0) {
+        if ((!docLahir.files || docLahir.files.length === 0) && docLahir.dataset.hasExisting !== 'true') {
             document.getElementById('error-doc_birth_cert').classList.remove('hidden');
             valid = false;
             if (!firstInvalid) firstInvalid = document.getElementById('placeholder-lahir');
         }
 
-        if (!docNikah.files || docNikah.files.length === 0) {
+        if ((!docNikah.files || docNikah.files.length === 0) && docNikah.dataset.hasExisting !== 'true') {
             document.getElementById('error-doc_marriage_cert').classList.remove('hidden');
             valid = false;
             if (!firstInvalid) firstInvalid = document.getElementById('placeholder-nikah');
+        }
+
+        if ((!docPengantar.files || docPengantar.files.length === 0) && docPengantar.dataset.hasExisting !== 'true') {
+            document.getElementById('error-doc_witness_ktp').classList.remove('hidden');
+            valid = false;
+            if (!firstInvalid) firstInvalid = document.getElementById('placeholder-pengantar');
         }
 
         if (!declarationCheck.checked) {
@@ -2828,6 +3597,309 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    // ==========================================
+    // Tanda Tangan Digital Pad & Stabilizer Logic
+    // ==========================================
+    let sigCtx = null;
+    let isDrawing = false;
+    let hasDrawnSignature = false;
+    let strokePoints = [];
+    let smoothX = 0;
+    let smoothY = 0;
+    let lastLineWidth = 2.4;
+    let lastTime = 0;
+
+    // Stabilizer Weight (0 = no smoothing, 0.45 = balanced natural stroke stabilization)
+    const STABILIZER_WEIGHT = 0.45;
+    const MIN_LINE_WIDTH = 1.8;
+    const MAX_LINE_WIDTH = 3.2;
+
+    function initSignaturePad() {
+        if (!signatureCanvas) return;
+        sigCtx = signatureCanvas.getContext('2d', { willReadFrequently: true });
+        resizeSignatureCanvas();
+    }
+
+    function resizeSignatureCanvas() {
+        if (!signatureCanvas || !sigCtx) return;
+        const rect = signatureCanvas.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        
+        // Preserve drawing on resize if needed
+        let backupData = null;
+        if (hasDrawnSignature && signatureCanvas.width > 0 && signatureCanvas.height > 0) {
+            backupData = signatureCanvas.toDataURL('image/png');
+        }
+
+        signatureCanvas.width = Math.round(rect.width * dpr);
+        signatureCanvas.height = Math.round(rect.height * dpr);
+        sigCtx.scale(dpr, dpr);
+        sigCtx.lineCap = 'round';
+        sigCtx.lineJoin = 'round';
+        sigCtx.lineWidth = 2.4;
+        sigCtx.strokeStyle = '#0f172a'; // slate-900 natural ink color
+
+        if (backupData) {
+            const img = new Image();
+            img.onload = () => {
+                sigCtx.drawImage(img, 0, 0, rect.width, rect.height);
+            };
+            img.src = backupData;
+        }
+    }
+
+    function getCanvasPos(e) {
+        const rect = signatureCanvas.getBoundingClientRect();
+        let clientX = e.clientX;
+        let clientY = e.clientY;
+
+        if (e.touches && e.touches.length > 0) {
+            clientX = e.touches[0].clientX;
+            clientY = e.touches[0].clientY;
+        }
+
+        return {
+            x: clientX - rect.left,
+            y: clientY - rect.top,
+            time: performance.now()
+        };
+    }
+
+    function startDrawing(e) {
+        e.preventDefault();
+        isDrawing = true;
+        const pos = getCanvasPos(e);
+
+        smoothX = pos.x;
+        smoothY = pos.y;
+        lastTime = pos.time;
+        lastLineWidth = 2.4;
+
+        strokePoints = [{ x: smoothX, y: smoothY, width: lastLineWidth }];
+
+        hasDrawnSignature = true;
+        const instruction = document.getElementById('signature-instruction');
+        if (instruction) instruction.classList.add('hidden');
+        const err = document.getElementById('error-signature-pad');
+        if (err) err.classList.add('hidden');
+
+        // Draw initial smooth dot
+        sigCtx.beginPath();
+        sigCtx.fillStyle = '#0f172a';
+        sigCtx.arc(smoothX, smoothY, lastLineWidth / 2, 0, Math.PI * 2);
+        sigCtx.fill();
+    }
+
+    function drawStroke(e) {
+        if (!isDrawing) return;
+        e.preventDefault();
+        const rawPos = getCanvasPos(e);
+
+        // Exponential Moving Average (EMA) Stabilizer to eliminate jitter & hand trembling
+        smoothX = smoothX + (rawPos.x - smoothX) * (1 - STABILIZER_WEIGHT);
+        smoothY = smoothY + (rawPos.y - smoothY) * (1 - STABILIZER_WEIGHT);
+
+        const dt = Math.max(1, rawPos.time - lastTime);
+        const dist = Math.hypot(smoothX - strokePoints[strokePoints.length - 1].x, smoothY - strokePoints[strokePoints.length - 1].y);
+        const speed = dist / dt;
+
+        // Dynamic stroke width based on writing velocity (slow = thick, fast = thin)
+        const targetWidth = Math.max(MIN_LINE_WIDTH, Math.min(MAX_LINE_WIDTH, MAX_LINE_WIDTH - speed * 0.7));
+        const currentWidth = lastLineWidth * 0.65 + targetWidth * 0.35;
+
+        strokePoints.push({ x: smoothX, y: smoothY, width: currentWidth });
+        lastTime = rawPos.time;
+        lastLineWidth = currentWidth;
+
+        if (strokePoints.length >= 3) {
+            const p0 = strokePoints[strokePoints.length - 3];
+            const p1 = strokePoints[strokePoints.length - 2];
+            const p2 = strokePoints[strokePoints.length - 1];
+
+            // Midpoint quadratic Bezier curve calculation
+            const mid1X = (p0.x + p1.x) / 2;
+            const mid1Y = (p0.y + p1.y) / 2;
+            const mid2X = (p1.x + p2.x) / 2;
+            const mid2Y = (p1.y + p2.y) / 2;
+
+            sigCtx.beginPath();
+            sigCtx.moveTo(mid1X, mid1Y);
+            sigCtx.quadraticCurveTo(p1.x, p1.y, mid2X, mid2Y);
+            sigCtx.lineWidth = p1.width;
+            sigCtx.stroke();
+        } else if (strokePoints.length === 2) {
+            const p0 = strokePoints[0];
+            const p1 = strokePoints[1];
+            sigCtx.beginPath();
+            sigCtx.moveTo(p0.x, p0.y);
+            sigCtx.lineTo(p1.x, p1.y);
+            sigCtx.lineWidth = p1.width;
+            sigCtx.stroke();
+        }
+    }
+
+    function stopDrawing(e) {
+        if (!isDrawing) return;
+        if (e && e.cancelable) e.preventDefault();
+        
+        // Connect tail endpoint smoothly if remaining
+        if (strokePoints.length >= 2) {
+            const pPrev = strokePoints[strokePoints.length - 2];
+            const pLast = strokePoints[strokePoints.length - 1];
+            sigCtx.beginPath();
+            sigCtx.moveTo((pPrev.x + pLast.x) / 2, (pPrev.y + pLast.y) / 2);
+            sigCtx.lineTo(pLast.x, pLast.y);
+            sigCtx.lineWidth = pLast.width;
+            sigCtx.stroke();
+        }
+
+        isDrawing = false;
+        strokePoints = [];
+    }
+
+    function clearSignaturePad() {
+        if (!signatureCanvas || !sigCtx) return;
+        const rect = signatureCanvas.getBoundingClientRect();
+        sigCtx.clearRect(0, 0, rect.width, rect.height);
+        hasDrawnSignature = false;
+        strokePoints = [];
+        const instruction = document.getElementById('signature-instruction');
+        if (instruction) instruction.classList.remove('hidden');
+    }
+
+    function openSignatureModal() {
+        const curName = applicantName ? applicantName.value.trim() : '';
+        const curNik = applicantNik ? applicantNik.value.trim() : '';
+        const modalName = document.getElementById('signature-modal-applicant-name');
+        const modalNik = document.getElementById('signature-modal-applicant-nik');
+        if (modalName) modalName.textContent = curName || '-';
+        if (modalNik) modalNik.textContent = curNik || '-';
+
+        showModal(signatureModal);
+
+        // Adjust canvas resolution after modal is visible
+        setTimeout(() => {
+            initSignaturePad();
+            if (signatureInput && signatureInput.value) {
+                const img = new Image();
+                img.onload = () => {
+                    const rect = signatureCanvas.getBoundingClientRect();
+                    sigCtx.clearRect(0, 0, rect.width, rect.height);
+                    sigCtx.drawImage(img, 0, 0, rect.width, rect.height);
+                    hasDrawnSignature = true;
+                    const instruction = document.getElementById('signature-instruction');
+                    if (instruction) instruction.classList.add('hidden');
+                };
+                img.src = signatureInput.value;
+            } else {
+                clearSignaturePad();
+            }
+        }, 120);
+    }
+
+    function applySignatureData(dataUrl) {
+        if (!signatureInput) return;
+        signatureInput.value = dataUrl || '';
+        
+        const previewImg = document.getElementById('signature-preview-img');
+        const previewEmpty = document.getElementById('signature-preview-empty');
+        const statusBadge = document.getElementById('badge-signature-status');
+        const btnText = document.getElementById('btn-open-signature-text');
+        const errSig = document.getElementById('error-applicant_signature');
+        const nameEl = document.getElementById('signature-applicant-name');
+        const nikEl = document.getElementById('signature-applicant-nik');
+
+        const curName = applicantName ? applicantName.value.trim() : '';
+        const curNik = applicantNik ? applicantNik.value.trim() : '';
+        if (nameEl) nameEl.textContent = curName || '-';
+        if (nikEl) nikEl.textContent = curNik ? 'NIK: ' + curNik : '-';
+
+        if (dataUrl) {
+            if (previewImg) {
+                previewImg.src = dataUrl;
+                previewImg.classList.remove('hidden');
+            }
+            if (previewEmpty) previewEmpty.classList.add('hidden');
+            if (statusBadge) {
+                statusBadge.textContent = 'Sudah Ditandatangani';
+                statusBadge.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200';
+            }
+            if (btnText) btnText.textContent = 'Ubah Tanda Tangan';
+            if (errSig) errSig.classList.add('hidden');
+        } else {
+            if (previewImg) {
+                previewImg.src = '';
+                previewImg.classList.add('hidden');
+            }
+            if (previewEmpty) previewEmpty.classList.remove('hidden');
+            if (statusBadge) {
+                statusBadge.textContent = 'Belum Ditandatangani';
+                statusBadge.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200';
+            }
+            if (btnText) btnText.textContent = 'Bubuhkan Tanda Tangan';
+        }
+    }
+
+    // Attach Pointer / Touch / Mouse Events to Canvas
+    if (signatureCanvas) {
+        signatureCanvas.addEventListener('pointerdown', startDrawing);
+        signatureCanvas.addEventListener('pointermove', drawStroke);
+        signatureCanvas.addEventListener('pointerup', stopDrawing);
+        signatureCanvas.addEventListener('pointercancel', stopDrawing);
+        signatureCanvas.addEventListener('pointerleave', stopDrawing);
+    }
+
+    if (btnClearSignature) {
+        btnClearSignature.addEventListener('click', clearSignaturePad);
+    }
+
+    if (btnOpenSignatureModal) {
+        btnOpenSignatureModal.addEventListener('click', openSignatureModal);
+    }
+
+    if (btnModalReSign) {
+        btnModalReSign.addEventListener('click', () => {
+            hideModal(previewModal);
+            openSignatureModal();
+        });
+    }
+
+    if (btnCloseSignatureModal) {
+        btnCloseSignatureModal.addEventListener('click', () => hideModal(signatureModal));
+    }
+    if (btnCancelSignature) {
+        btnCancelSignature.addEventListener('click', () => hideModal(signatureModal));
+    }
+
+    if (signatureModal) {
+        signatureModal.addEventListener('click', function(e) {
+            if (e.target === signatureModal) {
+                hideModal(signatureModal);
+            }
+        });
+    }
+
+    if (btnSaveSignature) {
+        btnSaveSignature.addEventListener('click', function() {
+            if (!hasDrawnSignature) {
+                const err = document.getElementById('error-signature-pad');
+                if (err) err.classList.remove('hidden');
+                return;
+            }
+
+            const dataUrl = signatureCanvas.toDataURL('image/png');
+            applySignatureData(dataUrl);
+            saveFormDraft();
+            hideModal(signatureModal);
+
+            // If user came here via form submission trigger, continue submission directly
+            if (btnSaveSignature.dataset.pendingSubmit === 'true') {
+                delete btnSaveSignature.dataset.pendingSubmit;
+                executeFormSubmission();
+            }
+        });
+    }
+
     // Form Submission Function
     function executeFormSubmission() {
         if (!validateStep1()) { setStep(1); return; }
@@ -2835,6 +3907,16 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!validateStep3()) { setStep(3); return; }
         if (!validateStep4()) { setStep(4); return; }
         if (!validateStep5()) { setStep(5); return; }
+
+        // Popup tanda tangan digital jika berkas & dokumen sudah lengkap namun belum ada tanda tangan
+        if (!signatureInput || !signatureInput.value) {
+            hideModal(previewModal);
+            if (btnSaveSignature) {
+                btnSaveSignature.dataset.pendingSubmit = 'true';
+            }
+            openSignatureModal();
+            return;
+        }
 
         hideModal(previewModal);
 
@@ -2867,12 +3949,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     localStorage.removeItem('purwobinangun_birth_form_draft');
                     clearDraftFilesFromDB();
 
-                    ['ktp', 'kk', 'lahir', 'nikah'].forEach(key => {
+                    ['ktp', 'kk', 'lahir', 'nikah', 'pengantar'].forEach(key => {
                         const ph = document.getElementById(`placeholder-${key}`);
                         const pb = document.getElementById(`preview-box-${key}`);
                         if (ph) ph.classList.remove('hidden');
                         if (pb) pb.classList.add('hidden');
                     });
+
+                    if (signatureInput) signatureInput.value = '';
+                    applySignatureData('');
                 } catch (e) {
                     console.warn('Gagal menghapus draft setelah submit:', e);
                 }
@@ -2942,10 +4027,39 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Buka Gambar Dokumen Langsung di Tab Baru
+    window.viewFullImage = function(cardKey) {
+        const imgEl = document.getElementById(`img-preview-${cardKey}`);
+        if (!imgEl || !imgEl.src) return;
+
+        const src = imgEl.src;
+        if (src.startsWith('data:')) {
+            const docTitles = {
+                'ktp': 'Dokumen KTP Pelapor / Orang Tua',
+                'kk': 'Kartu Keluarga (KK)',
+                'lahir': 'Surat Kelahiran RS/Bidan',
+                'nikah': 'Buku Nikah / Akta Perkawinan',
+                'pengantar': 'Surat Pengantar RT/RW'
+            };
+            const title = docTitles[cardKey] || 'Pratinjau Dokumen';
+            const newWindow = window.open('', '_blank');
+            if (newWindow) {
+                newWindow.document.write(`<!DOCTYPE html><html><head><title>${title}</title><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>body{margin:0;background:#0f172a;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;box-sizing:border-box;}img{max-width:100%;max-height:95vh;object-fit:contain;border-radius:8px;box-shadow:0 10px 25px rgba(0,0,0,0.5);}</style></head><body><img src="${src}" alt="${title}"></body></html>`);
+                newWindow.document.close();
+            }
+        } else {
+            window.open(src, '_blank');
+        }
+    };
+
     // ESC Key to close modal
     document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && previewModal.classList.contains('active')) {
-            hideModal(previewModal);
+        if (e.key === 'Escape') {
+            if (signatureModal && signatureModal.classList.contains('active')) {
+                hideModal(signatureModal);
+            } else if (previewModal && previewModal.classList.contains('active')) {
+                hideModal(previewModal);
+            }
         }
     });
 
