@@ -91,10 +91,27 @@ class AdminArchiveController extends Controller
             abort(404);
         }
 
+        $admin = Auth::user();
+
         $citizen->status = 'archived';
         $citizen->verified_at = now();
-        $citizen->verified_by = Auth::user()->name;
+        $citizen->verified_by = $admin->name;
         $citizen->save();
+
+        \App\Models\ActivityLog::record([
+            'actor_id' => $admin->id,
+            'actor_name' => $admin->name,
+            'actor_role' => 'admin',
+            'actor_nik' => $admin->nik,
+            'module' => 'akun_warga',
+            'action' => 'arsip',
+            'description' => 'Pengarsipan akun warga.',
+            'subject_type' => User::class,
+            'subject_id' => $citizen->id,
+            'reference_no' => $citizen->nik,
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+        ]);
 
         return redirect()->route('admin.citizens.index')
             ->with('success', 'Akun warga (' . $citizen->name . ') berhasil dipindahkan ke arsip.');
@@ -106,19 +123,53 @@ class AdminArchiveController extends Controller
             abort(404);
         }
 
+        $admin = Auth::user();
+
         $citizen->status = 'active';
         $citizen->verified_at = now();
-        $citizen->verified_by = Auth::user()->name;
+        $citizen->verified_by = $admin->name;
         $citizen->save();
+
+        \App\Models\ActivityLog::record([
+            'actor_id' => $admin->id,
+            'actor_name' => $admin->name,
+            'actor_role' => 'admin',
+            'actor_nik' => $admin->nik,
+            'module' => 'akun_warga',
+            'action' => 'pulihkan',
+            'description' => 'Pemulihan dan pengaktifan kembali akun warga.',
+            'subject_type' => User::class,
+            'subject_id' => $citizen->id,
+            'reference_no' => $citizen->nik,
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+        ]);
 
         return back()->with('success', 'Akun warga (' . $citizen->name . ') berhasil dipulihkan dan diaktifkan kembali.');
     }
 
     public function archiveBirth(BirthCertificate $birth)
     {
+        $admin = Auth::user();
+
         $birth->is_archived = true;
-        $birth->processed_by = Auth::user()->name;
+        $birth->processed_by = $admin->name;
         $birth->save();
+
+        \App\Models\ActivityLog::record([
+            'actor_id' => $admin->id,
+            'actor_name' => $admin->name,
+            'actor_role' => 'admin',
+            'actor_nik' => $admin->nik,
+            'module' => 'akte_kelahiran',
+            'action' => 'arsip',
+            'description' => 'Pengarsipan permohonan Akte Kelahiran.',
+            'subject_type' => BirthCertificate::class,
+            'subject_id' => $birth->id,
+            'reference_no' => $birth->registration_no,
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+        ]);
 
         return redirect()->route('admin.birth.index')
             ->with('success', 'Pengajuan Akte Kelahiran (' . $birth->registration_no . ') berhasil diarsipkan.');
@@ -126,19 +177,53 @@ class AdminArchiveController extends Controller
 
     public function restoreBirth(BirthCertificate $birth)
     {
+        $admin = Auth::user();
+
         $birth->is_archived = false;
         $birth->status = 'pending';
-        $birth->processed_by = Auth::user()->name;
+        $birth->processed_by = $admin->name;
         $birth->save();
+
+        \App\Models\ActivityLog::record([
+            'actor_id' => $admin->id,
+            'actor_name' => $admin->name,
+            'actor_role' => 'admin',
+            'actor_nik' => $admin->nik,
+            'module' => 'akte_kelahiran',
+            'action' => 'pulihkan',
+            'description' => 'Pemulihan permohonan Akte Kelahiran kembali ke status Menunggu Verifikasi.',
+            'subject_type' => BirthCertificate::class,
+            'subject_id' => $birth->id,
+            'reference_no' => $birth->registration_no,
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+        ]);
 
         return back()->with('success', 'Pengajuan Akte Kelahiran (' . $birth->registration_no . ') berhasil dikembalikan ke status Menunggu Verifikasi.');
     }
 
     public function archiveDeath(DeathCertificate $death)
     {
+        $admin = Auth::user();
+
         $death->is_archived = true;
-        $death->processed_by = Auth::user()->name;
+        $death->processed_by = $admin->name;
         $death->save();
+
+        \App\Models\ActivityLog::record([
+            'actor_id' => $admin->id,
+            'actor_name' => $admin->name,
+            'actor_role' => 'admin',
+            'actor_nik' => $admin->nik,
+            'module' => 'akte_kematian',
+            'action' => 'arsip',
+            'description' => 'Pengarsipan permohonan Akte Kematian.',
+            'subject_type' => DeathCertificate::class,
+            'subject_id' => $death->id,
+            'reference_no' => $death->registration_no,
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+        ]);
 
         return redirect()->route('admin.death.index')
             ->with('success', 'Pengajuan Akte Kematian (' . $death->registration_no . ') berhasil diarsipkan.');
@@ -146,10 +231,27 @@ class AdminArchiveController extends Controller
 
     public function restoreDeath(DeathCertificate $death)
     {
+        $admin = Auth::user();
+
         $death->is_archived = false;
         $death->status = 'pending';
-        $death->processed_by = Auth::user()->name;
+        $death->processed_by = $admin->name;
         $death->save();
+
+        \App\Models\ActivityLog::record([
+            'actor_id' => $admin->id,
+            'actor_name' => $admin->name,
+            'actor_role' => 'admin',
+            'actor_nik' => $admin->nik,
+            'module' => 'akte_kematian',
+            'action' => 'pulihkan',
+            'description' => 'Pemulihan permohonan Akte Kematian kembali ke status Menunggu Verifikasi.',
+            'subject_type' => DeathCertificate::class,
+            'subject_id' => $death->id,
+            'reference_no' => $death->registration_no,
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+        ]);
 
         return back()->with('success', 'Pengajuan Akte Kematian (' . $death->registration_no . ') berhasil dikembalikan ke status Menunggu Verifikasi.');
     }

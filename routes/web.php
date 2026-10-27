@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminActivityLogController;
 use App\Http\Controllers\Admin\AdminArchiveController;
 use App\Http\Controllers\Admin\AdminBirthController;
 use App\Http\Controllers\Admin\AdminCitizenController;
@@ -138,6 +139,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('/akte-kelahiran/{birth}/restore', [AdminArchiveController::class, 'restoreBirth'])->name('birth.restore');
             Route::post('/akte-kematian/{death}/archive', [AdminArchiveController::class, 'archiveDeath'])->name('death.archive');
             Route::post('/akte-kematian/{death}/restore', [AdminArchiveController::class, 'restoreDeath'])->name('death.restore');
+        });
+
+        // Log Aktivitas Sistem (Seluruh Aktivitas Warga & Admin)
+        Route::prefix('log-aktivitas')->name('activity_logs.')->group(function () {
+            Route::get('/', [AdminActivityLogController::class, 'index'])->name('index');
         });
 
         // Pengaturan Profil Admin & Email Notifikasi

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Mail\SubmissionStatusNotification;
+use App\Models\ActivityLog;
 use App\Models\BirthCertificate;
 use App\Models\User;
 use App\Services\WhatsAppNotificationService;
@@ -86,6 +87,19 @@ class AdminBirthController extends Controller
         $birth->rejection_note = $validated['rejection_note'];
         $birth->processed_by = Auth::user()->name;
         $birth->save();
+
+        ActivityLog::record([
+            'user_id' => Auth::id(),
+            'user_name' => Auth::user()->name,
+            'user_role' => 'admin',
+            'action_type' => in_array($validated['status'], ['picked_up', 'completed', 'ready_for_pickup']) ? 'approve' : ($validated['status'] === 'rejected' ? 'reject' : 'update'),
+            'module' => 'birth_certificate',
+            'title' => 'Pembaruan Status Akte Kelahiran',
+            'description' => 'Pembaruan status permohonan menjadi "' . $birth->status_label . '".' . (!empty($validated['rejection_note']) ? ' Catatan: ' . $validated['rejection_note'] : ''),
+            'reference_no' => $birth->registration_no,
+            'subject_type' => BirthCertificate::class,
+            'subject_id' => $birth->id,
+        ]);
 
         $message = $birth->isPickedUp()
             ? 'Status permohonan Akte Kelahiran berhasil diperbarui menjadi Sudah diambil dan telah otomatis masuk ke arsip.'

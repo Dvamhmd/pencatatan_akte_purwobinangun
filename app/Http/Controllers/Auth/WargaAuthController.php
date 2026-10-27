@@ -263,6 +263,28 @@ class WargaAuthController extends Controller
             }
         }
 
+        // Catat aktivitas log pendaftaran warga
+        \App\Models\ActivityLog::record([
+            'actor_id' => $user->id,
+            'actor_name' => $user->name,
+            'actor_role' => 'warga',
+            'actor_nik' => $user->nik,
+            'module' => 'akun_warga',
+            'action' => $existingRejected ? 'daftar_ulang' : 'pendaftaran',
+            'description' => $existingRejected ? 'Pendaftaran ulang akun kependudukan warga.' : 'Pendaftaran akun kependudukan baru.',
+            'subject_type' => User::class,
+            'subject_id' => $user->id,
+            'reference_no' => $user->nik,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'metadata' => [
+                'nik' => $user->nik,
+                'family_card_no' => $user->family_card_no,
+                'email' => $user->email,
+                'phone' => $user->phone,
+            ],
+        ]);
+
         // Notifikasi email otomatis ke admin/petugas kalurahan
         AdminNotificationService::notifyNewCitizenRegistration($user);
 

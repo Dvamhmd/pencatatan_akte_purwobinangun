@@ -251,13 +251,30 @@ class WargaAuthAndAccessTest extends TestCase
     public function test_admin_can_verify_and_reject_citizens()
     {
         $admin = User::where('email', 'admin@purwobinangun.desa.id')->first();
-        $pendingCitizen = User::where('status', 'pending')->first();
+        $pendingCitizen = User::firstOrCreate(
+            ['nik' => '3404059999990001'],
+            [
+                'name' => 'Warga Pending Test',
+                'email' => 'pending@example.com',
+                'password' => Hash::make('password123'),
+                'role' => 'warga',
+                'family_card_no' => '3404059999990002',
+                'status' => 'pending',
+                'birth_place' => 'Sleman',
+                'birth_date' => '1995-01-01',
+                'gender' => 'L',
+                'address' => 'Pakem',
+                'rt' => '01',
+                'rw' => '01',
+                'phone' => '081234567899',
+            ]
+        );
 
-        // Cek halaman pending menampilkan tombol "Tolak Pendaftaran Akun" dan TIDAK menampilkan "Nonaktifkan Akun"
+        // Cek halaman pending menampilkan tombol "Tolak Pendaftaran Akun" dan TIDAK menampilkan "Hapus Akun Warga"
         $responseShowPending = $this->actingAs($admin)->get('/admin/warga/' . $pendingCitizen->id);
         $responseShowPending->assertStatus(200);
         $responseShowPending->assertSee('Tolak Pendaftaran Akun');
-        $responseShowPending->assertDontSee('Nonaktifkan Akun');
+        $responseShowPending->assertDontSee('Hapus Akun Warga');
 
         // Admin approves citizen
         $responseApprove = $this->actingAs($admin)->post('/admin/warga/' . $pendingCitizen->id . '/verify', [
@@ -271,39 +288,23 @@ class WargaAuthAndAccessTest extends TestCase
             'verified_by' => 'Petugas Pelayanan Kalurahan',
         ]);
 
-        // Cek halaman aktif menampilkan tombol "Nonaktifkan Akun" dan TIDAK menampilkan "Tolak Pendaftaran Akun"
+        // Cek halaman aktif menampilkan tombol "Hapus Akun Warga" dan TIDAK menampilkan "Tolak Pendaftaran Akun"
         $responseShowActive = $this->actingAs($admin)->get('/admin/warga/' . $pendingCitizen->id);
         $responseShowActive->assertStatus(200);
-        $responseShowActive->assertSee('Nonaktifkan Akun');
+        $responseShowActive->assertSee('Hapus Akun Warga');
         $responseShowActive->assertDontSee('Tolak Pendaftaran Akun');
 
-        // Admin deactivates/rejects citizen with reason
-        $responseReject = $this->actingAs($admin)->post('/admin/warga/' . $pendingCitizen->id . '/verify', [
-            'action' => 'reject',
-            'rejection_reason' => 'NIK tidak sesuai dengan database KTP Kalurahan.',
+        // Admin menghapus akun warga yang aktif (masuk ke arsip)
+        $responseDelete = $this->actingAs($admin)->post('/admin/warga/' . $pendingCitizen->id . '/verify', [
+            'action' => 'delete',
+            'rejection_reason' => 'Warga sudah tidak tinggal di domisili wilayah Kalurahan Purwobinangun.',
         ]);
 
-        $this->assertDatabaseHas('users', [
-            'id' => $pendingCitizen->id,
-            'status' => 'rejected',
-            'rejection_reason' => 'NIK tidak sesuai dengan database KTP Kalurahan.',
-        ]);
-
-        // Halaman detail akun yang ditolak menampilkan tombol "Arsipkan Akun Warga" dan TIDAK menampilkan tombol "Tolak Pendaftaran Akun" maupun "Nonaktifkan Akun"
-        $responseShowRejected = $this->actingAs($admin)->get('/admin/warga/' . $pendingCitizen->id);
-        $responseShowRejected->assertStatus(200);
-        $responseShowRejected->assertSee('Arsipkan Akun Warga');
-        $responseShowRejected->assertDontSee('Tolak Pendaftaran Akun');
-        $responseShowRejected->assertDontSee('Nonaktifkan Akun');
-
-        // Admin can archive the citizen
-        $responseArchive = $this->actingAs($admin)->post('/admin/warga/' . $pendingCitizen->id . '/verify', [
-            'action' => 'archive',
-        ]);
-        $responseArchive->assertRedirect('/admin/warga');
+        $responseDelete->assertRedirect('/admin/warga');
         $this->assertDatabaseHas('users', [
             'id' => $pendingCitizen->id,
             'status' => 'archived',
+            'rejection_reason' => 'Warga sudah tidak tinggal di domisili wilayah Kalurahan Purwobinangun.',
         ]);
 
         // Verifikasi akun warga berstatus 'archived' TIDAK muncul di daftar utama /admin/warga
@@ -311,6 +312,39 @@ class WargaAuthAndAccessTest extends TestCase
         $responseCitizenIndex = $this->actingAs($admin)->get('/admin/warga');
         $responseCitizenIndex->assertStatus(200);
         $responseCitizenIndex->assertDontSee($pendingCitizen->name);
+    }
+
+    public function test_cannot_delete_citizen_with_active_applications()
+    {
+        $admin = User::where('email', 'admin@purwobinangun.desa.id')->first();
+        $citizen = User::where('status', 'active')->where('role', 'warga')->first();
+
+        // Buat pengajuan akte kelahiran yang aktif
+        BirthCertificate::create([
+            'user_id' => $citizen->id,
+            'registration_no' => 'REG-ACTIVE-001',
+            'family_card_no' => $citizen->family_card_no,
+            'child_name' => 'Bayi Aktif',
+            'child_nik' => '3404051111110001',
+            'gender' => 'L',
+            'birth_place' => 'Sleman',
+            'birth_date' => now()->toDateString(),
+            'status' => 'in_process',
+            'applicant_nik' => $citizen->nik,
+            'applicant_name' => $citizen->name,
+            'applicant_phone' => $citizen->phone ?: '081234567890',
+        ]);
+
+        $this->assertTrue($citizen->fresh()->hasActiveApplications());
+
+        // Coba hapus akun warga yang punya permohonan aktif -> harus dicegah
+        $response = $this->actingAs($admin)->post('/admin/warga/' . $citizen->id . '/verify', [
+            'action' => 'delete',
+            'rejection_reason' => 'Pindah domisili',
+        ]);
+
+        $response->assertSessionHas('error');
+        $this->assertEquals('active', $citizen->fresh()->status);
     }
 
     public function test_admin_can_access_archive_menu_and_restore_items()
@@ -341,6 +375,60 @@ class WargaAuthAndAccessTest extends TestCase
         $responseDeathArchive->assertStatus(200);
     }
 
+    public function test_admin_can_permanently_delete_archived_citizen_from_archive_menu()
+    {
+        $admin = User::where('email', 'admin@purwobinangun.desa.id')->first();
+        $citizen = User::create([
+            'name' => 'Warga Arsip Mandiri',
+            'email' => 'arsip_mandiri@example.com',
+            'password' => Hash::make('password123'),
+            'role' => 'warga',
+            'nik' => '3404059999990001',
+            'family_card_no' => '3404059999990002',
+            'status' => 'archived',
+            'birth_place' => 'Sleman',
+            'birth_date' => '1990-01-01',
+            'gender' => 'L',
+            'address' => 'Pakem',
+            'rt' => '01',
+            'rw' => '01',
+            'phone' => '081299999999',
+        ]);
+
+        // Akun akte kelahiran milik citizen yang sudah selesai
+        $birth = BirthCertificate::create([
+            'user_id' => $citizen->id,
+            'registration_no' => 'REG-DONE-001',
+            'family_card_no' => $citizen->family_card_no,
+            'child_name' => 'Bayi Arsip',
+            'child_nik' => '3404051111110002',
+            'gender' => 'P',
+            'birth_place' => 'Sleman',
+            'birth_date' => now()->toDateString(),
+            'status' => 'picked_up',
+            'applicant_nik' => $citizen->nik,
+            'applicant_name' => $citizen->name,
+            'applicant_phone' => $citizen->phone ?: '081234567890',
+        ]);
+
+        // Admin menghapus permanen data akun warga dari menu arsip
+        $responseDelete = $this->actingAs($admin)->delete('/admin/warga/' . $citizen->id);
+        $responseDelete->assertRedirect('/admin/arsip?tab=citizens');
+
+        // Akun user terhapus dari users
+        $this->assertDatabaseMissing('users', [
+            'id' => $citizen->id,
+        ]);
+
+        // Riwayat data akte kelahiran tetap utuh (user_id menjadi null, data NIK pelapor dll tetap ada)
+        $this->assertDatabaseHas('birth_certificates', [
+            'id' => $birth->id,
+            'user_id' => null,
+            'child_name' => 'Bayi Arsip',
+            'applicant_nik' => $citizen->nik,
+        ]);
+    }
+
     public function test_citizen_verification_triggers_email_and_whatsapp_notifications()
     {
         \Illuminate\Support\Facades\Mail::fake();
@@ -349,7 +437,24 @@ class WargaAuthAndAccessTest extends TestCase
         ]);
 
         $admin = User::where('email', 'admin@purwobinangun.desa.id')->first();
-        $pendingCitizen = User::where('status', 'pending')->first();
+        $pendingCitizen = User::firstOrCreate(
+            ['nik' => '3404058888880001'],
+            [
+                'name' => 'Warga Pending Notif',
+                'email' => 'pending_notif@example.com',
+                'password' => Hash::make('password123'),
+                'role' => 'warga',
+                'family_card_no' => '3404058888880002',
+                'status' => 'pending',
+                'birth_place' => 'Sleman',
+                'birth_date' => '1995-01-01',
+                'gender' => 'L',
+                'address' => 'Pakem',
+                'rt' => '01',
+                'rw' => '01',
+                'phone' => '081234567888',
+            ]
+        );
 
         // 1. Cek halaman menampilkan pop up konfirmasi notifikasi dan toggle
         $responseShow = $this->actingAs($admin)->get('/admin/warga/' . $pendingCitizen->id);
@@ -375,23 +480,23 @@ class WargaAuthAndAccessTest extends TestCase
             return $mail->citizen->id === $pendingCitizen->id && $mail->actionType === 'approved';
         });
 
-        // 3. Admin menonaktifkan akun dengan notifikasi email & whatsapp aktif
-        $responseDeactivate = $this->actingAs($admin)->post('/admin/warga/' . $pendingCitizen->id . '/verify', [
-            'action' => 'reject',
-            'rejection_reason' => 'Data NIK ganda atau perlu verifikasi ulang.',
+        // 3. Admin menghapus akun dengan notifikasi email & whatsapp aktif
+        $responseDelete = $this->actingAs($admin)->post('/admin/warga/' . $pendingCitizen->id . '/verify', [
+            'action' => 'delete',
+            'rejection_reason' => 'Sudah tidak bertempat tinggal di wilayah Kalurahan.',
             'send_email' => '1',
             'send_whatsapp' => '1',
         ]);
 
-        $responseDeactivate->assertRedirect('/admin/warga/' . $pendingCitizen->id);
+        $responseDelete->assertRedirect('/admin/warga');
         $this->assertDatabaseHas('users', [
             'id' => $pendingCitizen->id,
-            'status' => 'rejected',
-            'rejection_reason' => 'Data NIK ganda atau perlu verifikasi ulang.',
+            'status' => 'archived',
+            'rejection_reason' => 'Sudah tidak bertempat tinggal di wilayah Kalurahan.',
         ]);
 
         \Illuminate\Support\Facades\Mail::assertSent(\App\Mail\CitizenAccountStatusNotification::class, function ($mail) use ($pendingCitizen) {
-            return $mail->citizen->id === $pendingCitizen->id && $mail->actionType === 'deactivated';
+            return $mail->citizen->id === $pendingCitizen->id && $mail->actionType === 'deleted';
         });
     }
 }

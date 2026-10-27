@@ -89,6 +89,7 @@ class AdminNewSubmissionNotificationTest extends TestCase
             'doc_family_card' => UploadedFile::fake()->create('kk.jpg', 100),
             'doc_marriage_cert' => UploadedFile::fake()->create('buku_nikah.pdf', 100),
             'doc_parents_ktp' => UploadedFile::fake()->create('ktp.jpg', 100),
+            'doc_witness_ktp' => UploadedFile::fake()->create('saksi.jpg', 100),
         ]);
 
         $birth = BirthCertificate::first();

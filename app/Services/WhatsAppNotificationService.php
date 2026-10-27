@@ -209,11 +209,14 @@ class WhatsAppNotificationService
 
             $message .= "\n✅ Anda sekarang dapat masuk (login) ke website pelayanan kependudukan untuk mengajukan permohonan Akte Kelahiran maupun Akte Kematian secara online.\n\n";
             $message .= "🔗 *Masuk Akun Warga:* \n{$loginUrl}\n";
-        } elseif ($actionType === 'deactivated') {
-            $message .= "Pemberitahuan: Akun Warga Anda di Sistem Pelayanan Kalurahan Purwobinangun telah *DINONAKTIFKAN* oleh petugas pelayanan.\n\n";
+        } elseif ($actionType === 'deleted' || $actionType === 'deactivated') {
+            $isDeleted = ($actionType === 'deleted');
+            $statusWord = $isDeleted ? 'DIHAPUS & DIARSIPKAN' : 'DINONAKTIFKAN';
+            $statusLabel = $isDeleted ? 'Dihapus (Masuk Arsip)' : 'Dinonaktifkan';
+            $message .= "Pemberitahuan: Akun Warga Anda di Sistem Pelayanan Kalurahan Purwobinangun telah *{$statusWord}* oleh petugas pelayanan.\n\n";
             $message .= "📌 *NIK:* `{$citizen->nik}`\n";
             $message .= "🏠 *No. KK:* `{$citizen->family_card_no}`\n";
-            $message .= "📊 *Status Akun:* *Dinonaktifkan*\n";
+            $message .= "📊 *Status Akun:* *{$statusLabel}*\n";
             $message .= "👤 *Petugas:* {$adminOfficer}\n";
 
             if (!empty($reason)) {

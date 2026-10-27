@@ -118,6 +118,15 @@
             </a>
 
             <div class="pt-4 pb-1.5 px-3 text-[11px] uppercase font-bold tracking-wider text-teal-300/80">
+                Audit & Aktivitas
+            </div>
+
+            <a href="{{ route('admin.activity_logs.index') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition {{ request()->routeIs('admin.activity_logs.*') ? 'bg-[#0b7c89] text-white shadow-sm font-bold' : 'text-teal-100 hover:bg-teal-800/50 hover:text-white' }}">
+                <i class="fa-solid fa-clock-rotate-left w-5 text-center text-cyan-300 text-base"></i>
+                <span>Log Aktivitas</span>
+            </a>
+
+            <div class="pt-4 pb-1.5 px-3 text-[11px] uppercase font-bold tracking-wider text-teal-300/80">
                 Pengaturan
             </div>
 

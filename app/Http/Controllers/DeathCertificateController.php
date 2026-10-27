@@ -84,6 +84,28 @@ class DeathCertificateController extends Controller
 
         $death = DeathCertificate::create($data);
 
+        // Catat aktivitas log pengajuan akte kematian oleh warga
+        \App\Models\ActivityLog::record([
+            'actor_id' => $user?->id,
+            'actor_name' => $user ? $user->name : $death->applicant_name,
+            'actor_role' => 'warga',
+            'actor_nik' => $user?->nik ?? $death->applicant_nik,
+            'module' => 'akte_kematian',
+            'action' => 'pengajuan',
+            'description' => "Pengajuan permohonan Akte Kematian baru (Almarhum/ah: {$death->deceased_name}).",
+            'subject_type' => DeathCertificate::class,
+            'subject_id' => $death->id,
+            'reference_no' => $death->registration_no,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'metadata' => [
+                'deceased_name' => $death->deceased_name,
+                'deceased_nik' => $death->deceased_nik,
+                'applicant_name' => $death->applicant_name,
+                'death_date' => $death->death_date,
+            ],
+        ]);
+
         // Notifikasi email otomatis ke admin/petugas kalurahan
         AdminNotificationService::notifyNewDeathCertificate($death);
 

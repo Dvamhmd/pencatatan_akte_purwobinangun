@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityLog;
 use App\Models\BirthCertificate;
 use App\Models\DeathCertificate;
 use Illuminate\Http\Request;
@@ -718,6 +719,19 @@ class BirthCertificateController extends Controller
 
         // Notifikasi email otomatis ke admin/petugas kalurahan
         AdminNotificationService::notifyNewBirthCertificate($birth);
+
+        ActivityLog::record([
+            'user_id' => Auth::id(),
+            'user_name' => Auth::user()?->name ?? $birth->applicant_name,
+            'user_role' => 'warga',
+            'action_type' => $isRevision ? 'update' : 'create',
+            'module' => 'birth_certificate',
+            'title' => $isRevision ? 'Pengiriman Revisi Akte Kelahiran' : 'Pengajuan Akte Kelahiran Baru',
+            'description' => $isRevision ? 'Pengiriman revisi berkas permohonan Akte Kelahiran.' : 'Pengajuan permohonan Akte Kelahiran baru.',
+            'reference_no' => $birth->registration_no,
+            'subject_type' => BirthCertificate::class,
+            'subject_id' => $birth->id,
+        ]);
 
         $successMessage = $isRevision
             ? 'Revisi berkas permohonan Akte Kelahiran berhasil dikirimkan!'

@@ -142,4 +142,45 @@ class User extends Authenticatable
     {
         return $this->profileUpdateRequests()->where('status', 'pending')->latest()->first();
     }
+
+    public function hasActiveApplications(): bool
+    {
+        $hasActiveBirth = BirthCertificate::where(function ($q) {
+            $q->where('user_id', $this->id)
+              ->orWhere('applicant_nik', $this->nik);
+        })->whereNotIn('status', ['picked_up', 'archived', 'rejected'])->exists();
+
+        if ($hasActiveBirth) {
+            return true;
+        }
+
+        $hasActiveDeath = DeathCertificate::where(function ($q) {
+            $q->where('user_id', $this->id)
+              ->orWhere('applicant_nik', $this->nik);
+        })->whereNotIn('status', ['picked_up', 'archived', 'rejected'])->exists();
+
+        if ($hasActiveDeath) {
+            return true;
+        }
+
+        return $this->profileUpdateRequests()->where('status', 'pending')->exists();
+    }
+
+    public function getActiveApplicationsCount(): int
+    {
+        $birthCount = BirthCertificate::where(function ($q) {
+            $q->where('user_id', $this->id)
+              ->orWhere('applicant_nik', $this->nik);
+        })->whereNotIn('status', ['picked_up', 'archived', 'rejected'])->count();
+
+        $deathCount = DeathCertificate::where(function ($q) {
+            $q->where('user_id', $this->id)
+              ->orWhere('applicant_nik', $this->nik);
+        })->whereNotIn('status', ['picked_up', 'archived', 'rejected'])->count();
+
+        $profileCount = $this->profileUpdateRequests()->where('status', 'pending')->count();
+
+        return $birthCount + $deathCount + $profileCount;
+    }
 }
+

@@ -164,6 +164,15 @@
                                                     <i class="fa-solid fa-rotate-left"></i> Pulihkan
                                                 </button>
                                             </form>
+
+                                            <!-- Tombol Hapus Permanen dari Arsip -->
+                                            <form action="{{ route('admin.citizens.destroy', $citizen) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin MENGHAPUS PERMANEN akun warga ({{ $citizen->name }}) ini dari arsip? Riwayat data pengajuan akta tetap aman di arsip.');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="bg-rose-600 hover:bg-rose-700 text-white font-bold text-[11px] px-2.5 py-1.5 rounded-lg transition" title="Hapus Permanen Data Akun">
+                                                    <i class="fa-solid fa-trash-can"></i> Hapus
+                                                </button>
+                                            </form>
                                         </div>
                                     </td>
                                 </tr>

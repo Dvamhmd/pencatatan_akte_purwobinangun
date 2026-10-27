@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Mail\SubmissionStatusNotification;
+use App\Models\ActivityLog;
 use App\Models\DeathCertificate;
 use App\Models\User;
 use App\Services\WhatsAppNotificationService;
@@ -86,6 +87,19 @@ class AdminDeathController extends Controller
         $death->rejection_note = $validated['rejection_note'];
         $death->processed_by = Auth::user()->name;
         $death->save();
+
+        ActivityLog::record([
+            'user_id' => Auth::id(),
+            'user_name' => Auth::user()->name,
+            'user_role' => 'admin',
+            'action_type' => in_array($validated['status'], ['picked_up', 'completed', 'ready_for_pickup']) ? 'approve' : ($validated['status'] === 'rejected' ? 'reject' : 'update'),
+            'module' => 'death_certificate',
+            'title' => 'Pembaruan Status Akte Kematian',
+            'description' => 'Pembaruan status permohonan menjadi "' . $death->status_label . '".' . (!empty($validated['rejection_note']) ? ' Catatan: ' . $validated['rejection_note'] : ''),
+            'reference_no' => $death->registration_no,
+            'subject_type' => DeathCertificate::class,
+            'subject_id' => $death->id,
+        ]);
 
         $message = $death->isPickedUp()
             ? 'Status permohonan Akte Kematian berhasil diperbarui menjadi Sudah Diambil dan telah otomatis masuk ke arsip.'

@@ -218,6 +218,28 @@ class WargaProfileController extends Controller
             $savedRequest = ProfileUpdateRequest::create($dataToSave);
         }
 
+        // Catat aktivitas log pengajuan perubahan data profil
+        \App\Models\ActivityLog::record([
+            'actor_id' => $warga->id,
+            'actor_name' => $warga->name,
+            'actor_role' => 'warga',
+            'actor_nik' => $warga->nik,
+            'module' => 'perubahan_profil',
+            'action' => 'pengajuan',
+            'description' => 'Pengajuan permohonan perubahan data profil dan Kartu Keluarga.',
+            'subject_type' => ProfileUpdateRequest::class,
+            'subject_id' => $savedRequest->id,
+            'reference_no' => $warga->nik,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'metadata' => [
+                'nik' => $validated['nik'],
+                'family_card_no' => $validated['family_card_no'],
+                'phone' => $validated['phone'],
+                'email' => $validated['email'],
+            ],
+        ]);
+
         // Notifikasi email otomatis ke admin/petugas kalurahan
         AdminNotificationService::notifyNewProfileUpdateRequest($savedRequest);
 
@@ -237,6 +259,21 @@ class WargaProfileController extends Controller
             return redirect()->route('profile.index')
                 ->with('error', 'Permohonan perubahan data tidak dapat dibatalkan.');
         }
+
+        \App\Models\ActivityLog::record([
+            'actor_id' => $warga->id,
+            'actor_name' => $warga->name,
+            'actor_role' => 'warga',
+            'actor_nik' => $warga->nik,
+            'module' => 'perubahan_profil',
+            'action' => 'batal',
+            'description' => 'Pembatalan permohonan perubahan data profil.',
+            'subject_type' => ProfileUpdateRequest::class,
+            'subject_id' => $profileRequest->id,
+            'reference_no' => $warga->nik,
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+        ]);
 
         $profileRequest->delete();
 

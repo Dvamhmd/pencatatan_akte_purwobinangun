@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use App\Models\BirthCertificate;
 use App\Models\DeathCertificate;
 use App\Models\FamilyMember;
@@ -147,6 +148,19 @@ class AdminProfileRequestController extends Controller
                     'processed_by' => $verifierName,
                     'processed_at' => now(),
                 ]);
+
+                ActivityLog::record([
+                    'user_id' => Auth::id(),
+                    'user_name' => $verifierName,
+                    'user_role' => 'admin',
+                    'action_type' => 'approve',
+                    'module' => 'profile_update',
+                    'title' => 'Perubahan Data KK Disetujui',
+                    'description' => 'Persetujuan permohonan perubahan data Kartu Keluarga dan profil warga.',
+                    'reference_no' => $profileRequest->family_card_no,
+                    'subject_type' => ProfileUpdateRequest::class,
+                    'subject_id' => $profileRequest->id,
+                ]);
             });
 
             return redirect()->route('admin.profile_requests.show', $profileRequest)
@@ -157,6 +171,19 @@ class AdminProfileRequestController extends Controller
                 'admin_notes' => $validated['rejection_reason'],
                 'processed_by' => $verifierName,
                 'processed_at' => now(),
+            ]);
+
+            ActivityLog::record([
+                'user_id' => Auth::id(),
+                'user_name' => $verifierName,
+                'user_role' => 'admin',
+                'action_type' => 'reject',
+                'module' => 'profile_update',
+                'title' => 'Perubahan Data KK Ditolak',
+                'description' => 'Penolakan permohonan perubahan data Kartu Keluarga. Alasan: ' . $validated['rejection_reason'],
+                'reference_no' => $profileRequest->family_card_no,
+                'subject_type' => ProfileUpdateRequest::class,
+                'subject_id' => $profileRequest->id,
             ]);
 
             return redirect()->route('admin.profile_requests.show', $profileRequest)

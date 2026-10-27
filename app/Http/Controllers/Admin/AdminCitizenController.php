@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Mail\CitizenAccountStatusNotification;
+use App\Models\ActivityLog;
 use App\Models\BirthCertificate;
 use App\Models\DeathCertificate;
 use App\Models\ProfileUpdateRequest;
@@ -227,6 +228,19 @@ class AdminCitizenController extends Controller
             $citizen->touch();
         });
 
+        ActivityLog::record([
+            'user_id' => Auth::id(),
+            'user_name' => Auth::user()->name,
+            'user_role' => 'admin',
+            'action_type' => 'update',
+            'module' => 'citizen',
+            'title' => 'Pembaruan Data Warga oleh Admin',
+            'description' => 'Pembaruan data profil akun warga.',
+            'reference_no' => $citizen->nik,
+            'subject_type' => User::class,
+            'subject_id' => $citizen->id,
+        ]);
+
         if ($validated['status'] === 'archived') {
             return redirect()->route('admin.citizens.index')
                 ->with('success', 'Data akun warga (' . $citizen->name . ') berhasil diperbarui dan dipindahkan ke arsip.');
@@ -243,10 +257,10 @@ class AdminCitizenController extends Controller
         }
 
         $validated = $request->validate([
-            'action' => 'required|in:approve,reject,archive',
-            'rejection_reason' => 'required_if:action,reject|nullable|string|max:1000',
+            'action' => 'required|in:approve,reject,archive,delete',
+            'rejection_reason' => 'required_if:action,reject,delete|nullable|string|max:1000',
         ], [
-            'rejection_reason.required_if' => 'Alasan atau catatan penolakan/penonaktifan akun wajib diisi.',
+            'rejection_reason.required_if' => 'Alasan atau catatan penolakan/penghapusan akun wajib diisi.',
         ]);
 
         $sendEmail = $request->boolean('send_email');
@@ -259,6 +273,19 @@ class AdminCitizenController extends Controller
             $citizen->verified_at = now();
             $citizen->verified_by = $verifierName;
             $citizen->save();
+
+            ActivityLog::record([
+                'user_id' => Auth::id(),
+                'user_name' => $verifierName,
+                'user_role' => 'admin',
+                'action_type' => 'approve',
+                'module' => 'citizen',
+                'title' => 'Verifikasi Akun Warga Disetujui',
+                'description' => 'Persetujuan dan pengaktifan akun warga.',
+                'reference_no' => $citizen->nik,
+                'subject_type' => User::class,
+                'subject_id' => $citizen->id,
+            ]);
 
             $message = 'Akun warga (' . $citizen->name . ') berhasil diverifikasi dan diaktifkan!';
 
@@ -300,16 +327,107 @@ class AdminCitizenController extends Controller
             $citizen->verified_by = $verifierName;
             $citizen->save();
 
+            ActivityLog::record([
+                'user_id' => Auth::id(),
+                'user_name' => $verifierName,
+                'user_role' => 'admin',
+                'action_type' => 'archive',
+                'module' => 'citizen',
+                'title' => 'Pengarsipan Akun Warga',
+                'description' => 'Pengarsipan akun warga ke arsip database.',
+                'reference_no' => $citizen->nik,
+                'subject_type' => User::class,
+                'subject_id' => $citizen->id,
+            ]);
+
             return redirect()->route('admin.citizens.index')
                 ->with('success', 'Data akun warga (' . $citizen->name . ') telah berhasil diarsipkan.');
+        } elseif ($validated['action'] === 'delete') {
+            // Guard: Akun yang dihapus tidak boleh memiliki pengajuan aktif
+            if ($citizen->hasActiveApplications()) {
+                return back()->with('error', 'Akun warga (' . $citizen->name . ') tidak dapat dihapus karena masih memiliki permohonan akta atau perubahan data yang sedang aktif/berjalan. Harap selesaikan atau batalkan permohonan tersebut terlebih dahulu.');
+            }
+
+            // Simpan riwayat ke arsip database agar data NIK, berkas KK, dan permohonan tetap aman
+            $citizen->status = 'archived';
+            $citizen->rejection_reason = $validated['rejection_reason'];
+            $citizen->verified_at = now();
+            $citizen->verified_by = $verifierName;
+            $citizen->save();
+
+            ActivityLog::record([
+                'user_id' => Auth::id(),
+                'user_name' => $verifierName,
+                'user_role' => 'admin',
+                'action_type' => 'delete',
+                'module' => 'citizen',
+                'title' => 'Penghapusan Akun Warga (Masuk Arsip)',
+                'description' => 'Penghapusan akun warga dan pemindahan ke arsip.' . (!empty($validated['rejection_reason']) ? ' Alasan: ' . $validated['rejection_reason'] : ''),
+                'reference_no' => $citizen->nik,
+                'subject_type' => User::class,
+                'subject_id' => $citizen->id,
+            ]);
+
+            $message = 'Akun warga (' . $citizen->name . ') telah berhasil dihapus dari daftar aktif dan seluruh riwayat datanya telah disimpan ke dalam Arsip Database.';
+
+            // Kirim notifikasi Email jika diaktifkan
+            if ($sendEmail && $citizen->email) {
+                try {
+                    Mail::to($citizen->email)->send(new CitizenAccountStatusNotification(
+                        citizen: $citizen,
+                        actionType: 'deleted',
+                        reason: $validated['rejection_reason'],
+                        processedBy: $verifierName
+                    ));
+                    $message .= ' Notifikasi telah otomatis dikirimkan ke email warga (' . $citizen->email . ').';
+                } catch (\Throwable $e) {
+                    Log::error('Gagal mengirim email notifikasi penghapusan akun: ' . $e->getMessage());
+                    $message .= ' (Status tersimpan, namun notifikasi email gagal dikirim. Silakan periksa konfigurasi SMTP).';
+                }
+            }
+
+            // Kirim notifikasi WhatsApp jika diaktifkan
+            if ($sendWhatsApp && $citizen->phone) {
+                $waSent = WhatsAppNotificationService::sendCitizenAccountStatusNotification(
+                    citizen: $citizen,
+                    actionType: 'deleted',
+                    reason: $validated['rejection_reason'],
+                    adminName: $verifierName
+                );
+
+                if ($waSent) {
+                    $message .= ' Notifikasi WhatsApp berhasil dikirim ke ' . $citizen->phone . '.';
+                }
+            }
+
+            return redirect()->route('admin.citizens.index')
+                ->with('success', $message);
         } else {
+            // Penolakan pendaftaran akun baru
             $wasActive = $citizen->isActive();
+            if ($wasActive && $citizen->hasActiveApplications()) {
+                return back()->with('error', 'Akun warga (' . $citizen->name . ') tidak dapat dinonaktifkan/dihapus karena masih memiliki permohonan akta aktif.');
+            }
+
             $actionType = $wasActive ? 'deactivated' : 'rejected';
             $citizen->status = 'rejected';
             $citizen->rejection_reason = $validated['rejection_reason'];
             $citizen->verified_at = now();
             $citizen->verified_by = $verifierName;
             $citizen->save();
+
+            ActivityLog::record([
+                'user_id' => Auth::id(),
+                'user_name' => $verifierName,
+                'user_role' => 'admin',
+                'action_type' => 'reject',
+                'module' => 'citizen',
+                'title' => 'Penolakan Pendaftaran Akun Warga',
+                'description' => 'Penolakan pendaftaran akun warga.' . (!empty($validated['rejection_reason']) ? ' Alasan: ' . $validated['rejection_reason'] : ''),
+                'reference_no' => $citizen->nik,
+                'subject_type' => User::class,
+                'subject_id' => $citizen->id,
+            ]);
 
             $message = $wasActive
                 ? 'Akun warga (' . $citizen->name . ') telah dinonaktifkan.'
@@ -356,7 +474,12 @@ class AdminCitizenController extends Controller
             abort(404);
         }
 
+        if ($citizen->hasActiveApplications()) {
+            return back()->with('error', 'Akun warga (' . $citizen->name . ') tidak dapat dihapus permanen karena masih memiliki permohonan akta atau data yang sedang berjalan.');
+        }
+
         $citizenName = $citizen->name;
+        $citizenNik = $citizen->nik;
 
         DB::transaction(function () use ($citizen) {
             // Hapus file dokumen kartu keluarga fisik jika tersimpan di disk
@@ -382,6 +505,19 @@ class AdminCitizenController extends Controller
             // Hapus akun user
             $citizen->delete();
         });
+
+        ActivityLog::record([
+            'user_id' => Auth::id(),
+            'user_name' => Auth::user()->name,
+            'user_role' => 'admin',
+            'action_type' => 'delete',
+            'module' => 'citizen',
+            'title' => 'Penghapusan Permanen Akun Warga',
+            'description' => 'Penghapusan permanen akun warga dari database arsip.',
+            'reference_no' => $citizenNik,
+            'subject_type' => null,
+            'subject_id' => null,
+        ]);
 
         return redirect()->route('admin.archive.index', ['tab' => 'citizens'])
             ->with('success', 'Akun warga (' . $citizenName . ') telah berhasil dihapus secara permanen.');

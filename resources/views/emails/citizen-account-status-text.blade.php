@@ -8,6 +8,8 @@ Status Akun: {{ $statusLabel }}
 
 @if($actionType === 'approved')
 Selamat! Akun Anda telah berhasil diverifikasi oleh petugas pelayanan. Anda sekarang dapat masuk dan mengakses seluruh layanan pengajuan dokumen kependudukan secara online.
+@elseif($actionType === 'deleted')
+Pemberitahuan: Akun warga Anda telah dihapus dari sistem pelayanan aktif dan disimpan ke dalam arsip oleh petugas pelayanan Kalurahan Purwobinangun.
 @elseif($actionType === 'deactivated')
 Pemberitahuan: Akun warga Anda telah dinonaktifkan oleh petugas pelayanan Kalurahan Purwobinangun.
 @elseif($actionType === 'rejected')
@@ -18,7 +20,7 @@ RINCIAN AKUN:
 - NIK: {{ $citizen->nik }}
 - Nomor KK: {{ $citizen->family_card_no }}
 - Nama Lengkap: {{ $citizen->name }}
-- Status Akun: {{ $actionType === 'approved' ? 'Aktif / Terverifikasi' : ($actionType === 'deactivated' ? 'Dinonaktifkan' : 'Ditolak') }}
+- Status Akun: {{ $actionType === 'approved' ? 'Aktif / Terverifikasi' : ($actionType === 'deleted' ? 'Dihapus (Masuk Arsip)' : ($actionType === 'deactivated' ? 'Dinonaktifkan' : 'Ditolak')) }}
 - Petugas: {{ $processedBy }}
 
 @if(!empty($reason))

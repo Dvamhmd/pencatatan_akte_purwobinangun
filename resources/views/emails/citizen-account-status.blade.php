@@ -45,6 +45,7 @@
                     <!-- Status Hero Alert -->
                     @php
                         $isApproved = ($actionType === 'approved');
+                        $isDeleted = ($actionType === 'deleted');
                         $isDeactivated = ($actionType === 'deactivated');
                         $isRejected = ($actionType === 'rejected');
 
@@ -66,6 +67,8 @@
                                 <p style="margin: 6px 0 0 0; font-size: 13px; color: {{ $statusTextColor }}; opacity: 0.9;">
                                     @if($isApproved)
                                         Selamat! Akun Anda telah berhasil diverifikasi oleh petugas pelayanan. Anda sekarang dapat masuk dan mengakses seluruh layanan pengajuan dokumen kependudukan secara online.
+                                    @elseif($isDeleted)
+                                        Pemberitahuan: Akun warga Anda telah dihapus dari sistem pelayanan aktif dan disimpan ke dalam arsip oleh petugas pelayanan Kalurahan Purwobinangun.
                                     @elseif($isDeactivated)
                                         Pemberitahuan: Akun warga Anda telah dinonaktifkan oleh petugas pelayanan Kalurahan Purwobinangun.
                                     @elseif($isRejected)
@@ -109,7 +112,7 @@
                                 <tr>
                                     <td style="padding: 12px 16px; border-bottom: 1px solid #e2e8f0; font-size: 12px; color: #64748b; font-weight: 600;">Status Akun Saat Ini</td>
                                     <td style="padding: 12px 16px; border-bottom: 1px solid #e2e8f0; font-size: 13px; font-weight: 800; color: {{ $isApproved ? '#059669' : '#e11d48' }};">
-                                        {{ $isApproved ? 'Aktif / Terverifikasi' : ($isDeactivated ? 'Dinonaktifkan' : 'Ditolak') }}
+                                        {{ $isApproved ? 'Aktif / Terverifikasi' : ($isDeleted ? 'Dihapus (Masuk Arsip)' : ($isDeactivated ? 'Dinonaktifkan' : 'Ditolak')) }}
                                     </td>
                                 </tr>
                                 <tr>

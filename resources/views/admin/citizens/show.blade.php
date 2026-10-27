@@ -320,9 +320,9 @@
                         @if(!$citizen->isArchived())
                             <div>
                                 <label for="rejection_reason" class="block font-bold text-slate-700 mb-1">
-                                    Catatan / Alasan {{ $citizen->isActive() ? 'Penonaktifan' : 'Penolakan' }} <span class="text-slate-400 font-normal">(Wajib jika {{ $citizen->isActive() ? 'menonaktifkan' : 'menolak' }})</span>:
+                                    Catatan / Alasan {{ $citizen->isActive() ? 'Penghapusan Akun' : 'Penolakan' }} <span class="text-slate-400 font-normal">(Wajib jika {{ $citizen->isActive() ? 'menghapus akun' : 'menolak' }})</span>:
                                 </label>
-                                <textarea name="rejection_reason" id="rejection_reason" rows="3" placeholder="{{ $citizen->isActive() ? 'Tuliskan catatan mengapa akun warga ini dinonaktifkan...' : 'Tuliskan catatan mengapa data pendaftaran warga belum dapat disetujui (misal: Nomor KK tidak ditemukan, NIK tidak sesuai KTP, dsb)...' }}" class="w-full text-xs p-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0b7c89]">{{ old('rejection_reason', $citizen->rejection_reason) }}</textarea>
+                                <textarea name="rejection_reason" id="rejection_reason" rows="3" placeholder="{{ $citizen->isActive() ? 'Tuliskan alasan mengapa akun warga ini dihapus (misal: Sudah pindah domisili ke luar wilayah Kalurahan Purwobinangun)...' : 'Tuliskan catatan mengapa data pendaftaran warga belum dapat disetujui (misal: Nomor KK tidak ditemukan, NIK tidak sesuai KTP, dsb)...' }}" class="w-full text-xs p-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0b7c89]">{{ old('rejection_reason', $citizen->rejection_reason) }}</textarea>
                                 @error('rejection_reason')
                                     <p class="text-rose-600 text-[11px] mt-1 font-medium">{{ $message }}</p>
                                 @enderror
@@ -343,8 +343,8 @@
                             </button>
 
                             @if($citizen->isRejected())
-                                <!-- Saat status ditolak / dinonaktifkan: Tombol Tolak/Nonaktifkan hilang diganti dengan tombol Arsipkan -->
-                                <button type="submit" name="action" value="archive" onclick="return confirm('Apakah Anda yakin ingin MENGARSIPKAN data akun warga yang telah ditolak / dinonaktifkan ini?');" class="btn-archive w-full bg-slate-700 hover:bg-slate-800 text-white font-bold py-2.5 px-4 rounded-xl shadow-xs transition flex items-center justify-center gap-2" style="background-color: #334155; color: #ffffff;">
+                                <!-- Saat status ditolak: Tombol Tolak hilang diganti dengan tombol Arsipkan -->
+                                <button type="submit" name="action" value="archive" onclick="return confirm('Apakah Anda yakin ingin MENGARSIPKAN data akun warga yang telah ditolak ini?');" class="btn-archive w-full bg-slate-700 hover:bg-slate-800 text-white font-bold py-2.5 px-4 rounded-xl shadow-xs transition flex items-center justify-center gap-2" style="background-color: #334155; color: #ffffff;">
                                     <i class="fa-solid fa-box-archive text-amber-300"></i> Arsipkan Akun Warga
                                 </button>
                             @elseif($citizen->isArchived())
@@ -355,10 +355,19 @@
                                     <i class="fa-solid fa-circle-info text-[#0b7c89] mr-1"></i> Akun ini sudah berada di dalam daftar arsip.
                                 </div>
                             @elseif($citizen->isActive())
-                                <!-- Tombol Nonaktifkan untuk akun yang sudah aktif -->
-                                <button type="button" id="btnDeactivateAction" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 px-4 rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer">
-                                    <i class="fa-solid fa-ban"></i> Nonaktifkan Akun
-                                </button>
+                                <!-- Tombol Hapus Akun untuk akun yang sudah aktif (pindah domisili -> arsip) -->
+                                @if($citizen->hasActiveApplications())
+                                    <button type="button" onclick="alert('PERHATIAN: Akun warga ({{ $citizen->name }}) tidak dapat dihapus karena masih memiliki {{ $citizen->getActiveApplicationsCount() }} permohonan akta/dokumen yang berstatus aktif/dalam proses. Selesaikan atau batalkan permohonan tersebut terlebih dahulu.');" class="w-full bg-slate-300 text-slate-600 font-bold py-2.5 px-4 rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-not-allowed border border-slate-300" title="Tidak dapat dihapus karena masih memiliki pengajuan aktif">
+                                        <i class="fa-solid fa-lock"></i> Hapus Akun Warga
+                                    </button>
+                                    <p class="text-[10px] text-amber-700 bg-amber-50 p-2 rounded-lg border border-amber-200 mt-1">
+                                        <i class="fa-solid fa-triangle-exclamation mr-1"></i> <strong>Tidak dapat dihapus:</strong> Masih ada permohonan akta yang aktif/berjalan.
+                                    </p>
+                                @else
+                                    <button type="button" id="btnDeleteAction" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 px-4 rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer">
+                                        <i class="fa-solid fa-trash-can"></i> Hapus Akun Warga
+                                    </button>
+                                @endif
                             @else
                                 <!-- Tombol Tolak untuk status pendaftaran yang masih menunggu verifikasi (pending) -->
                                 <button type="button" id="btnRejectAction" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 px-4 rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer">
@@ -479,7 +488,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const formSendWhatsApp = document.getElementById('formSendWhatsApp');
 
     const btnApproveAction = document.getElementById('btnApproveAction');
-    const btnDeactivateAction = document.getElementById('btnDeactivateAction');
+    const btnDeleteAction = document.getElementById('btnDeleteAction') || document.getElementById('btnDeactivateAction');
     const btnRejectAction = document.getElementById('btnRejectAction');
 
     const notificationConfirmModal = document.getElementById('notificationConfirmModal');
@@ -563,7 +572,27 @@ document.addEventListener('DOMContentLoaded', function() {
     function openModal(actionName, statusText) {
         if (!notificationConfirmModal || !modalCardContent) return;
         if (formAction) formAction.value = actionName;
-        if (modalTargetStatus) modalTargetStatus.textContent = statusText;
+        if (modalTargetStatus) {
+            modalTargetStatus.textContent = statusText;
+            if (actionName === 'delete' || actionName === 'reject') {
+                modalTargetStatus.className = 'text-rose-600 font-extrabold';
+            } else {
+                modalTargetStatus.className = 'text-[#0b7c89] font-extrabold';
+            }
+        }
+
+        if (confirmModalSubmitBtn) {
+            if (actionName === 'delete') {
+                confirmModalSubmitBtn.className = 'px-4 py-2 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-lg shadow-sm transition cursor-pointer';
+                confirmModalSubmitBtn.textContent = 'Kirim Notifikasi & Hapus Akun';
+            } else if (actionName === 'approve') {
+                confirmModalSubmitBtn.className = 'px-4 py-2 text-xs font-bold text-white bg-[#0b7c89] hover:bg-[#065b65] rounded-lg shadow-sm transition cursor-pointer';
+                confirmModalSubmitBtn.textContent = 'Kirim & Simpan Status';
+            } else {
+                confirmModalSubmitBtn.className = 'px-4 py-2 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-lg shadow-sm transition cursor-pointer';
+                confirmModalSubmitBtn.textContent = 'Kirim & Tolak Pendaftaran';
+            }
+        }
 
         notificationConfirmModal.classList.remove('opacity-0', 'pointer-events-none');
         notificationConfirmModal.classList.add('opacity-100', 'pointer-events-auto');
@@ -596,15 +625,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    if (btnDeactivateAction) {
-        btnDeactivateAction.addEventListener('click', function() {
+    if (btnDeleteAction) {
+        btnDeleteAction.addEventListener('click', function() {
             const reason = rejectionReason ? rejectionReason.value.trim() : '';
             if (!reason) {
-                alert('Harap isi kolom Catatan / Alasan Penonaktifan sebelum menonaktifkan akun warga.');
+                alert('Harap isi kolom Catatan / Alasan Penghapusan Akun sebelum menghapus akun warga.');
                 if (rejectionReason) rejectionReason.focus();
                 return;
             }
-            openModal('reject', 'Dinonaktifkan');
+            openModal('delete', 'Dihapus & Disimpan ke Arsip');
         });
     }
 

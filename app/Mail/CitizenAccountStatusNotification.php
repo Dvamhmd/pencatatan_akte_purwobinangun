@@ -40,6 +40,7 @@ class CitizenAccountStatusNotification extends Mailable
     {
         return match ($actionType) {
             'approved' => 'Pendaftaran Akun Disetujui & Diaktifkan',
+            'deleted' => 'Akun Warga Dihapus / Diarsipkan',
             'deactivated' => 'Akun Warga Dinonaktifkan',
             'rejected' => 'Pendaftaran Akun Belum Disetujui / Ditolak',
             default => 'Pemberitahuan Status Akun Warga',
