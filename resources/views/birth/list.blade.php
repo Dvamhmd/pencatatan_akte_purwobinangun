@@ -223,6 +223,11 @@
                                             <a href="{{ route('tracking.print_receipt', ['type' => $sub->certificate_type, 'registrationNo' => $sub->registration_no]) }}" target="_blank" class="p-1.5 bg-slate-100 hover:bg-slate-800 text-slate-700 hover:text-white rounded-lg transition border border-slate-200" title="Cetak Bukti Pendaftaran">
                                                 <i class="fa-solid fa-print text-xs"></i>
                                             </a>
+                                            @if($sub->certificate_type === 'birth' && $sub->status !== 'revision')
+                                                <a href="{{ route('tracking.print_letter', ['type' => 'birth', 'registrationNo' => $sub->registration_no]) }}" target="_blank" class="p-1.5 bg-slate-800 hover:bg-black text-white rounded-lg transition border border-slate-700" title="Cetak Surat Keterangan (A4)">
+                                                    <i class="fa-solid fa-file-lines text-xs"></i>
+                                                </a>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>

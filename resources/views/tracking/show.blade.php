@@ -153,6 +153,11 @@
                             <i class="fa-solid fa-pen-to-square"></i> Revisi Berkas
                         </a>
                     @endif
+                    @if($data->status !== 'revision' && $type === 'birth')
+                        <a href="{{ route('tracking.print_letter', ['type' => $type, 'registrationNo' => $data->registration_no]) }}" target="_blank" class="bg-slate-900 hover:bg-black text-white font-bold text-xs px-5 py-2.5 rounded-lg shadow-sm transition flex items-center gap-2">
+                            <i class="fa-solid fa-file-lines"></i> Cetak Surat Keterangan (A4)
+                        </a>
+                    @endif
                     @if($data->status === 'revision')
                         <button type="button" disabled title="Tanda terima permohonan tidak dapat dicetak selama permohonan dalam status revisi berkas" class="bg-slate-200 text-slate-400 cursor-not-allowed font-bold text-xs px-5 py-2.5 rounded-lg border border-slate-300 transition flex items-center gap-2">
                             <i class="fa-solid fa-print"></i> Cetak Tanda Terima Permohonan

@@ -902,4 +902,58 @@ class CertificateServiceTest extends TestCase
         $this->assertEquals('uploads/birth_certs/old_ktp.jpg', $refreshed->doc_parents_ktp);
         $this->assertEquals('signatures/old_sig.png', $refreshed->applicant_signature);
     }
+
+    public function test_birth_certificate_letter_can_be_printed_in_a4_format(): void
+    {
+        $warga = User::create([
+            'name' => 'Warga Purwobinangun',
+            'nik' => '3404051101900001',
+            'family_card_no' => '3404050101900002',
+            'role' => 'warga',
+            'status' => 'active',
+            'password' => bcrypt('password123'),
+        ]);
+
+        $birth = BirthCertificate::create([
+            'user_id' => $warga->id,
+            'registration_no' => 'AKL-20261030-0099',
+            'family_card_no' => '3404050101900002',
+            'child_name' => 'Ananda Putri',
+            'gender' => 'P',
+            'birth_place' => 'Sleman',
+            'birth_date' => '2026-10-01',
+            'applicant_name' => 'Warga Purwobinangun',
+            'applicant_nik' => '3404051101900001',
+            'applicant_phone' => '081234567890',
+            'applicant_job' => 'Wiraswasta',
+            'padukuhan' => 'Watuadeg',
+            'rt' => '02',
+            'rw' => '05',
+            'status' => 'pending',
+        ]);
+
+        // Warga dapat mencetak surat akte kelahiran miliknya
+        $response = $this->actingAs($warga)->get(route('birth.print_letter', $birth));
+        $response->assertStatus(200);
+        $response->assertSee('SURAT KETERANGAN');
+        $response->assertSee('PEMERINTAH KALURAHAN PURWOBINANGUN');
+        $response->assertSee('R. Heri Suasana');
+        $response->assertSee('Lurah Purwobinangun');
+        $response->assertSee('Mohon Akta Kelahiran untuk ANANDA PUTRI');
+        $response->assertSee('Dinas Kependudukan dan Catatan Sipil');
+
+        // Admin juga dapat mencetak surat akte kelahiran
+        $admin = User::create([
+            'name' => 'Petugas Kalurahan',
+            'email' => 'petugas_print@purwobinangun.desa.id',
+            'password' => bcrypt('password123'),
+            'role' => 'admin',
+            'status' => 'active',
+        ]);
+
+        $adminResponse = $this->actingAs($admin)->get(route('admin.birth.print_letter', $birth));
+        $adminResponse->assertStatus(200);
+        $adminResponse->assertSee('SURAT KETERANGAN');
+        $adminResponse->assertSee('R. Heri Suasana');
+    }
 }

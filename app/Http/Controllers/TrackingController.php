@@ -112,4 +112,27 @@ class TrackingController extends Controller
 
         return view('tracking.print-receipt', compact('data', 'type'));
     }
+
+    public function printLetter($type, $registrationNo)
+    {
+        if ($type === 'birth') {
+            $birth = BirthCertificate::where('registration_no', $registrationNo)->firstOrFail();
+        } else {
+            abort(404, 'Jenis permohonan tidak mendukung cetak surat ini.');
+        }
+
+        if (!Auth::check()) {
+            return redirect()->guest(route('warga.login'))
+                ->with('info', 'Silakan masuk ke akun warga Anda untuk mencetak surat keterangan.');
+        }
+
+        $user = Auth::user();
+        if ($user->isWarga()) {
+            if ($birth->family_card_no && $birth->family_card_no !== $user->family_card_no) {
+                abort(403, 'Akses Ditolak: Anda hanya berhak mencetak surat dari Kartu Keluarga (KK) Anda sendiri.');
+            }
+        }
+
+        return view('admin.birth.print-letter', compact('birth'));
+    }
 }

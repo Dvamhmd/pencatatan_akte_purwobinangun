@@ -43,6 +43,7 @@ Route::prefix('lacak')->name('tracking.')->group(function () {
     Route::get('/', [TrackingController::class, 'index'])->name('index');
     Route::get('/{type}/{registrationNo}', [TrackingController::class, 'show'])->name('show');
     Route::get('/{type}/{registrationNo}/cetak-resi', [TrackingController::class, 'printReceipt'])->name('print_receipt');
+    Route::get('/{type}/{registrationNo}/cetak-surat', [TrackingController::class, 'printLetter'])->name('print_letter');
 });
 
 /*
@@ -65,6 +66,7 @@ Route::middleware('auth.warga')->group(function () {
         Route::get('/buat', [BirthCertificateController::class, 'create'])->name('create');
         Route::post('/buat', [BirthCertificateController::class, 'store'])->name('store');
         Route::get('/sukses', [BirthCertificateController::class, 'success'])->name('success');
+        Route::get('/{birth}/cetak-surat', [BirthCertificateController::class, 'printLetter'])->name('print_letter');
         Route::get('/daftar-pengajuan', function () {
             return redirect()->route('submissions.index', request()->query());
         })->name('list');

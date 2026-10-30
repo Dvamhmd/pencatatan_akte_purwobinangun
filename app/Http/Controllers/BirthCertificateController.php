@@ -914,4 +914,21 @@ class BirthCertificateController extends Controller
             'user'
         ));
     }
+
+    public function printLetter(BirthCertificate $birth)
+    {
+        if (!Auth::check()) {
+            return redirect()->guest(route('warga.login'))
+                ->with('info', 'Silakan masuk ke akun warga Anda untuk mencetak surat keterangan.');
+        }
+
+        $user = Auth::user();
+        if ($user->isWarga()) {
+            if ($birth->family_card_no && $birth->family_card_no !== $user->family_card_no) {
+                abort(403, 'Akses Ditolak: Anda hanya berhak mencetak surat dari Kartu Keluarga (KK) Anda sendiri.');
+            }
+        }
+
+        return view('admin.birth.print-letter', compact('birth'));
+    }
 }

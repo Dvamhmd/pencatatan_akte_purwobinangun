@@ -3,6 +3,25 @@
 @section('title', 'Profil & Data Warga - ' . $warga->name)
 
 @section('content')
+<style>
+    /* Garis penghubung stepper tepat terpusat secara vertikal dan berhenti tepat di pusat bulatan */
+    .stepper-progress-track {
+        position: absolute;
+        top: 16px;
+        left: 36px;
+        right: 48px;
+        transform: translateY(-50%);
+        pointer-events: none;
+        z-index: 0;
+    }
+    @media (min-width: 640px) {
+        .stepper-progress-track {
+            top: 20px;
+            left: 42px;
+            right: 52px;
+        }
+    }
+</style>
 <div class="space-y-6">
 
     <!-- Header & Hero Profile Card -->
@@ -195,40 +214,71 @@
 
         <!-- Kolom Kiri: Form Ubah Data Profil & Anggota Keluarga (8 Col) -->
         <div class="lg:col-span-8 space-y-6">
-            <div class="bg-white rounded-xl shadow-xs border border-slate-200 overflow-hidden">
+            <div class="bg-white rounded-xl shadow-xs border border-slate-200 overflow-hidden" id="card-form-profile">
+                <!-- Header Kartu & Stepper Info -->
                 <div class="bg-slate-50 px-5 py-3.5 border-b border-slate-200 flex items-center justify-between">
                     <h2 class="font-bold text-xs uppercase tracking-wider text-slate-700 flex items-center gap-2">
                         <i class="fa-solid fa-user-pen text-[#059cb8]"></i> Formulir Pengajuan Perubahan Data
                     </h2>
-                    <span class="text-[11px] text-slate-400"><i class="fa-solid fa-asterisk text-rose-500 text-[9px]"></i> Wajib diisi</span>
+                    <span class="text-[11px] font-semibold text-slate-500">
+                        Langkah <span id="current-step-text">1</span> dari 3
+                    </span>
                 </div>
 
-                <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data" class="p-5 sm:p-6 space-y-6 text-xs" id="form-profile-update">
+                <!-- Stepper Progress Bar (Persis seperti alur Pengajuan Akte Kelahiran) -->
+                <div class="bg-gradient-to-b from-slate-50 to-slate-100/70 border-b border-slate-200 px-4 py-4 sm:px-8">
+                    <div class="max-w-md mx-auto">
+                        <div class="relative">
+                            <!-- Progress Line Background (Center Vertikal) -->
+                            <div class="stepper-progress-track">
+                                <div class="w-full h-1 bg-slate-200 rounded-full"></div>
+                                <div id="progress-bar-line" class="h-1 bg-[#095b8c] rounded-full transition-all duration-300" style="width: 0%; margin-top: -4px;"></div>
+                            </div>
+
+                            <!-- Steps Bulatan 1 - 3 -->
+                            <div class="relative z-10 flex items-center justify-between">
+                                <!-- Step 1: Kartu Keluarga -->
+                                <div class="step-indicator flex flex-col items-center">
+                                    <button type="button" onclick="goToStep(1)" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm transition-all duration-200 shadow-md bg-[#095b8c] text-white ring-4 ring-teal-100 ring-offset-1 cursor-default" id="step-circle-1" title="Langkah 1: Kartu Keluarga">
+                                        <span class="step-num">1</span>
+                                    </button>
+                                    <span class="step-label text-[10px] sm:text-xs font-bold text-[#095b8c] mt-1.5 text-center whitespace-nowrap" id="step-label-1">Kartu Keluarga</span>
+                                </div>
+
+                                <!-- Step 2: Data Diri -->
+                                <div class="step-indicator flex flex-col items-center">
+                                    <button type="button" onclick="goToStep(2)" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm transition-all duration-200 shadow-xs bg-white text-slate-400 border-2 border-slate-300 cursor-pointer hover:border-slate-400 hover:text-slate-600" id="step-circle-2" title="Langkah 2: Data Diri">
+                                        <span class="step-num">2</span>
+                                    </button>
+                                    <span class="step-label text-[10px] sm:text-xs font-medium text-slate-400 mt-1.5 text-center whitespace-nowrap" id="step-label-2">Data Diri</span>
+                                </div>
+
+                                <!-- Step 3: Anggota Keluarga -->
+                                <div class="step-indicator flex flex-col items-center">
+                                    <button type="button" onclick="goToStep(3)" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm transition-all duration-200 shadow-xs bg-white text-slate-400 border-2 border-slate-300 cursor-pointer hover:border-slate-400 hover:text-slate-600" id="step-circle-3" title="Langkah 3: Anggota Keluarga">
+                                        <span class="step-num">3</span>
+                                    </button>
+                                    <span class="step-label text-[10px] sm:text-xs font-medium text-slate-400 mt-1.5 text-center whitespace-nowrap" id="step-label-3">Anggota Keluarga</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data" class="p-5 sm:p-6 text-xs" id="form-profile-update">
                     @csrf
                     @method('PUT')
 
-                    <!-- BAGIAN 1: IDENTITAS UTAMA (NIK & KK) -->
-                    <div class="space-y-4">
-                        <div class="pb-2.5 border-b border-slate-200 flex items-center justify-between">
+                    <!-- STEP 1: IDENTITAS UTAMA (NIK & KK) & BERKAS -->
+                    <div id="step-profile-1" class="space-y-4">
+                        <div class="pb-2 border-b border-slate-100 flex items-center justify-between">
                             <h3 class="text-xs font-extrabold uppercase tracking-wider text-[#095b8c] flex items-center gap-2">
                                 <i class="fa-solid fa-id-card text-sm"></i> 1. Identitas Akun & Kartu Keluarga
                             </h3>
-                            <span class="text-[11px] text-slate-400 font-medium hidden sm:inline">Data Pemohon Utama</span>
+                            <span class="text-[11px] text-slate-400 font-medium">Langkah 1/3</span>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label for="nik" class="block font-bold text-slate-700 mb-1">
-                                    Nomor Induk Kependudukan (NIK) <span class="text-rose-500">*</span>
-                                </label>
-                                <input type="text" name="nik" id="nik" value="{{ $activeNik }}" required maxlength="16" placeholder="16 digit NIK"
-                                    class="w-full text-xs font-mono rounded-lg border {{ $errors->has('nik') ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300' }} focus:outline-none focus:ring-2 focus:ring-[#059cb8]/20 focus:border-[#059cb8] transition"
-                                    style="padding: 0.625rem 0.875rem;">
-                                @error('nik')
-                                    <p class="text-rose-600 text-[11px] mt-1 font-medium">{{ $message }}</p>
-                                @enderror
-                            </div>
-
                             <div>
                                 <label for="family_card_no" class="block font-bold text-slate-700 mb-1">
                                     Nomor Kartu Keluarga (KK) <span class="text-rose-500">*</span>
@@ -240,12 +290,24 @@
                                     <p class="text-rose-600 text-[11px] mt-1 font-medium">{{ $message }}</p>
                                 @enderror
                             </div>
+
+                            <div>
+                                <label for="nik" class="block font-bold text-slate-700 mb-1">
+                                    Nomor Induk Kependudukan (NIK) <span class="text-rose-500">*</span>
+                                </label>
+                                <input type="text" name="nik" id="nik" value="{{ $activeNik }}" required maxlength="16" placeholder="16 digit NIK"
+                                    class="w-full text-xs font-mono rounded-lg border {{ $errors->has('nik') ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300' }} focus:outline-none focus:ring-2 focus:ring-[#059cb8]/20 focus:border-[#059cb8] transition"
+                                    style="padding: 0.625rem 0.875rem;">
+                                @error('nik')
+                                    <p class="text-rose-600 text-[11px] mt-1 font-medium">{{ $message }}</p>
+                                @enderror
+                            </div>
                         </div>
 
                         <!-- Upload Berkas Kartu Keluarga Fisik -->
                         <div>
                             <label class="block font-bold text-slate-700 mb-1">
-                                Dokumen Kartu Keluarga (KK) Fisik <span class="text-slate-400 font-normal">(Opsional jika tidak ada perubahan berkas)</span>
+                                Dokumen Kartu Keluarga (KK) Fisik
                             </label>
 
                             <!-- Kotak Preview Berkas Tersimpan / Dipilih -->
@@ -269,13 +331,13 @@
                                     </div>
                                 </div>
 
-                                <div class="flex items-center gap-1.5 shrink-0">
-                                    <button type="button" id="btn-preview-lightbox" class="text-xs font-bold text-[#095b8c] hover:text-[#074a73] bg-teal-50 hover:bg-teal-100 px-3.5 py-1.5 rounded-lg border border-teal-200 transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
-                                        <i class="fa-solid fa-magnifying-glass"></i> Lihat
-                                    </button>
+                                <div class="flex items-center gap-1.5 shrink-0 flex-wrap sm:flex-nowrap">
                                     <label for="doc_family_card" class="text-xs font-bold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg border border-slate-300 transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
-                                        <i class="fa-solid fa-upload"></i> {{ $hasDocKk ? 'Ganti Berkas' : 'Pilih Berkas' }}
+                                        <i class="fa-solid fa-upload"></i> <span id="label-text-doc-kk">{{ $hasDocKk ? 'Ganti Berkas' : 'Pilih Berkas' }}</span>
                                     </label>
+                                    <button type="button" id="btn-clear-doc-kk" class="hidden text-xs font-bold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 px-3 py-1.5 rounded-lg border border-rose-200 transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap" title="Batal pilih / kosongkan berkas">
+                                        <i class="fa-solid fa-xmark"></i> Batal Pilih
+                                    </button>
                                 </div>
                             </div>
 
@@ -283,7 +345,7 @@
                             <div id="placeholder-kk" class="{{ $hasDocKk ? 'hidden' : '' }} border-2 border-dashed border-slate-300 hover:border-[#095b8c] rounded-xl p-4 text-center cursor-pointer transition bg-slate-50/50 hover:bg-teal-50/20" onclick="document.getElementById('doc_family_card').click();">
                                 <i class="fa-solid fa-cloud-arrow-up text-slate-400 text-2xl mb-1.5 block"></i>
                                 <span class="font-bold text-slate-700 text-xs block">Unggah Foto / Scan Dokumen Kartu Keluarga</span>
-                                <span class="text-[10px] text-slate-400 mt-0.5 block">Format JPG, JPEG, PNG, atau PDF (Maksimal 3MB)</span>
+                                <span class="text-[10px] text-slate-400 mt-0.5 block">Format JPG, PNG, atau PDF (Maksimal 3MB)</span>
                             </div>
 
                             <input type="file" name="doc_family_card" id="doc_family_card" accept=".jpg,.jpeg,.png,.pdf" class="hidden">
@@ -291,6 +353,24 @@
                             @error('doc_family_card')
                                 <p class="text-rose-600 text-[11px] mt-1 font-medium">{{ $message }}</p>
                             @enderror
+                        </div>
+
+                        <!-- Navigasi Step 1 -->
+                        <div class="pt-4 border-t border-slate-100 flex items-center justify-end">
+                            <button type="button" onclick="nextStep()" class="bg-[#095b8c] hover:bg-[#074a73] text-white font-bold text-xs px-5 py-2.5 rounded-lg transition flex items-center gap-2 cursor-pointer shadow-xs">
+                                <span>Selanjutnya</span>
+                                <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2: DATA DIRI & KONTAK -->
+                    <div id="step-profile-2" class="space-y-4 hidden">
+                        <div class="pb-2 border-b border-slate-100 flex items-center justify-between">
+                            <h3 class="text-xs font-extrabold uppercase tracking-wider text-[#095b8c] flex items-center gap-2">
+                                <i class="fa-solid fa-user text-sm"></i> 2. Data Diri & Kontak Pemohon
+                            </h3>
+                            <span class="text-[11px] text-slate-400 font-medium">Langkah 2/3</span>
                         </div>
 
                         <!-- Nama Lengkap Sesuai KK -->
@@ -418,7 +498,7 @@
                         <!-- Alamat Lengkap -->
                         <div>
                             <label for="address" class="block font-bold text-slate-700 mb-1">
-                                Alamat Lengkap (Padukuhan / Jalan / Dusun) <span class="text-rose-500">*</span>
+                                Alamat Lengkap <span class="text-rose-500">*</span>
                             </label>
                             <textarea name="address" id="address" rows="2" required placeholder="Contoh: Watuadeg, Purwobinangun, Pakem, Sleman"
                                 class="w-full text-xs rounded-lg border {{ $errors->has('address') ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300' }} focus:outline-none focus:ring-2 focus:ring-[#059cb8]/20 focus:border-[#059cb8] transition"
@@ -429,7 +509,7 @@
                         </div>
 
                         <!-- RT & RW -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label for="rt" class="block font-bold text-slate-700 mb-1">
                                     RT <span class="text-rose-500">*</span>
@@ -454,21 +534,30 @@
                                 @enderror
                             </div>
                         </div>
+
+                        <!-- Navigasi Step 2 -->
+                        <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+                            <button type="button" onclick="prevStep()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs px-4 py-2.5 rounded-lg border border-slate-300 transition flex items-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-arrow-left text-xs"></i>
+                                <span>Kembali</span>
+                            </button>
+                            <button type="button" onclick="nextStep()" class="bg-[#095b8c] hover:bg-[#074a73] text-white font-bold text-xs px-5 py-2.5 rounded-lg transition flex items-center gap-2 cursor-pointer shadow-xs">
+                                <span>Selanjutnya</span>
+                                <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </button>
+                        </div>
                     </div>
 
-                    <!-- BAGIAN 2: ANGGOTA KELUARGA (TAMBAH / EDIT / KURANGI) -->
-                    <div class="space-y-4 pt-4 border-t border-slate-200">
-                        <div class="flex items-center justify-between pb-2.5 border-b border-slate-200 flex-wrap gap-2">
+                    <!-- STEP 3: ANGGOTA KELUARGA & KIRIM -->
+                    <div id="step-profile-3" class="space-y-4 hidden">
+                        <div class="flex items-center justify-between pb-2 border-b border-slate-100 flex-wrap gap-2">
                             <div>
                                 <h3 class="text-xs font-extrabold uppercase tracking-wider text-[#095b8c] flex items-center gap-2">
-                                    <i class="fa-solid fa-people-roof text-sm"></i> 2. Data Anggota Keluarga Satu KK
+                                    <i class="fa-solid fa-people-roof text-sm"></i> 3. Data Anggota Keluarga Satu KK
                                 </h3>
-                                <p class="text-[11px] text-slate-500 mt-0.5">
-                                    Kelola daftar anggota keluarga lain yang tercantum di KK. Anda dapat menambah, mengedit, atau menghapus anggota.
-                                </p>
                             </div>
-                            <button type="button" id="btn-add-family-member" class="text-xs font-bold bg-[#095b8c] hover:bg-[#074a73] text-white px-3.5 py-2 rounded-lg transition flex items-center gap-1.5 shadow-2xs cursor-pointer shrink-0 whitespace-nowrap">
-                                <i class="fa-solid fa-user-plus text-xs"></i> Tambah Anggota
+                            <button type="button" id="btn-add-family-member" class="text-xs font-bold bg-[#095b8c] hover:bg-[#074a73] text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 shadow-2xs cursor-pointer shrink-0 whitespace-nowrap">
+                                <i class="fa-solid fa-plus text-xs"></i> Tambah Anggota
                             </button>
                         </div>
 
@@ -476,25 +565,21 @@
                         <div id="empty-family-state" class="p-6 bg-slate-50 border border-dashed border-slate-300 rounded-xl text-center text-slate-500 text-xs">
                             <i class="fa-solid fa-users text-slate-400 text-2xl mb-1.5 block"></i>
                             <p class="font-medium text-slate-700">Belum ada anggota keluarga tambahan.</p>
-                            <p class="text-[11px] text-slate-400 mt-0.5">Klik tombol <strong>Tambah Anggota</strong> di atas untuk menambahkan anggota keluarga lain yang tercatat dalam KK.</p>
+                            <p class="text-[11px] text-slate-400 mt-0.5">Gunakan tombol <strong>+ Tambah Anggota</strong> jika ada anggota keluarga lain di KK.</p>
                         </div>
 
                         <!-- Container Kartu Anggota Keluarga Dinamis -->
                         <div id="family-members-container" class="space-y-3.5"></div>
-                    </div>
 
-                    <!-- Tombol Simpan & Info Verifikasi -->
-                    <div class="pt-4 border-t border-slate-200 space-y-3.5">
-                        <div class="p-3.5 bg-amber-50 rounded-xl border border-amber-200 text-slate-700 text-xs flex items-start gap-2.5">
-                            <i class="fa-solid fa-circle-info text-amber-600 mt-0.5 shrink-0 text-sm"></i>
-                            <div class="text-[11px] leading-relaxed">
-                                <strong>Perhatian:</strong> Perubahan data profil dan penyesuaian anggota keluarga akan dikirimkan sebagai <strong>permohonan perubahan data</strong> kepada petugas kelurahan dan akan aktif setelah diverifikasi oleh admin.
-                            </div>
-                        </div>
-
-                        <div class="flex items-center justify-end">
-                            <button type="submit" id="btn-submit-profile-update" class="w-full sm:w-auto bg-[#095b8c] hover:bg-[#059cb8] active:bg-[#074a73] text-white font-bold text-xs py-3 px-6 rounded-xl shadow-xs hover:shadow transition flex items-center justify-center cursor-pointer whitespace-nowrap">
-                                <span>Kirim Permohonan Perubahan Data ke Admin</span>
+                        <!-- Navigasi Step 3 -->
+                        <div class="pt-4 border-t border-slate-100 flex items-center justify-between flex-wrap gap-3">
+                            <button type="button" onclick="prevStep()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs px-4 py-2.5 rounded-lg border border-slate-300 transition flex items-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-arrow-left text-xs"></i>
+                                <span>Kembali</span>
+                            </button>
+                            <button type="submit" id="btn-submit-profile-update" class="bg-[#095b8c] hover:bg-[#059cb8] active:bg-[#074a73] text-white font-bold text-xs py-2.5 px-6 rounded-lg shadow-sm transition flex items-center gap-2 cursor-pointer">
+                                <i class="fa-solid fa-paper-plane text-xs"></i>
+                                <span>Kirim Permohonan Perubahan Data</span>
                             </button>
                         </div>
                     </div>
@@ -665,7 +750,7 @@
                 </div>
                 <div class="truncate">
                     <h4 class="text-xs sm:text-sm font-bold truncate">Pratinjau Dokumen Kartu Keluarga (KK)</h4>
-                    <p class="text-[10px] sm:text-[11px] text-teal-100 truncate" id="modal-preview-subtitle">Scroll untuk Zoom • Drag untuk Menggeser Posisi</p>
+                    <p class="text-[10px] sm:text-[11px] text-teal-100 truncate" id="modal-preview-subtitle"></p>
                 </div>
             </div>
 
@@ -793,11 +878,178 @@ document.addEventListener('DOMContentLoaded', function() {
     const DB_NAME = 'PurwobinangunFormDB';
     const STORE_NAME = 'draft_files';
 
+    @if(session('success'))
+        try {
+            localStorage.removeItem(PROFILE_DRAFT_KEY);
+            if (window.indexedDB) {
+                clearDraftFilesFromDB(PROFILE_KK_KEY);
+            }
+        } catch (e) {}
+    @endif
+
     const familyContainer = document.getElementById('family-members-container');
     const emptyFamilyState = document.getElementById('empty-family-state');
     const btnAddFamily = document.getElementById('btn-add-family-member');
     const applicantKkInput = document.getElementById('family_card_no');
     const formProfileUpdate = document.getElementById('form-profile-update');
+
+    // Stepper Form Logic (3 Step - Sesuai Alur Akte Kelahiran)
+    let currentProfileStep = 1;
+
+    function alignStepperTrack() {
+        const circle1 = document.getElementById('step-circle-1');
+        const circle3 = document.getElementById('step-circle-3');
+        const track = document.querySelector('.stepper-progress-track');
+        if (!circle1 || !circle3 || !track) return;
+        const container = track.parentElement;
+        if (!container) return;
+
+        const containerRect = container.getBoundingClientRect();
+        const c1Rect = circle1.getBoundingClientRect();
+        const c3Rect = circle3.getBoundingClientRect();
+
+        if (containerRect.width === 0 || c1Rect.width === 0) return;
+
+        const left = (c1Rect.left + c1Rect.width / 2) - containerRect.left;
+        const right = containerRect.right - (c3Rect.left + c3Rect.width / 2);
+        const top = (c1Rect.top + c1Rect.height / 2) - containerRect.top;
+
+        track.style.left = left + 'px';
+        track.style.right = right + 'px';
+        track.style.top = top + 'px';
+    }
+
+    function updateProfileStepUI(step) {
+        step = parseInt(step);
+        currentProfileStep = step;
+        const totalSteps = 3;
+
+        // Progress line background width & color animation
+        const progressBarLine = document.getElementById('progress-bar-line');
+        if (progressBarLine) {
+            const pct = ((step - 1) / (totalSteps - 1)) * 100;
+            progressBarLine.style.width = pct + '%';
+        }
+
+        for (let i = 1; i <= totalSteps; i++) {
+            const stepEl = document.getElementById('step-profile-' + i);
+            const circle = document.getElementById('step-circle-' + i);
+            const label = document.getElementById('step-label-' + i);
+
+            if (stepEl) {
+                if (i === step) {
+                    stepEl.classList.remove('hidden');
+                } else {
+                    stepEl.classList.add('hidden');
+                }
+            }
+
+            if (circle && label) {
+                if (i < step) {
+                    // Completed Step
+                    circle.className = 'w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm transition-all duration-200 shadow-xs bg-[#095b8c] text-white cursor-pointer hover:bg-[#07476f]';
+                    label.className = 'step-label text-[10px] sm:text-xs font-semibold text-[#095b8c] mt-1.5 text-center whitespace-nowrap cursor-pointer';
+                } else if (i === step) {
+                    // Current Active Step
+                    circle.className = 'w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm transition-all duration-200 shadow-md bg-[#095b8c] text-white ring-4 ring-teal-100 ring-offset-1 cursor-default';
+                    label.className = 'step-label text-[10px] sm:text-xs font-bold text-[#095b8c] mt-1.5 text-center whitespace-nowrap';
+                } else {
+                    // Inactive / Upcoming Step
+                    circle.className = 'w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm transition-all duration-200 shadow-xs bg-white text-slate-400 border-2 border-slate-300 cursor-pointer hover:border-slate-400 hover:text-slate-600';
+                    label.className = 'step-label text-[10px] sm:text-xs font-medium text-slate-400 mt-1.5 text-center whitespace-nowrap';
+                }
+            }
+        }
+
+        const currentStepText = document.getElementById('current-step-text');
+        if (currentStepText) currentStepText.textContent = step;
+        alignStepperTrack();
+    }
+
+    function validateStep1() {
+        const kk = document.getElementById('family_card_no');
+        const nik = document.getElementById('nik');
+
+        if (kk && (!kk.value.trim() || kk.value.trim().length !== 16 || !/^\d+$/.test(kk.value.trim()))) {
+            alert('Nomor Kartu Keluarga (KK) wajib diisi dengan 16 digit angka.');
+            kk.focus();
+            return false;
+        }
+
+        if (nik && (!nik.value.trim() || nik.value.trim().length !== 16 || !/^\d+$/.test(nik.value.trim()))) {
+            alert('Nomor Induk Kependudukan (NIK) wajib diisi dengan 16 digit angka.');
+            nik.focus();
+            return false;
+        }
+
+        return true;
+    }
+
+    function validateStep2() {
+        const requiredFields = [
+            { id: 'name', label: 'Nama Lengkap' },
+            { id: 'birth_place', label: 'Tempat Lahir' },
+            { id: 'birth_date', label: 'Tanggal Lahir' },
+            { id: 'gender', label: 'Jenis Kelamin' },
+            { id: 'family_relationship', label: 'Status Hubungan dalam Keluarga' },
+            { id: 'phone', label: 'Nomor WhatsApp / HP' },
+            { id: 'address', label: 'Alamat KTP / Domisili' },
+            { id: 'rt', label: 'RT' },
+            { id: 'rw', label: 'RW' },
+        ];
+
+        for (const f of requiredFields) {
+            const el = document.getElementById(f.id);
+            if (el && !el.value.trim()) {
+                alert(f.label + ' wajib diisi.');
+                el.focus();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function goToStep(step) {
+        if (step === currentProfileStep) return;
+
+        if (step > currentProfileStep) {
+            if (currentProfileStep === 1) {
+                if (!validateStep1()) return;
+                if (step === 3 && !validateStep2()) {
+                    updateProfileStepUI(2);
+                    return;
+                }
+            } else if (currentProfileStep === 2) {
+                if (!validateStep2()) return;
+            }
+        }
+
+        updateProfileStepUI(step);
+    }
+
+    function nextStep() {
+        if (currentProfileStep === 1) {
+            if (!validateStep1()) return;
+            updateProfileStepUI(2);
+        } else if (currentProfileStep === 2) {
+            if (!validateStep2()) return;
+            updateProfileStepUI(3);
+        }
+    }
+
+    function prevStep() {
+        if (currentProfileStep > 1) {
+            updateProfileStepUI(currentProfileStep - 1);
+        }
+    }
+
+    window.goToStep = goToStep;
+    window.nextStep = nextStep;
+    window.prevStep = prevStep;
+
+    window.addEventListener('resize', alignStepperTrack);
+    requestAnimationFrame(alignStepperTrack);
+    setTimeout(alignStepperTrack, 150);
 
     const profileDraftFields = [
         'nik',
@@ -1072,6 +1324,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 currentFileName = restoredFile.name;
                 if (fileNameKk) fileNameKk.textContent = restoredFile.name;
                 if (fileSizeKk) fileSizeKk.textContent = (restoredFile.size / 1024).toFixed(1) + ' KB (Draft tersimpan - Siap diunggah)';
+                if (modalFileInfo) modalFileInfo.textContent = restoredFile.name;
+                if (modalPdfName) modalPdfName.textContent = restoredFile.name;
 
                 if (restoredFile.type === 'application/pdf' || restoredFile.name.toLowerCase().endsWith('.pdf')) {
                     currentFileIsPdf = true;
@@ -1092,6 +1346,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 if (placeholderKk) placeholderKk.classList.add('hidden');
                 if (previewBoxKk) previewBoxKk.classList.remove('hidden');
+                if (btnClearDocKk) btnClearDocKk.classList.remove('hidden');
+                if (labelTextDocKk) labelTextDocKk.textContent = 'Ganti Berkas';
             } catch (e) {
                 console.warn('Gagal memulihkan draft KK profil:', e);
             }
@@ -1104,24 +1360,25 @@ document.addEventListener('DOMContentLoaded', function() {
     function saveProfileDraft() {
         try {
             const draft = {
-                user_updated_at: CURRENT_USER_UPDATED_AT,
+                user_id: CURRENT_USER_ID,
                 saved_at: Date.now()
             };
-            let hasContent = false;
 
             profileDraftFields.forEach(function(fieldId) {
                 const el = document.getElementById(fieldId);
                 if (el) {
-                    draft[fieldId] = el.value || '';
-                    if (el.value && el.value.trim() !== '') {
-                        hasContent = true;
-                    }
+                    draft[fieldId] = el.value !== undefined ? el.value : '';
                 }
             });
 
             const checkedGender = document.querySelector('input[name="gender"]:checked');
             if (checkedGender) {
                 draft['gender'] = checkedGender.value;
+            }
+
+            if (docKkInput && docKkInput.files && docKkInput.files.length > 0) {
+                draft.has_file = true;
+                draft.file_name = docKkInput.files[0].name;
             }
 
             // Simpan anggota keluarga
@@ -1136,7 +1393,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const genderInp = card.querySelector('select[name*="[gender]"]');
                 const relInp = card.querySelector('select[name*="[family_relationship]"]');
 
-                const mData = {
+                members.push({
                     family_card_no: kkInp ? kkInp.value : '',
                     nik: nikInp ? nikInp.value : '',
                     name: nameInp ? nameInp.value : '',
@@ -1144,39 +1401,24 @@ document.addEventListener('DOMContentLoaded', function() {
                     birth_date: birthDateInp ? birthDateInp.value : '',
                     gender: genderInp ? genderInp.value : '',
                     family_relationship: relInp ? relInp.value : ''
-                };
-
-                if (mData.name || mData.nik) {
-                    hasContent = true;
-                }
-                members.push(mData);
+                });
             });
 
             draft.family_members = members;
 
-            if (hasContent || members.length > 0) {
-                localStorage.setItem(PROFILE_DRAFT_KEY, JSON.stringify(draft));
-            } else {
-                localStorage.removeItem(PROFILE_DRAFT_KEY);
-            }
+            localStorage.setItem(PROFILE_DRAFT_KEY, JSON.stringify(draft));
         } catch (e) {
             console.warn('Gagal menyimpan draft profil ke localStorage:', e);
         }
     }
 
-    function loadProfileDraft() {
+    async function loadProfileDraft() {
         let restoredMembers = false;
         try {
             const rawDraft = localStorage.getItem(PROFILE_DRAFT_KEY);
             if (rawDraft) {
                 const draft = JSON.parse(rawDraft);
-                if (!draft || !draft.user_updated_at || String(draft.user_updated_at) !== String(CURRENT_USER_UPDATED_AT)) {
-                    // Data pada server telah diperbarui atau draft usang, buang draft lama agar data server terbaru tampil
-                    localStorage.removeItem(PROFILE_DRAFT_KEY);
-                    if (window.indexedDB) {
-                        clearDraftFilesFromDB(PROFILE_KK_KEY);
-                    }
-                } else if (typeof draft === 'object') {
+                if (draft && typeof draft === 'object') {
                     profileDraftFields.forEach(function(fieldId) {
                         const el = document.getElementById(fieldId);
                         if (el && draft[fieldId] !== undefined && draft[fieldId] !== null) {
@@ -1216,11 +1458,8 @@ document.addEventListener('DOMContentLoaded', function() {
             updateEmptyState();
         }
 
-        // Pulihkan berkas fisik KK dari IndexedDB jika draft masih valid
-        const validDraft = localStorage.getItem(PROFILE_DRAFT_KEY);
-        if (validDraft) {
-            restoreProfileDraftFile();
-        }
+        // Selalu pulihkan berkas fisik KK dari IndexedDB jika ada
+        await restoreProfileDraftFile();
     }
 
     // Pasang listeners form input untuk auto-save
@@ -1236,6 +1475,10 @@ document.addEventListener('DOMContentLoaded', function() {
         radio.addEventListener('change', saveProfileDraft);
     });
 
+    window.addEventListener('beforeunload', function() {
+        saveProfileDraft();
+    });
+
     // Modal Preview & Interactive Pan/Zoom Dokumen KK
     const docKkInput = document.getElementById('doc_family_card');
     const placeholderKk = document.getElementById('placeholder-kk');
@@ -1245,6 +1488,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const fileNameKk = document.getElementById('file-name-kk');
     const fileSizeKk = document.getElementById('file-size-kk');
     const btnPreviewLightbox = document.getElementById('btn-preview-lightbox');
+    const btnClearDocKk = document.getElementById('btn-clear-doc-kk');
+    const labelTextDocKk = document.getElementById('label-text-doc-kk');
 
     const modalPreviewKk = document.getElementById('modal-preview-kk');
     const modalPreviewImg = document.getElementById('modal-preview-img');
@@ -1420,7 +1665,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 modalPreviewImg.src = currentPreviewUrl;
                 modalPreviewImg.style.display = 'block';
             }
-            if (modalPreviewSubtitle) modalPreviewSubtitle.textContent = 'Scroll untuk Zoom • Drag untuk Menggeser Posisi';
+            if (modalPreviewSubtitle) modalPreviewSubtitle.textContent = '';
             if (modalFileInfo) modalFileInfo.textContent = currentFileName || 'Gambar Kartu Keluarga';
         } else {
             return;
@@ -1491,8 +1736,57 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (placeholderKk) placeholderKk.classList.add('hidden');
             if (previewBoxKk) previewBoxKk.classList.remove('hidden');
+            if (btnClearDocKk) btnClearDocKk.classList.remove('hidden');
+            if (labelTextDocKk) labelTextDocKk.textContent = 'Ganti Berkas';
 
             await saveFileToDB(PROFILE_KK_KEY, file);
+            saveProfileDraft();
+        });
+    }
+
+    if (btnClearDocKk) {
+        btnClearDocKk.addEventListener('click', async function() {
+            if (docKkInput) {
+                docKkInput.value = '';
+                try {
+                    const dt = new DataTransfer();
+                    docKkInput.files = dt.files;
+                } catch (e) {}
+            }
+
+            await clearDraftFilesFromDB(PROFILE_KK_KEY);
+
+            const hasOriginalServerDoc = {{ $hasDocKk ? 'true' : 'false' }};
+            if (hasOriginalServerDoc) {
+                currentFileIsPdf = {{ ($hasDocKk && $isPdfDocKk) ? 'true' : 'false' }};
+                currentPreviewUrl = @json(($hasDocKk && !$isPdfDocKk) ? $docKkUrl : '');
+                currentFileName = @json($hasDocKk ? basename($activeDocKk) : '');
+
+                if (fileNameKk) fileNameKk.textContent = currentFileName;
+                if (fileSizeKk) fileSizeKk.textContent = 'Dokumen terlampir di sistem (Klik untuk lihat)';
+                if (modalFileInfo) modalFileInfo.textContent = currentFileName;
+                if (modalPdfName) modalPdfName.textContent = currentFileName;
+                if (modalPdfLink && currentPreviewUrl) modalPdfLink.href = currentPreviewUrl;
+                if (modalPreviewImg && currentPreviewUrl) modalPreviewImg.src = currentPreviewUrl;
+
+                if (imgPreviewWrapKk) imgPreviewWrapKk.classList.toggle('hidden', currentFileIsPdf);
+                if (pdfPreviewWrapKk) pdfPreviewWrapKk.classList.toggle('hidden', !currentFileIsPdf);
+
+                if (placeholderKk) placeholderKk.classList.add('hidden');
+                if (previewBoxKk) previewBoxKk.classList.remove('hidden');
+                if (labelTextDocKk) labelTextDocKk.textContent = 'Ganti Berkas';
+            } else {
+                currentFileIsPdf = false;
+                currentPreviewUrl = '';
+                currentFileName = '';
+
+                if (placeholderKk) placeholderKk.classList.remove('hidden');
+                if (previewBoxKk) previewBoxKk.classList.add('hidden');
+                if (labelTextDocKk) labelTextDocKk.textContent = 'Pilih Berkas';
+            }
+
+            btnClearDocKk.classList.add('hidden');
+            saveProfileDraft();
         });
     }
 
@@ -2053,6 +2347,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             e.preventDefault();
+
+            if (!validateStep1()) {
+                updateProfileStepUI(1);
+                return false;
+            }
+
+            if (!validateStep2()) {
+                updateProfileStepUI(2);
+                return false;
+            }
 
             const report = generateFormChangesReport();
             if (!report.hasChanges) {

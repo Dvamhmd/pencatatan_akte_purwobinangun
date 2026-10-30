@@ -55,6 +55,9 @@
 
         <!-- Action Buttons -->
         <div class="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <a href="{{ route('birth.print_letter', $birth) }}" target="_blank" class="w-full sm:w-auto bg-slate-900 hover:bg-black text-white font-bold text-xs px-5 py-2.5 rounded-lg shadow-sm transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-file-lines"></i> Cetak Surat Keterangan (A4)
+            </a>
             <a href="{{ route('tracking.print_receipt', ['type' => 'birth', 'registrationNo' => $birth->registration_no]) }}" target="_blank" class="w-full sm:w-auto bg-[#0b7c89] hover:bg-[#065b65] text-white font-bold text-xs px-5 py-2.5 rounded-lg shadow-sm transition flex items-center justify-center gap-2">
                 <i class="fa-solid fa-print"></i> Cetak Tanda Terima / Resi
             </a>
