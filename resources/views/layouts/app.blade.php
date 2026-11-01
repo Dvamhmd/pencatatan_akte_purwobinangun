@@ -18,6 +18,8 @@
     
     <!-- Vite CSS & JS -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    @stack('styles')
 </head>
 <body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col">
 
@@ -583,5 +585,7 @@
         setInterval(updateClock, 1000);
         updateClock();
     </script>
+
+    @stack('scripts')
 </body>
 </html>

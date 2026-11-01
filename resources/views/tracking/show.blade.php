@@ -153,7 +153,7 @@
                             <i class="fa-solid fa-pen-to-square"></i> Revisi Berkas
                         </a>
                     @endif
-                    @if($data->status !== 'revision' && $type === 'birth')
+                    @if($data->status !== 'revision')
                         <a href="{{ route('tracking.print_letter', ['type' => $type, 'registrationNo' => $data->registration_no]) }}" target="_blank" class="bg-slate-900 hover:bg-black text-white font-bold text-xs px-5 py-2.5 rounded-lg shadow-sm transition flex items-center gap-2">
                             <i class="fa-solid fa-file-lines"></i> Cetak Surat Keterangan (A4)
                         </a>

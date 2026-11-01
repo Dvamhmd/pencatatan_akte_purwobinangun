@@ -33,47 +33,83 @@
         <!-- Kolom Data Permohonan (8 Kolom) -->
         <div class="lg:col-span-8 space-y-6">
             
-            <!-- 1. Data Almarhum/ah -->
+            <!-- 1. Data Almarhum/ah & KK -->
             <div class="bg-white rounded-xl shadow-xs border border-slate-200 p-5">
                 <h4 class="text-xs font-bold uppercase tracking-wider text-rose-700 pb-2 border-b border-slate-100 flex items-center gap-2 mb-4">
-                    <i class="fa-solid fa-user-xmark text-base"></i> 1. Data Almarhum / Almarhumah
+                    <i class="fa-solid fa-user-xmark text-base"></i> 1. Data Kartu Keluarga & Almarhum / Almarhumah
                 </h4>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                    <div><span class="text-slate-500 block text-[11px]">Nama Lengkap:</span> <strong class="text-slate-900 text-sm">{{ $death->deceased_name }}</strong></div>
+                    <div><span class="text-slate-500 block text-[11px]">No. Kartu Keluarga:</span> <span class="font-mono font-bold text-slate-800">{{ $death->family_card_no ?? '-' }}</span></div>
+                    <div><span class="text-slate-500 block text-[11px]">Nama Kepala Keluarga:</span> <span class="font-semibold text-slate-800">{{ $death->head_of_family_name ?? '-' }}</span></div>
+                    <div><span class="text-slate-500 block text-[11px]">Nama Lengkap Almarhum/ah:</span> <strong class="text-slate-900 text-sm">{{ $death->deceased_name }}</strong></div>
                     <div><span class="text-slate-500 block text-[11px]">NIK Almarhum/ah:</span> <span class="font-mono font-bold text-slate-800">{{ $death->deceased_nik }}</span></div>
                     <div><span class="text-slate-500 block text-[11px]">Jenis Kelamin:</span> <span class="font-medium text-slate-800">{{ $death->gender === 'L' ? 'Laki-laki' : 'Perempuan' }}</span></div>
+                    <div><span class="text-slate-500 block text-[11px]">Tempat, Tgl Lahir:</span> <span class="font-medium text-slate-800">{{ $death->deceased_birth_place ?? '-' }}, {{ $death->birth_date ? $death->birth_date->translatedFormat('d F Y') : '-' }}</span></div>
                     <div><span class="text-slate-500 block text-[11px]">Agama:</span> <span class="font-medium text-slate-800">{{ $death->religion }}</span></div>
+                    <div><span class="text-slate-500 block text-[11px]">Anak Ke-:</span> <span class="font-medium text-slate-800">{{ $death->deceased_child_order ?? '-' }}</span></div>
                     <div><span class="text-slate-500 block text-[11px]">Padukuhan Domisili:</span> <span class="font-medium text-slate-800">Padukuhan {{ $death->padukuhan }}, RT {{ $death->rt }} / RW {{ $death->rw }}</span></div>
+                    <div><span class="text-slate-500 block text-[11px]">Alamat KTP Lengkap:</span> <span class="font-medium text-slate-800">{{ $death->deceased_address ?? '-' }}</span></div>
                 </div>
             </div>
 
-            <!-- 2. Peristiwa Kematian -->
+            <!-- 2. Orang Tua Almarhum/ah (Ibu & Ayah) -->
             <div class="bg-white rounded-xl shadow-xs border border-slate-200 p-5">
                 <h4 class="text-xs font-bold uppercase tracking-wider text-rose-700 pb-2 border-b border-slate-100 flex items-center gap-2 mb-4">
-                    <i class="fa-solid fa-clock text-base"></i> 2. Rincian Peristiwa Kematian
+                    <i class="fa-solid fa-people-roof text-base"></i> 2. Data Orang Tua Almarhum / Almarhumah
+                </h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                    <!-- Ibu -->
+                    <div class="p-3 bg-rose-50/40 rounded-lg border border-rose-100 space-y-1.5">
+                        <span class="font-bold text-rose-800 block border-b border-rose-100 pb-1">Data Ibu:</span>
+                        <div><span class="text-slate-500 text-[11px]">Nama:</span> <strong>{{ $death->mother_name ?: '-' }}</strong></div>
+                        <div><span class="text-slate-500 text-[11px]">NIK:</span> <span class="font-mono">{{ $death->mother_nik ?: '-' }}</span></div>
+                        <div><span class="text-slate-500 text-[11px]">Tempat, Tgl Lahir:</span> {{ $death->mother_birth_place ?: '-' }}, {{ $death->mother_birth_date ? $death->mother_birth_date->translatedFormat('d F Y') : '-' }}</div>
+                        <div><span class="text-slate-500 text-[11px]">Pekerjaan:</span> {{ $death->mother_job ?: '-' }}</div>
+                        <div><span class="text-slate-500 text-[11px]">Alamat:</span> {{ $death->mother_address ?: '-' }}</div>
+                        <div><span class="text-slate-500 text-[11px]">Kewarganegaraan:</span> {{ $death->mother_citizenship ?: 'WNI' }}</div>
+                    </div>
+                    <!-- Ayah -->
+                    <div class="p-3 bg-rose-50/40 rounded-lg border border-rose-100 space-y-1.5">
+                        <span class="font-bold text-rose-800 block border-b border-rose-100 pb-1">Data Ayah:</span>
+                        <div><span class="text-slate-500 text-[11px]">Nama:</span> <strong>{{ $death->father_name ?: '-' }}</strong></div>
+                        <div><span class="text-slate-500 text-[11px]">NIK:</span> <span class="font-mono">{{ $death->father_nik ?: '-' }}</span></div>
+                        <div><span class="text-slate-500 text-[11px]">Tempat, Tgl Lahir:</span> {{ $death->father_birth_place ?: '-' }}, {{ $death->father_birth_date ? $death->father_birth_date->translatedFormat('d F Y') : '-' }}</div>
+                        <div><span class="text-slate-500 text-[11px]">Pekerjaan:</span> {{ $death->father_job ?: '-' }}</div>
+                        <div><span class="text-slate-500 text-[11px]">Alamat:</span> {{ $death->father_address ?: '-' }}</div>
+                        <div><span class="text-slate-500 text-[11px]">Kewarganegaraan:</span> {{ $death->father_citizenship ?: 'WNI' }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Peristiwa Kematian -->
+            <div class="bg-white rounded-xl shadow-xs border border-slate-200 p-5">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-rose-700 pb-2 border-b border-slate-100 flex items-center gap-2 mb-4">
+                    <i class="fa-solid fa-clock text-base"></i> 3. Rincian Peristiwa Kematian
                 </h4>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                    <div><span class="text-slate-500 block text-[11px]">Hari / Tanggal Meninggal:</span> <span class="font-bold text-slate-800">{{ $death->death_date->translatedFormat('l, d F Y') }}</span></div>
+                    <div><span class="text-slate-500 block text-[11px]">Hari / Tanggal Meninggal:</span> <span class="font-bold text-slate-800">{{ $death->death_day ? $death->death_day . ', ' : '' }}{{ $death->death_date->translatedFormat('d F Y') }}</span></div>
                     <div><span class="text-slate-500 block text-[11px]">Waktu / Pukul:</span> <span class="font-medium text-slate-800">{{ $death->death_time ?? '-' }}</span></div>
-                    <div><span class="text-slate-500 block text-[11px]">Tempat Kematian:</span> <span class="font-medium text-slate-800">{{ $death->death_place }}</span></div>
+                    <div><span class="text-slate-500 block text-[11px]">Tempat Kejadian:</span> <span class="font-medium text-slate-800">{{ $death->death_place }} {{ $death->death_location_detail ? '(' . $death->death_location_detail . ')' : '' }}</span></div>
                     <div><span class="text-slate-500 block text-[11px]">Penyebab Kematian:</span> <span class="font-medium text-slate-800">{{ $death->cause_of_death }}</span></div>
                     <div class="sm:col-span-2"><span class="text-slate-500 block text-[11px]">Yang Menerangkan:</span> <span class="font-medium text-slate-800">{{ $death->reported_by_title }}</span></div>
                 </div>
             </div>
 
-            <!-- 3. Berkas Dokumen Terunggah -->
+            <!-- 4. Berkas Dokumen Terunggah -->
             <div class="bg-white rounded-xl shadow-xs border border-slate-200 p-5">
                 <h4 class="text-xs font-bold uppercase tracking-wider text-rose-700 pb-2 border-b border-slate-100 flex items-center gap-2 mb-4">
-                    <i class="fa-solid fa-folder-open text-base"></i> 3. Berkas Lampiran Pendukung
+                    <i class="fa-solid fa-folder-open text-base"></i> 4. Berkas Lampiran Pendukung (6 Dokumen)
                 </h4>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                     
                     @php
                         $docs = [
-                            'Surat Keterangan Kematian (RS/Dokter/RT)' => $death->doc_death_statement,
-                            'Kartu Keluarga (KK) Almarhum/ah' => $death->doc_family_card,
-                            'KTP Asli Almarhum/ah' => $death->doc_deceased_ktp,
-                            'KTP Pelapor / Ahli Waris' => $death->doc_applicant_ktp,
+                            '1. Surat Kematian (RS/Dokter/RT)' => $death->doc_death_statement,
+                            '2. Surat Pengantar RT/RW' => $death->doc_rt_rw_statement,
+                            '3. Kartu Keluarga (KK)' => $death->doc_family_card,
+                            '4. KTP Asli Almarhum/ah' => $death->doc_deceased_ktp,
+                            '5. KK Ahli Waris' => $death->doc_heir_family_card,
+                            '6. KTP Ahli Waris' => $death->doc_heir_ktp ?: $death->doc_applicant_ktp,
                         ];
                     @endphp
 
@@ -167,21 +203,43 @@
             </div>
 
             <!-- Ringkasan Pelapor & Saksi -->
-            <div class="bg-white rounded-xl shadow-xs border border-slate-200 p-5 text-xs space-y-2.5">
+            <div class="bg-white rounded-xl shadow-xs border border-slate-200 p-5 text-xs space-y-3">
                 <h4 class="font-bold text-slate-800 border-b border-slate-100 pb-2 flex items-center gap-1.5">
                     <i class="fa-solid fa-address-card text-rose-700"></i> Data Pelapor (Ahli Waris)
                 </h4>
                 <div><span class="text-slate-400 block text-[11px]">Nama Pelapor:</span> <strong class="text-slate-800">{{ $death->applicant_name }}</strong></div>
-                <div><span class="text-slate-400 block text-[11px]">NIK Pelapor:</span> <span class="font-mono">{{ $death->applicant_nik }}</span></div>
-                <div><span class="text-slate-400 block text-[11px]">Hubungan:</span> <span>{{ $death->applicant_relation }}</span></div>
-                <div><span class="text-slate-400 block text-[11px]">Email Warga:</span> <span class="font-medium text-slate-800">{{ $death->applicant_email ?: '-' }}</span></div>
-                <div><span class="text-slate-400 block text-[11px]">Kontak / WhatsApp:</span> <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $death->applicant_phone) }}" target="_blank" class="text-rose-700 font-bold hover:underline">{{ $death->applicant_phone }}</a></div>
-                @if($death->witness_name)
-                    <div class="pt-2 border-t border-slate-100">
-                        <span class="text-slate-400 block text-[11px]">Saksi Kematian:</span>
-                        <span class="font-medium">{{ $death->witness_name }} (NIK: {{ $death->witness_nik ?? '-' }})</span>
+                <div><span class="text-slate-400 block text-[11px]">NIK Pelapor:</span> <span class="font-mono font-semibold">{{ $death->applicant_nik }}</span></div>
+                <div><span class="text-slate-400 block text-[11px]">Tempat, Tgl Lahir / Umur:</span> <span>{{ $death->applicant_birth_place ?: '-' }}, {{ $death->applicant_birth_date ? $death->applicant_birth_date->translatedFormat('d F Y') : '-' }} ({{ $death->applicant_age ? $death->applicant_age . ' Thn' : '-' }})</span></div>
+                <div><span class="text-slate-400 block text-[11px]">Pekerjaan:</span> <span>{{ $death->applicant_job ?: '-' }}</span></div>
+                <div><span class="text-slate-400 block text-[11px]">Alamat KTP:</span> <span>{{ $death->applicant_address ?: '-' }}</span></div>
+                <div><span class="text-slate-400 block text-[11px]">Hubungan:</span> <span class="font-semibold text-rose-700">{{ $death->applicant_relation }}</span></div>
+                <div><span class="text-slate-400 block text-[11px]">Tgl Lapor:</span> <span>{{ $death->report_date ? $death->report_date->translatedFormat('d F Y') : '-' }}</span></div>
+                <div><span class="text-slate-400 block text-[11px]">Kontak / WhatsApp:</span> <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $death->applicant_phone) }}" target="_blank" class="text-rose-700 font-bold hover:underline flex items-center gap-1"><i class="fa-brands fa-whatsapp text-emerald-600"></i> {{ $death->applicant_phone }}</a></div>
+
+                <!-- Saksi I & Saksi II -->
+                <div class="pt-3 border-t border-slate-100 space-y-2">
+                    <h5 class="font-bold text-slate-800 text-[11px] uppercase tracking-wider flex items-center gap-1">
+                        <i class="fa-solid fa-users text-rose-600"></i> Saksi-Saksi Kematian:
+                    </h5>
+                    
+                    <div class="p-2.5 bg-slate-50 rounded-lg border border-slate-200 space-y-1">
+                        <span class="text-[10px] font-bold text-rose-800 block">SAKSI I:</span>
+                        <div class="text-[11px]"><strong class="text-slate-800">{{ $death->witness1_name ?: ($death->witness_name ?: '-') }}</strong></div>
+                        <div class="text-[10px] text-slate-500 font-mono">NIK: {{ $death->witness1_nik ?: ($death->witness_nik ?: '-') }} &bull; Umur: {{ $death->witness1_age ? $death->witness1_age . ' Thn' : '-' }}</div>
+                        @if($death->witness1_address)
+                            <div class="text-[10px] text-slate-500">Alamat: {{ $death->witness1_address }}</div>
+                        @endif
                     </div>
-                @endif
+
+                    <div class="p-2.5 bg-slate-50 rounded-lg border border-slate-200 space-y-1">
+                        <span class="text-[10px] font-bold text-rose-800 block">SAKSI II:</span>
+                        <div class="text-[11px]"><strong class="text-slate-800">{{ $death->witness2_name ?: '-' }}</strong></div>
+                        <div class="text-[10px] text-slate-500 font-mono">NIK: {{ $death->witness2_nik ?: '-' }} &bull; Umur: {{ $death->witness2_age ? $death->witness2_age . ' Thn' : '-' }}</div>
+                        @if($death->witness2_address)
+                            <div class="text-[10px] text-slate-500">Alamat: {{ $death->witness2_address }}</div>
+                        @endif
+                    </div>
+                </div>
             </div>
 
         </div>
