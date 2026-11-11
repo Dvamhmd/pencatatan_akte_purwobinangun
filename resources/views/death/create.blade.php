@@ -833,122 +833,66 @@
                 </div>
 
                 <!-- 6 Upload Cards Bersih & Rapi -->
+                @php
+                    $deathDocCards = [
+                        ['id' => 'doc_death_statement', 'key' => 'death', 'title' => 'Surat Kematian', 'desc' => 'Dari RS, Puskesmas, Dokter, atau RT'],
+                        ['id' => 'doc_rt_rw_statement', 'key' => 'rtrw', 'title' => 'Surat Pengantar RT / RW', 'desc' => 'Surat pengantar kematian RT/RW'],
+                        ['id' => 'doc_family_card', 'key' => 'kk', 'title' => 'Kartu Keluarga (KK)', 'desc' => 'KK almarhum / almarhumah'],
+                        ['id' => 'doc_deceased_ktp', 'key' => 'deceased-ktp', 'title' => 'KTP Almarhum / Almarhumah', 'desc' => 'KTP-el asli yang meninggal'],
+                        ['id' => 'doc_heir_family_card', 'key' => 'heir-kk', 'title' => 'KK Ahli Waris', 'desc' => 'Kartu Keluarga ahli waris'],
+                        ['id' => 'doc_heir_ktp', 'key' => 'heir-ktp', 'title' => 'KTP Ahli Waris', 'desc' => 'KTP-el asli ahli waris / pelapor'],
+                    ];
+                @endphp
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
-                    
-                    <!-- 1. Surat Kematian -->
-                    <div class="bg-white border border-slate-200 rounded-lg p-3.5 flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between mb-1.5">
-                                <span class="w-5 h-5 rounded-full bg-rose-100 text-rose-700 font-bold text-[11px] flex items-center justify-center">1</span>
-                                <span class="text-[10px] bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold">Wajib</span>
+                    @foreach($deathDocCards as $index => $card)
+                        <div class="bg-white border border-slate-200 rounded-xl p-3.5 flex flex-col justify-between">
+                            <div class="mb-2.5">
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <span class="w-5 h-5 rounded-full bg-rose-100 text-rose-700 font-bold text-[11px] flex items-center justify-center">{{ $index + 1 }}</span>
+                                    <span class="text-[10px] bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold">Wajib</span>
+                                </div>
+                                <h4 class="text-xs font-bold text-slate-800">{{ $card['title'] }}</h4>
+                                <p class="text-[11px] text-slate-500">{{ $card['desc'] }}</p>
                             </div>
-                            <h4 class="text-xs font-bold text-slate-800">Surat Kematian</h4>
-                            <p class="text-[11px] text-slate-500 mb-3">Dari RS, Puskesmas, Dokter, atau RT</p>
-                        </div>
-                        <div>
-                            <input type="file" name="doc_death_statement" id="doc_death_statement" accept=".jpg,.jpeg,.png,.pdf" class="hidden" onchange="handleFileChange(this, 'preview-death')">
-                            <button type="button" onclick="document.getElementById('doc_death_statement').click()" class="w-full text-xs font-semibold py-2 px-3 bg-slate-50 hover:bg-rose-50 hover:text-rose-700 border border-slate-300 rounded-lg transition flex items-center justify-center gap-1.5 text-slate-700">
-                                <i class="fa-solid fa-cloud-arrow-up text-rose-600"></i> Pilih Berkas
-                            </button>
-                            <div id="preview-death" class="text-[11px] text-emerald-700 mt-1.5 truncate text-center hidden font-medium"></div>
-                        </div>
-                    </div>
+                            <div class="mt-auto w-full">
+                                <input type="file" name="{{ $card['id'] }}" id="{{ $card['id'] }}" accept=".jpg,.jpeg,.png,.pdf" class="hidden" onchange="handleFileChange(this, '{{ $card['key'] }}')">
 
-                    <!-- 2. Surat Pengantar RT/RW -->
-                    <div class="bg-white border border-slate-200 rounded-lg p-3.5 flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between mb-1.5">
-                                <span class="w-5 h-5 rounded-full bg-rose-100 text-rose-700 font-bold text-[11px] flex items-center justify-center">2</span>
-                                <span class="text-[10px] bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold">Wajib</span>
+                                <!-- Box Upload Standar -->
+                                <label for="{{ $card['id'] }}" id="placeholder-{{ $card['key'] }}" class="cursor-pointer flex flex-col items-center justify-center text-center bg-slate-50 hover:bg-rose-50 hover:text-rose-700 border-2 border-dashed border-slate-300 hover:border-rose-400 rounded-xl w-full p-3 transition" style="height: 165px;">
+                                    <div class="w-9 h-9 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mb-1.5 border border-rose-200">
+                                        <i class="fa-solid fa-cloud-arrow-up text-sm"></i>
+                                    </div>
+                                    <span class="block text-xs font-bold text-slate-700">Pilih Berkas</span>
+                                    <span class="block text-[10px] text-slate-400 mt-0.5">JPG, PNG, PDF (Maks. 3MB)</span>
+                                </label>
+
+                                <!-- Box Preview Dokumen -->
+                                <div id="preview-box-{{ $card['key'] }}" class="hidden bg-white border border-emerald-200 rounded-xl p-2 shadow-xs w-full flex flex-col justify-between" style="height: 165px; overflow: hidden;">
+                                    <div id="img-preview-wrap-{{ $card['key'] }}" class="w-full bg-slate-100 rounded-lg overflow-hidden border border-slate-200 relative group hidden shrink-0" style="height: 108px;">
+                                        <img id="img-preview-{{ $card['key'] }}" src="" alt="Preview {{ $card['title'] }}" class="w-full h-full object-cover object-center block">
+                                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                                            <button type="button" onclick="viewFullDeathImage('{{ $card['key'] }}', '{{ $card['title'] }}')" class="cursor-pointer bg-white text-slate-800 text-[11px] font-bold px-2.5 py-1 rounded-md shadow-sm hover:bg-slate-100 transition flex items-center gap-1">
+                                                <i class="fa-solid fa-eye text-rose-600"></i> Lihat Gambar
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div id="pdf-preview-wrap-{{ $card['key'] }}" class="w-full bg-rose-50 rounded-lg flex flex-col items-center justify-center border border-rose-200 text-rose-700 hidden shrink-0" style="height: 108px;">
+                                        <i class="fa-solid fa-file-pdf text-2xl mb-1"></i>
+                                        <span class="text-[10px] font-bold uppercase tracking-wider">Dokumen PDF</span>
+                                    </div>
+                                    <div class="flex items-center justify-between gap-2 pt-1 border-t border-slate-100 shrink-0">
+                                        <div class="truncate flex-1 min-w-0">
+                                            <p id="file-name-{{ $card['key'] }}" class="text-[11px] font-bold text-slate-800 truncate"></p>
+                                            <p id="file-size-{{ $card['key'] }}" class="text-[10px] text-emerald-700 font-medium"></p>
+                                        </div>
+                                        <label for="{{ $card['id'] }}" class="shrink-0 text-[10px] font-bold text-rose-700 hover:text-rose-800 cursor-pointer bg-rose-50 px-2 py-1 rounded border border-rose-200 transition">
+                                            <i class="fa-solid fa-pen-to-square"></i> Ganti
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
-                            <h4 class="text-xs font-bold text-slate-800">Surat Pengantar RT / RW</h4>
-                            <p class="text-[11px] text-slate-500 mb-3">Surat pengantar kematian RT/RW</p>
                         </div>
-                        <div>
-                            <input type="file" name="doc_rt_rw_statement" id="doc_rt_rw_statement" accept=".jpg,.jpeg,.png,.pdf" class="hidden" onchange="handleFileChange(this, 'preview-rtrw')">
-                            <button type="button" onclick="document.getElementById('doc_rt_rw_statement').click()" class="w-full text-xs font-semibold py-2 px-3 bg-slate-50 hover:bg-rose-50 hover:text-rose-700 border border-slate-300 rounded-lg transition flex items-center justify-center gap-1.5 text-slate-700">
-                                <i class="fa-solid fa-cloud-arrow-up text-rose-600"></i> Pilih Berkas
-                            </button>
-                            <div id="preview-rtrw" class="text-[11px] text-emerald-700 mt-1.5 truncate text-center hidden font-medium"></div>
-                        </div>
-                    </div>
-
-                    <!-- 3. Kartu Keluarga -->
-                    <div class="bg-white border border-slate-200 rounded-lg p-3.5 flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between mb-1.5">
-                                <span class="w-5 h-5 rounded-full bg-rose-100 text-rose-700 font-bold text-[11px] flex items-center justify-center">3</span>
-                                <span class="text-[10px] bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold">Wajib</span>
-                            </div>
-                            <h4 class="text-xs font-bold text-slate-800">Kartu Keluarga (KK)</h4>
-                            <p class="text-[11px] text-slate-500 mb-3">KK almarhum / almarhumah</p>
-                        </div>
-                        <div>
-                            <input type="file" name="doc_family_card" id="doc_family_card" accept=".jpg,.jpeg,.png,.pdf" class="hidden" onchange="handleFileChange(this, 'preview-kk')">
-                            <button type="button" onclick="document.getElementById('doc_family_card').click()" class="w-full text-xs font-semibold py-2 px-3 bg-slate-50 hover:bg-rose-50 hover:text-rose-700 border border-slate-300 rounded-lg transition flex items-center justify-center gap-1.5 text-slate-700">
-                                <i class="fa-solid fa-cloud-arrow-up text-rose-600"></i> Pilih Berkas
-                            </button>
-                            <div id="preview-kk" class="text-[11px] text-emerald-700 mt-1.5 truncate text-center hidden font-medium"></div>
-                        </div>
-                    </div>
-
-                    <!-- 4. KTP Almarhum/ah -->
-                    <div class="bg-white border border-slate-200 rounded-lg p-3.5 flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between mb-1.5">
-                                <span class="w-5 h-5 rounded-full bg-rose-100 text-rose-700 font-bold text-[11px] flex items-center justify-center">4</span>
-                                <span class="text-[10px] bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold">Wajib</span>
-                            </div>
-                            <h4 class="text-xs font-bold text-slate-800">KTP Almarhum / Almarhumah</h4>
-                            <p class="text-[11px] text-slate-500 mb-3">KTP-el asli yang meninggal</p>
-                        </div>
-                        <div>
-                            <input type="file" name="doc_deceased_ktp" id="doc_deceased_ktp" accept=".jpg,.jpeg,.png,.pdf" class="hidden" onchange="handleFileChange(this, 'preview-deceased-ktp')">
-                            <button type="button" onclick="document.getElementById('doc_deceased_ktp').click()" class="w-full text-xs font-semibold py-2 px-3 bg-slate-50 hover:bg-rose-50 hover:text-rose-700 border border-slate-300 rounded-lg transition flex items-center justify-center gap-1.5 text-slate-700">
-                                <i class="fa-solid fa-cloud-arrow-up text-rose-600"></i> Pilih Berkas
-                            </button>
-                            <div id="preview-deceased-ktp" class="text-[11px] text-emerald-700 mt-1.5 truncate text-center hidden font-medium"></div>
-                        </div>
-                    </div>
-
-                    <!-- 5. KK Ahli Waris -->
-                    <div class="bg-white border border-slate-200 rounded-lg p-3.5 flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between mb-1.5">
-                                <span class="w-5 h-5 rounded-full bg-rose-100 text-rose-700 font-bold text-[11px] flex items-center justify-center">5</span>
-                                <span class="text-[10px] bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold">Wajib</span>
-                            </div>
-                            <h4 class="text-xs font-bold text-slate-800">KK Ahli Waris</h4>
-                            <p class="text-[11px] text-slate-500 mb-3">Kartu Keluarga ahli waris</p>
-                        </div>
-                        <div>
-                            <input type="file" name="doc_heir_family_card" id="doc_heir_family_card" accept=".jpg,.jpeg,.png,.pdf" class="hidden" onchange="handleFileChange(this, 'preview-heir-kk')">
-                            <button type="button" onclick="document.getElementById('doc_heir_family_card').click()" class="w-full text-xs font-semibold py-2 px-3 bg-slate-50 hover:bg-rose-50 hover:text-rose-700 border border-slate-300 rounded-lg transition flex items-center justify-center gap-1.5 text-slate-700">
-                                <i class="fa-solid fa-cloud-arrow-up text-rose-600"></i> Pilih Berkas
-                            </button>
-                            <div id="preview-heir-kk" class="text-[11px] text-emerald-700 mt-1.5 truncate text-center hidden font-medium"></div>
-                        </div>
-                    </div>
-
-                    <!-- 6. KTP Ahli Waris -->
-                    <div class="bg-white border border-slate-200 rounded-lg p-3.5 flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between mb-1.5">
-                                <span class="w-5 h-5 rounded-full bg-rose-100 text-rose-700 font-bold text-[11px] flex items-center justify-center">6</span>
-                                <span class="text-[10px] bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold">Wajib</span>
-                            </div>
-                            <h4 class="text-xs font-bold text-slate-800">KTP Ahli Waris</h4>
-                            <p class="text-[11px] text-slate-500 mb-3">KTP-el asli ahli waris / pelapor</p>
-                        </div>
-                        <div>
-                            <input type="file" name="doc_heir_ktp" id="doc_heir_ktp" accept=".jpg,.jpeg,.png,.pdf" class="hidden" onchange="handleFileChange(this, 'preview-heir-ktp')">
-                            <button type="button" onclick="document.getElementById('doc_heir_ktp').click()" class="w-full text-xs font-semibold py-2 px-3 bg-slate-50 hover:bg-rose-50 hover:text-rose-700 border border-slate-300 rounded-lg transition flex items-center justify-center gap-1.5 text-slate-700">
-                                <i class="fa-solid fa-cloud-arrow-up text-rose-600"></i> Pilih Berkas
-                            </button>
-                            <div id="preview-heir-ktp" class="text-[11px] text-emerald-700 mt-1.5 truncate text-center hidden font-medium"></div>
-                        </div>
-                    </div>
-
+                    @endforeach
                 </div>
 
                 <!-- Pernyataan Kebenaran Data -->
@@ -1463,8 +1407,15 @@
     };
 
     // File Preview Handler
-    function handleFileChange(input, previewId) {
-        const preview = document.getElementById(previewId);
+    function handleFileChange(input, cardKey) {
+        const placeholder = document.getElementById(`placeholder-${cardKey}`);
+        const previewBox = document.getElementById(`preview-box-${cardKey}`);
+        const imgWrap = document.getElementById(`img-preview-wrap-${cardKey}`);
+        const imgEl = document.getElementById(`img-preview-${cardKey}`);
+        const pdfWrap = document.getElementById(`pdf-preview-wrap-${cardKey}`);
+        const fileNameEl = document.getElementById(`file-name-${cardKey}`);
+        const fileSizeEl = document.getElementById(`file-size-${cardKey}`);
+
         if (input.files && input.files[0]) {
             const file = input.files[0];
             const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
@@ -1472,14 +1423,63 @@
             if (file.size > 3 * 1024 * 1024) {
                 alert(`Ukuran file "${file.name}" (${sizeMB} MB) melebihi batas maksimal 3 MB.`);
                 input.value = '';
-                preview.classList.add('hidden');
+                if (previewBox) previewBox.classList.add('hidden');
+                if (placeholder) placeholder.classList.remove('hidden');
+                if (imgEl) imgEl.src = '';
                 return;
             }
 
-            preview.innerHTML = `<i class="fa-solid fa-check-circle mr-1"></i> ${file.name} (${sizeMB} MB)`;
-            preview.classList.remove('hidden');
+            if (fileNameEl) fileNameEl.textContent = file.name;
+            if (fileSizeEl) {
+                fileSizeEl.textContent = file.size >= 1024 * 1024
+                    ? `${sizeMB} MB`
+                    : `${(file.size / 1024).toFixed(1)} KB`;
+            }
+
+            const isImage = (file.type && file.type.startsWith('image/')) || /\.(jpe?g|png)$/i.test(file.name);
+            if (isImage) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    if (imgEl) imgEl.src = e.target.result;
+                    if (imgWrap) imgWrap.classList.remove('hidden');
+                    if (pdfWrap) pdfWrap.classList.add('hidden');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                if (imgEl) imgEl.src = '';
+                if (imgWrap) imgWrap.classList.add('hidden');
+                if (pdfWrap) pdfWrap.classList.remove('hidden');
+            }
+
+            if (placeholder) placeholder.classList.add('hidden');
+            if (previewBox) previewBox.classList.remove('hidden');
         } else {
-            preview.classList.add('hidden');
+            if (imgEl) imgEl.src = '';
+            if (imgWrap) imgWrap.classList.add('hidden');
+            if (pdfWrap) pdfWrap.classList.add('hidden');
+            if (previewBox) previewBox.classList.add('hidden');
+            if (placeholder) placeholder.classList.remove('hidden');
+        }
+    }
+
+    function viewFullDeathImage(cardKey, title) {
+        const imgEl = document.getElementById(`img-preview-${cardKey}`);
+        if (!imgEl || !imgEl.src) return;
+
+        const src = imgEl.src;
+        if (src.startsWith('data:')) {
+            const newWindow = window.open('', '_blank');
+            if (newWindow) {
+                newWindow.document.title = title || 'Pratinjau Dokumen';
+                newWindow.document.body.style.cssText = 'margin:0;background:#0f172a;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;box-sizing:border-box;';
+                const previewImg = newWindow.document.createElement('img');
+                previewImg.src = src;
+                previewImg.alt = title || 'Pratinjau Dokumen';
+                previewImg.style.cssText = 'max-width:100%;max-height:95vh;object-fit:contain;border-radius:8px;box-shadow:0 10px 25px rgba(0,0,0,0.5);';
+                newWindow.document.body.appendChild(previewImg);
+            }
+        } else {
+            window.open(src, '_blank');
         }
     }
 
