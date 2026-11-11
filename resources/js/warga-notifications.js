@@ -1,92 +1,77 @@
 /**
- * Warga Notification Center
+ * Website Notification Center (Warga & Admin)
  * Handles notification dropdown, unread tracking, delete items, clear all, and category filtering via localStorage.
  */
 
-export function initWargaNotifications() {
-    const container = document.getElementById('warga-notif-container');
-    const btn = document.getElementById('warga-notif-btn');
-    const dropdown = document.getElementById('warga-notif-dropdown');
-    const closeBtn = document.getElementById('btn-close-notif-dropdown');
-    const markAllReadBtn = document.getElementById('btn-mark-all-read');
-    const clearAllBtn = document.getElementById('btn-clear-all-notifs');
-    const badge = document.getElementById('warga-notif-badge');
-    const ping = document.getElementById('warga-notif-ping');
-    const notifList = document.getElementById('warga-notif-list');
-    const emptyState = document.getElementById('warga-notif-empty');
+function setupNotificationPanel(options) {
+    const {
+        prefix,
+        storagePrefix,
+        filterKeys,
+        activeBtnClasses,
+        inactiveBtnClasses,
+        clickHandlerName,
+        deleteHandlerName,
+    } = options;
+
+    const container = document.getElementById(`${prefix}-notif-container`);
+    const btn = document.getElementById(`${prefix}-notif-btn`);
+    const dropdown = document.getElementById(`${prefix}-notif-dropdown`);
+    const closeBtn = document.getElementById(`${prefix}-btn-close-notif-dropdown`) || document.getElementById('btn-close-notif-dropdown');
+    const markAllReadBtn = document.getElementById(`${prefix}-btn-mark-all-read`) || document.getElementById('btn-mark-all-read');
+    const clearAllBtn = document.getElementById(`${prefix}-btn-clear-all-notifs`) || document.getElementById('btn-clear-all-notifs');
+    const badge = document.getElementById(`${prefix}-notif-badge`);
+    const ping = document.getElementById(`${prefix}-notif-ping`);
+    const notifList = document.getElementById(`${prefix}-notif-list`);
+    const emptyState = document.getElementById(`${prefix}-notif-empty`);
 
     if (!container || !btn || !dropdown || !notifList) {
         return;
     }
 
     const userId = notifList.dataset.userId || 'default';
-    const storageKeyRead = `purwobinangun_warga_read_notifs_${userId}`;
-    const storageKeyDeleted = `purwobinangun_warga_deleted_notifs_${userId}`;
+    const storageKeyRead = `${storagePrefix}_read_notifs_${userId}`;
+    const storageKeyDeleted = `${storagePrefix}_deleted_notifs_${userId}`;
 
-    // Helper untuk mengambil set notifikasi yang sudah dibaca
-    function getReadNotifIds() {
+    function readStorage(key) {
         try {
-            const raw = localStorage.getItem(storageKeyRead);
+            const raw = localStorage.getItem(key);
             return raw ? JSON.parse(raw) : [];
         } catch (e) {
             return [];
         }
     }
 
-    // Helper untuk menyimpan set notifikasi yang sudah dibaca
-    function saveReadNotifIds(ids) {
+    function writeStorage(key, ids) {
         try {
-            localStorage.setItem(storageKeyRead, JSON.stringify(ids));
+            localStorage.setItem(key, JSON.stringify(ids));
         } catch (e) {
             // Ignore quota errors
         }
     }
 
-    // Helper untuk mengambil set notifikasi yang sudah dihapus
-    function getDeletedNotifIds() {
-        try {
-            const raw = localStorage.getItem(storageKeyDeleted);
-            return raw ? JSON.parse(raw) : [];
-        } catch (e) {
-            return [];
-        }
-    }
-
-    // Helper untuk menyimpan set notifikasi yang sudah dihapus
-    function saveDeletedNotifIds(ids) {
-        try {
-            localStorage.setItem(storageKeyDeleted, JSON.stringify(ids));
-        } catch (e) {
-            // Ignore quota errors
-        }
-    }
-
-    // Update tampilan status read/unread, hapus item yang di-delete, dan counter badge & filter
     function updateNotifUI() {
-        const readIds = new Set(getReadNotifIds());
-        const deletedIds = new Set(getDeletedNotifIds());
+        const readIds = new Set(readStorage(storageKeyRead));
+        const deletedIds = new Set(readStorage(storageKeyDeleted));
         const items = notifList.querySelectorAll('.notif-item');
-        
+
         let unreadCount = 0;
         let totalRemaining = 0;
-        let akteCount = 0;
-        let profileCount = 0;
-        let accountCount = 0;
+        const typeCounts = Object.fromEntries(filterKeys.map(k => [k, 0]));
 
         items.forEach(item => {
             const id = item.dataset.notifId;
             const type = item.dataset.notifType;
 
-            // Jika item sudah dihapus, hilangkan dari tampilan
             if (deletedIds.has(id)) {
                 item.remove();
                 return;
             }
 
             totalRemaining++;
-            if (type === 'akte') akteCount++;
-            if (type === 'profile') profileCount++;
-            if (type === 'account') accountCount++;
+            if (Object.prototype.hasOwnProperty.call(typeCounts, type)) {
+                typeCounts[type]++;
+            }
 
             const isRead = readIds.has(id);
             const dot = item.querySelector('.notif-unread-dot');
@@ -109,7 +94,6 @@ export function initWargaNotifications() {
             }
         });
 
-        // Update Counter pada Badge Lonceng
         if (badge) {
             if (unreadCount > 0) {
                 badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
@@ -122,42 +106,26 @@ export function initWargaNotifications() {
             }
         }
 
-        // Update Counter pada Filter Pills
         const filterCountAll = dropdown.querySelector('.notif-filter-count[data-filter-type="all"]');
-        const filterCountAkte = dropdown.querySelector('.notif-filter-count[data-filter-type="akte"]');
-        const filterCountProfile = dropdown.querySelector('.notif-filter-count[data-filter-type="profile"]');
-        const filterCountAccount = dropdown.querySelector('.notif-filter-count[data-filter-type="account"]');
-
         if (filterCountAll) filterCountAll.textContent = totalRemaining;
-        if (filterCountAkte) filterCountAkte.textContent = akteCount;
-        if (filterCountProfile) filterCountProfile.textContent = profileCount;
-        if (filterCountAccount) filterCountAccount.textContent = accountCount;
 
-        // Toggle Empty State
+        filterKeys.forEach(key => {
+            const el = dropdown.querySelector(`.notif-filter-count[data-filter-type="${key}"]`);
+            if (el) el.textContent = typeCounts[key];
+        });
+
         if (emptyState) {
-            if (totalRemaining === 0) {
-                emptyState.classList.remove('hidden');
-            } else {
-                emptyState.classList.add('hidden');
-            }
+            emptyState.classList.toggle('hidden', totalRemaining > 0);
         }
     }
 
-    // Toggle Dropdown
     function toggleDropdown(show) {
         const isHidden = dropdown.classList.contains('hidden');
         const shouldShow = typeof show === 'boolean' ? show : isHidden;
-
-        if (shouldShow) {
-            dropdown.classList.remove('hidden');
-            btn.setAttribute('aria-expanded', 'true');
-        } else {
-            dropdown.classList.add('hidden');
-            btn.setAttribute('aria-expanded', 'false');
-        }
+        dropdown.classList.toggle('hidden', !shouldShow);
+        btn.setAttribute('aria-expanded', shouldShow ? 'true' : 'false');
     }
 
-    // Event listener tombol lonceng
     btn.addEventListener('click', (e) => {
         e.stopPropagation();
         toggleDropdown();
@@ -170,34 +138,30 @@ export function initWargaNotifications() {
         });
     }
 
-    // Klik di luar dropdown untuk menutup
     document.addEventListener('click', (e) => {
         if (!container.contains(e.target)) {
             toggleDropdown(false);
         }
     });
 
-    // Tombol Escape untuk menutup
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && !dropdown.classList.contains('hidden')) {
             toggleDropdown(false);
         }
     });
 
-    // Tandai Semua Sudah Dibaca
     if (markAllReadBtn) {
         markAllReadBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             const items = notifList.querySelectorAll('.notif-item');
             const allIds = Array.from(items).map(item => item.dataset.notifId).filter(Boolean);
-            const currentRead = new Set(getReadNotifIds());
+            const currentRead = new Set(readStorage(storageKeyRead));
             allIds.forEach(id => currentRead.add(id));
-            saveReadNotifIds(Array.from(currentRead));
+            writeStorage(storageKeyRead, Array.from(currentRead));
             updateNotifUI();
         });
     }
 
-    // Hapus Semua Notifikasi
     if (clearAllBtn) {
         clearAllBtn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -206,10 +170,10 @@ export function initWargaNotifications() {
             }
             const items = notifList.querySelectorAll('.notif-item');
             const allIds = Array.from(items).map(item => item.dataset.notifId).filter(Boolean);
-            const currentDeleted = new Set(getDeletedNotifIds());
+            const currentDeleted = new Set(readStorage(storageKeyDeleted));
             allIds.forEach(id => currentDeleted.add(id));
-            saveDeletedNotifIds(Array.from(currentDeleted));
-            
+            writeStorage(storageKeyDeleted, Array.from(currentDeleted));
+
             items.forEach(item => {
                 item.style.transition = 'all 0.25s ease-out';
                 item.style.opacity = '0';
@@ -223,35 +187,28 @@ export function initWargaNotifications() {
         });
     }
 
-    // Filter Kategori Notifikasi
     const filterBtns = dropdown.querySelectorAll('.notif-filter-btn');
     filterBtns.forEach(fBtn => {
         fBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             const filter = fBtn.dataset.filter;
 
-            // Update styling tombol filter aktif
             filterBtns.forEach(b => {
-                b.classList.remove('bg-[#095b8c]', 'text-white');
-                b.classList.add('bg-slate-200', 'text-slate-700');
+                b.classList.remove(...activeBtnClasses);
+                b.classList.add(...inactiveBtnClasses);
             });
-            fBtn.classList.remove('bg-slate-200', 'text-slate-700');
-            fBtn.classList.add('bg-[#095b8c]', 'text-white');
+            fBtn.classList.remove(...inactiveBtnClasses);
+            fBtn.classList.add(...activeBtnClasses);
 
             const items = notifList.querySelectorAll('.notif-item');
             let visibleCount = 0;
 
             items.forEach(item => {
-                const type = item.dataset.notifType;
-                if (filter === 'all' || type === filter) {
-                    item.classList.remove('hidden');
-                    visibleCount++;
-                } else {
-                    item.classList.add('hidden');
-                }
+                const match = filter === 'all' || item.dataset.notifType === filter;
+                item.classList.toggle('hidden', !match);
+                if (match) visibleCount++;
             });
 
-            // Tampilkan pesan kosong jika filter tidak menghasilkan item
             let emptyMsg = notifList.querySelector('.filter-empty-msg');
             if (visibleCount === 0 && items.length > 0) {
                 if (!emptyMsg) {
@@ -267,15 +224,13 @@ export function initWargaNotifications() {
         });
     });
 
-    // Inisialisasi status read/unread & hapus item yang tersimpan di deleted
     updateNotifUI();
 
-    // Global click handler untuk membuka notifikasi
-    window.handleNotificationClick = function(id, url) {
+    window[clickHandlerName] = function(id, url) {
         if (id) {
-            const currentRead = new Set(getReadNotifIds());
+            const currentRead = new Set(readStorage(storageKeyRead));
             currentRead.add(id);
-            saveReadNotifIds(Array.from(currentRead));
+            writeStorage(storageKeyRead, Array.from(currentRead));
             updateNotifUI();
         }
         if (url) {
@@ -283,18 +238,16 @@ export function initWargaNotifications() {
         }
     };
 
-    // Global click handler untuk menghapus satu notifikasi
-    window.deleteNotification = function(id, event) {
+    window[deleteHandlerName] = function(id, event) {
         if (event) {
             event.stopPropagation();
             event.preventDefault();
         }
-
         if (!id) return;
 
-        const currentDeleted = new Set(getDeletedNotifIds());
+        const currentDeleted = new Set(readStorage(storageKeyDeleted));
         currentDeleted.add(id);
-        saveDeletedNotifIds(Array.from(currentDeleted));
+        writeStorage(storageKeyDeleted, Array.from(currentDeleted));
 
         const item = notifList.querySelector(`.notif-item[data-notif-id="${id}"]`);
         if (item) {
@@ -315,4 +268,26 @@ export function initWargaNotifications() {
             updateNotifUI();
         }
     };
+}
+
+export function initWargaNotifications() {
+    setupNotificationPanel({
+        prefix: 'warga',
+        storagePrefix: 'purwobinangun_warga',
+        filterKeys: ['akte', 'profile', 'account'],
+        activeBtnClasses: ['bg-[#095b8c]', 'text-white'],
+        inactiveBtnClasses: ['bg-slate-200', 'text-slate-700'],
+        clickHandlerName: 'handleNotificationClick',
+        deleteHandlerName: 'deleteNotification',
+    });
+
+    setupNotificationPanel({
+        prefix: 'admin',
+        storagePrefix: 'purwobinangun_admin',
+        filterKeys: ['akte', 'citizen', 'profile'],
+        activeBtnClasses: ['bg-[#065b65]', 'text-white'],
+        inactiveBtnClasses: ['bg-slate-200', 'text-slate-700'],
+        clickHandlerName: 'handleAdminNotificationClick',
+        deleteHandlerName: 'deleteAdminNotification',
+    });
 }

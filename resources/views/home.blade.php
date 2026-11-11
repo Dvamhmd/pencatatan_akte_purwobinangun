@@ -40,15 +40,17 @@
                 <div>
                     <!-- Header Kartu -->
                     <div class="bg-gradient-to-br from-[#095b8c] to-[#059cb8] p-5 text-white relative">
-                        <div class="flex items-center justify-end mb-3">
-                            <i class="fa-solid fa-baby text-3xl text-white/30"></i>
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <h3 class="text-lg font-bold text-white leading-snug">
+                                    Pengajuan Akte Kelahiran
+                                </h3>
+                                <p class="text-xs text-teal-100 mt-1">
+                                    Penerbitan surat pengantar kelahiran bagi anak/bayi warga Kalurahan Purwobinangun.
+                                </p>
+                            </div>
+                            <i class="fa-solid fa-baby text-3xl text-white/30 shrink-0"></i>
                         </div>
-                        <h3 class="text-lg font-bold text-white leading-snug">
-                            Pengajuan Akte Kelahiran
-                        </h3>
-                        <p class="text-xs text-teal-100 mt-1">
-                            Penerbitan surat pengantar kelahiran bagi anak/bayi warga Kalurahan Purwobinangun.
-                        </p>
                     </div>
 
                     <!-- Body Info -->
@@ -83,15 +85,17 @@
                 <div>
                     <!-- Header Kartu -->
                     <div class="bg-gradient-to-br from-rose-700 to-rose-900 p-5 text-white relative">
-                        <div class="flex items-center justify-end mb-3">
-                            <i class="fa-solid fa-book-skull text-3xl text-white/30"></i>
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <h3 class="text-lg font-bold text-white leading-snug">
+                                    Pengajuan Akte Kematian
+                                </h3>
+                                <p class="text-xs text-rose-100 mt-1">
+                                    Penerbitan surat pengantar pelaporan kematian warga di wilayah Kalurahan Purwobinangun.
+                                </p>
+                            </div>
+                            <i class="fa-solid fa-book-skull text-3xl text-white/30 shrink-0"></i>
                         </div>
-                        <h3 class="text-lg font-bold text-white leading-snug">
-                            Pengajuan Akte Kematian
-                        </h3>
-                        <p class="text-xs text-rose-100 mt-1">
-                            Penerbitan surat pengantar pelaporan kematian warga di wilayah Kalurahan Purwobinangun.
-                        </p>
                     </div>
 
                     <!-- Body Info -->

@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Mail\SubmissionStatusNotification;
 use App\Models\BirthCertificate;
 use App\Models\DeathCertificate;
 use App\Models\User;
+use App\Services\CitizenNotificationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
@@ -494,28 +494,23 @@ class CertificateServiceTest extends TestCase
         $responseShowRejected->assertStatus(200);
         $responseShowRejected->assertSee('Arsipkan Pengajuan');
 
-        // 4. Ubah ke Siap diambil dengan toggle notifikasi (hanya WhatsApp aktif, email nonaktif)
+        // 4. Ubah ke Siap diambil
         $this->actingAs($admin)->put('/admin/akte-kelahiran/' . $birth->id . '/status', [
             'status' => 'ready_for_pickup',
             'rejection_note' => 'Akte kelahiran telah selesai dicetak dan siap diambil.',
-            'send_email' => '0',
-            'send_whatsapp' => '1',
         ]);
         $this->assertEquals('Siap diambil', $birth->fresh()->status_label);
 
-        // Halaman verifikasi menampilkan pop-up card konfirmasi notifikasi beserta toggle email dan whatsapp
+        // Halaman verifikasi tidak lagi menampilkan pop-up konfirmasi pengiriman email/whatsapp
         $responseShowReady = $this->actingAs($admin)->get('/admin/akte-kelahiran/' . $birth->id);
         $responseShowReady->assertStatus(200);
-        $responseShowReady->assertSee('Konfirmasi Pengiriman Notifikasi');
-        $responseShowReady->assertSee('Email Warga');
-        $responseShowReady->assertSee('WhatsApp');
+        $responseShowReady->assertDontSee('Konfirmasi Pengiriman Notifikasi');
+        $responseShowReady->assertDontSee('WhatsApp');
 
         // 5. Ubah ke Sudah diambil (otomatis masuk ke arsip)
         $responsePickedUp = $this->actingAs($admin)->put('/admin/akte-kelahiran/' . $birth->id . '/status', [
             'status' => 'picked_up',
             'rejection_note' => 'Dokumen telah diserahkan dan diambil oleh pemohon.',
-            'send_email' => '1',
-            'send_whatsapp' => '1',
         ]);
         $responsePickedUp->assertSessionHas('success');
         $this->assertEquals('Sudah diambil', $birth->fresh()->status_label);
@@ -655,12 +650,10 @@ class CertificateServiceTest extends TestCase
         $responseArchive->assertSee('Almarhum Uji Coba');
     }
 
-    public function test_status_updates_trigger_email_and_whatsapp_notifications_based_on_toggles(): void
+    public function test_status_updates_display_website_notifications_without_email_or_whatsapp(): void
     {
         Mail::fake();
-        Http::fake([
-            'api.fonnte.com/*' => Http::response(['status' => true, 'detail' => 'Pesan terkirim'], 200),
-        ]);
+        Http::fake();
 
         $admin = User::create([
             'name' => 'Petugas Validasi',
@@ -694,53 +687,26 @@ class CertificateServiceTest extends TestCase
             'status' => 'pending',
         ]);
 
-        // 1. Akte Kelahiran: Ubah status ke 'in_process' dengan toggle email dan WA aktif
+        // 1. Akte Kelahiran: Ubah status ke 'in_process'
         $resBirthInProcess = $this->actingAs($admin)->put('/admin/akte-kelahiran/' . $birth->id . '/status', [
             'status' => 'in_process',
             'rejection_note' => 'Berkas pendaftaran sedang diverifikasi oleh staf pelayanan.',
-            'send_email' => '1',
-            'send_whatsapp' => '1',
         ]);
 
         $resBirthInProcess->assertRedirect(route('admin.birth.show', $birth));
         $resBirthInProcess->assertSessionHas('success');
         $this->assertEquals('Sedang Diproses', $birth->fresh()->status_label);
 
-        // Pastikan Mailable terkirim untuk status in_process
-        Mail::assertSent(SubmissionStatusNotification::class, function ($mail) use ($warga, $birth) {
-            return $mail->hasTo($warga->email)
-                && $mail->status === 'in_process'
-                && $mail->submission->id === $birth->id;
-        });
-
-        // Pastikan WhatsApp Fonnte dipanggil
-        Http::assertSent(function ($request) use ($warga) {
-            return str_contains($request->url(), 'api.fonnte.com/send')
-                && str_contains($request['message'], 'Sedang Diproses')
-                && $request['target'] === '6281234567890';
-        });
-
-        // 2. Akte Kelahiran: Ubah status ke 'revision' dengan hanya WA aktif (email nonaktif)
-        Mail::fake();
-        Http::fake([
-            'api.fonnte.com/*' => Http::response(['status' => true], 200),
-        ]);
-
+        // 2. Akte Kelahiran: Ubah status ke 'revision'
         $resBirthRevision = $this->actingAs($admin)->put('/admin/akte-kelahiran/' . $birth->id . '/status', [
             'status' => 'revision',
             'rejection_note' => 'Harap unggah ulang KTP orang tua.',
-            'send_email' => '0',
-            'send_whatsapp' => '1',
         ]);
 
         $resBirthRevision->assertRedirect(route('admin.birth.show', $birth));
         $this->assertEquals('Revisi Berkas', $birth->fresh()->status_label);
-        Mail::assertNothingSent();
-        Http::assertSent(function ($request) {
-            return str_contains($request['message'], 'Revisi Berkas');
-        });
 
-        // 3. Akte Kematian: Buat pengajuan dan ubah ke 'ready_for_pickup' dengan email aktif dan WA nonaktif
+        // 3. Akte Kematian: Buat pengajuan dan ubah ke 'ready_for_pickup'
         $death = DeathCertificate::create([
             'user_id' => $warga->id,
             'registration_no' => 'AKM-20260904-8888',
@@ -757,43 +723,21 @@ class CertificateServiceTest extends TestCase
             'status' => 'pending',
         ]);
 
-        Mail::fake();
-        Http::fake([
-            'api.fonnte.com/*' => Http::response(['status' => true], 200),
-        ]);
-
         $resDeathReady = $this->actingAs($admin)->put('/admin/akte-kematian/' . $death->id . '/status', [
             'status' => 'ready_for_pickup',
             'rejection_note' => 'Akte kematian sudah dicetak dan siap diambil.',
-            'send_email' => '1',
-            'send_whatsapp' => '0',
         ]);
 
         $resDeathReady->assertRedirect(route('admin.death.show', $death));
         $this->assertEquals('Siap Diambil', $death->fresh()->status_label);
 
-        Mail::assertSent(SubmissionStatusNotification::class, function ($mail) use ($warga, $death) {
-            return $mail->hasTo($warga->email)
-                && $mail->status === 'ready_for_pickup'
-                && $mail->submission->id === $death->id;
-        });
-        Http::assertNothingSent();
-
-        // 4. Akte Kematian: Ubah status ke 'picked_up' dengan kedua toggle nonaktif
-        Mail::fake();
-        Http::fake();
-
-        $resDeathPickedUp = $this->actingAs($admin)->put('/admin/akte-kematian/' . $death->id . '/status', [
-            'status' => 'picked_up',
-            'rejection_note' => 'Dokumen telah diserahkan kepada keluarga pelapor.',
-            'send_email' => '0',
-            'send_whatsapp' => '0',
-        ]);
-
-        $resDeathPickedUp->assertRedirect(route('admin.death.show', $death));
-        $this->assertEquals('Sudah Diambil', $death->fresh()->status_label);
         Mail::assertNothingSent();
         Http::assertNothingSent();
+
+        // Pastikan pemberitahuan tampil di website (CitizenNotificationService & headbar)
+        $notifs = CitizenNotificationService::getNotificationsForUser($warga);
+        $this->assertTrue($notifs->contains(fn ($n) => $n['reference_no'] === $birth->registration_no && $n['status'] === 'revision'));
+        $this->assertTrue($notifs->contains(fn ($n) => $n['reference_no'] === $death->registration_no && $n['status'] === 'ready_for_pickup'));
     }
 
     public function test_birth_certificate_revision_flow(): void

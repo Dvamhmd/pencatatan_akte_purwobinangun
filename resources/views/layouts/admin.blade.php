@@ -132,7 +132,7 @@
 
             <a href="{{ route('admin.profile.index') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition {{ request()->routeIs('admin.profile.*') ? 'bg-[#0b7c89] text-white shadow-sm font-bold' : 'text-teal-100 hover:bg-teal-800/50 hover:text-white' }}">
                 <i class="fa-solid fa-user-gear w-5 text-center text-teal-300 text-base"></i>
-                <span>Profil & Email Notifikasi</span>
+                <span>Profil Akun Admin</span>
             </a>
 
         </nav>
@@ -152,6 +152,170 @@
                     <i class="fa-regular fa-calendar-days text-[#0b7c89] mr-1"></i>
                     {{ date('d F Y') }}
                 </span>
+
+                @php
+                    $adminNotifications = \App\Services\AdminNotificationService::getNotificationsForAdmin();
+                    $adminNotifCount = $adminNotifications->count();
+                @endphp
+
+                <!-- Notification Bell Component Admin -->
+                <div class="relative inline-block text-left" id="admin-notif-container">
+                    <button type="button"
+                            id="admin-notif-btn"
+                            class="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 px-3 py-1.5 rounded-lg transition cursor-pointer relative"
+                            title="Notifikasi Pengajuan Masuk"
+                            aria-label="Notifikasi Pengajuan Masuk"
+                            aria-expanded="false">
+                        <span class="relative inline-flex items-center">
+                            <i class="fa-solid fa-bell text-amber-500 text-sm"></i>
+                            <span id="admin-notif-ping" class="absolute -top-1 -right-1 flex h-2 w-2 {{ $adminNotifCount > 0 ? '' : 'hidden' }}">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+                            </span>
+                        </span>
+                        <span class="hidden md:inline">Notifikasi</span>
+                        <span id="admin-notif-badge" class="bg-rose-600 text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded-full min-w-[18px] text-center leading-none {{ $adminNotifCount > 0 ? '' : 'hidden' }}">
+                            {{ $adminNotifCount }}
+                        </span>
+                    </button>
+
+                    <!-- Admin Notification Dropdown Panel -->
+                    <div id="admin-notif-dropdown"
+                         class="hidden fixed sm:absolute inset-x-2 sm:inset-x-auto sm:right-0 top-16 sm:top-full mt-2 w-auto sm:w-[420px] max-w-[calc(100vw-16px)] sm:max-w-[440px] bg-white rounded-2xl shadow-2xl border border-slate-200/90 text-slate-800 z-50 overflow-hidden transform transition-all duration-200 origin-top-right">
+
+                        <!-- Header Panel -->
+                        <div class="p-3.5 bg-gradient-to-r from-[#065b65] to-[#0b7c89] text-white flex items-center justify-between shadow-xs">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center text-amber-300">
+                                    <i class="fa-solid fa-bell"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-sm text-white leading-tight">Pemberitahuan Masuk</h3>
+                                    <p class="text-[10px] text-teal-100 font-normal">Pengajuan akta, pendaftaran &amp; perubahan data</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <button type="button"
+                                        id="admin-btn-mark-all-read"
+                                        class="text-[10px] bg-white/20 hover:bg-white/30 text-white px-2 py-1 rounded-md transition font-medium cursor-pointer inline-flex items-center gap-1"
+                                        title="Tandai semua sudah dibaca">
+                                    <i class="fa-solid fa-check-double text-[9px]"></i> Dibaca
+                                </button>
+                                <button type="button"
+                                        id="admin-btn-clear-all-notifs"
+                                        class="text-[10px] bg-rose-500/30 hover:bg-rose-600 text-white px-2 py-1 rounded-md transition font-medium cursor-pointer border border-white/20 inline-flex items-center gap-1"
+                                        title="Hapus semua riwayat notifikasi">
+                                    <i class="fa-solid fa-trash-can text-[9px]"></i> Hapus Semua
+                                </button>
+                                <button type="button"
+                                        id="admin-btn-close-notif-dropdown"
+                                        class="w-7 h-7 rounded-lg hover:bg-white/20 text-white flex items-center justify-center transition cursor-pointer text-xs"
+                                        title="Tutup">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Filter Pills -->
+                        <div class="flex items-center gap-1 px-3 py-2 bg-slate-50 border-b border-slate-200 text-[11px] font-semibold text-slate-600 overflow-x-auto">
+                            <button type="button" data-filter="all" class="notif-filter-btn px-2.5 py-1 rounded-full bg-[#065b65] text-white cursor-pointer transition">
+                                Semua (<span class="notif-filter-count" data-filter-type="all">{{ $adminNotifCount }}</span>)
+                            </button>
+                            <button type="button" data-filter="akte" class="notif-filter-btn px-2.5 py-1 rounded-full bg-slate-200 text-slate-700 hover:bg-slate-300 cursor-pointer transition">
+                                Akte (<span class="notif-filter-count" data-filter-type="akte">{{ $adminNotifications->where('type', 'akte')->count() }}</span>)
+                            </button>
+                            <button type="button" data-filter="citizen" class="notif-filter-btn px-2.5 py-1 rounded-full bg-slate-200 text-slate-700 hover:bg-slate-300 cursor-pointer transition">
+                                Akun Warga (<span class="notif-filter-count" data-filter-type="citizen">{{ $adminNotifications->where('type', 'citizen')->count() }}</span>)
+                            </button>
+                            <button type="button" data-filter="profile" class="notif-filter-btn px-2.5 py-1 rounded-full bg-slate-200 text-slate-700 hover:bg-slate-300 cursor-pointer transition">
+                                Perubahan Data (<span class="notif-filter-count" data-filter-type="profile">{{ $adminNotifications->where('type', 'profile')->count() }}</span>)
+                            </button>
+                        </div>
+
+                        <!-- Notifications Scrollable List -->
+                        <div id="admin-notif-list" class="max-h-[380px] overflow-y-auto divide-y divide-slate-100 bg-white" data-user-id="admin_{{ Auth::id() }}">
+                            @foreach($adminNotifications as $item)
+                                <div class="notif-item notif-unread p-3.5 transition flex items-start gap-3 relative cursor-pointer group"
+                                     data-notif-id="{{ $item['id'] }}"
+                                     data-notif-type="{{ $item['type'] }}"
+                                     onclick="handleAdminNotificationClick('{{ $item['id'] }}', '{{ $item['url'] }}')">
+
+                                    <div class="notif-unread-dot w-2.5 h-2.5 rounded-full bg-rose-500 mt-1 shrink-0 transition"></div>
+
+                                    <div class="status-icon-container w-9 h-9 rounded-xl {{ $item['icon_bg'] }} flex items-center justify-center shrink-0 text-sm shadow-2xs group-hover:scale-105 transition">
+                                        <i class="{{ $item['icon_class'] }}"></i>
+                                    </div>
+
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center justify-between gap-1.5 mb-1">
+                                            <div class="flex items-center gap-1.5 flex-wrap">
+                                                <span class="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
+                                                    <i class="{{ $item['category_icon'] }} text-[9px] mr-0.5"></i> {{ $item['category'] }}
+                                                </span>
+                                                <span class="text-[9px] font-bold px-1.5 py-0.5 rounded border {{ $item['status_badge_class'] }}">
+                                                    {{ $item['status_label'] }}
+                                                </span>
+                                            </div>
+                                            <div class="flex items-center gap-1.5 shrink-0">
+                                                <span class="text-[10px] text-slate-400 font-medium flex items-center gap-1">
+                                                    <i class="fa-regular fa-clock text-[9px]"></i> {{ $item['formatted_time'] }}
+                                                </span>
+                                                <button type="button"
+                                                        class="btn-delete-notif w-5 h-5 rounded hover:bg-rose-100 text-slate-400 hover:text-rose-600 flex items-center justify-center transition cursor-pointer text-[10px]"
+                                                        title="Hapus notifikasi ini"
+                                                        aria-label="Hapus notifikasi ini"
+                                                        onclick="event.stopPropagation(); window.deleteAdminNotification('{{ $item['id'] }}', event);">
+                                                    <i class="fa-regular fa-trash-can"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <h4 class="text-xs font-bold text-slate-900 group-hover:text-[#0b7c89] transition leading-snug">
+                                            {{ $item['title'] }}
+                                        </h4>
+
+                                        <p class="text-[11px] text-slate-600 mt-1 leading-relaxed">
+                                            {!! $item['message'] !!}
+                                        </p>
+
+                                        <div class="mt-2.5 flex items-center justify-between">
+                                            <span class="notif-action-link text-[10px] font-bold text-[#0b7c89] group-hover:text-[#065b65] inline-flex items-center gap-1">
+                                                <span>{{ $item['url_label'] }}</span>
+                                                <i class="fa-solid fa-arrow-right text-[9px] transition-transform group-hover:translate-x-0.5"></i>
+                                            </span>
+                                            @if(!empty($item['reference_no']))
+                                                <span class="text-[9px] font-mono text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
+                                                    {{ $item['reference_no'] }}
+                                                </span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+
+                            <div class="p-8 text-center {{ $adminNotifCount > 0 ? 'hidden' : '' }}" id="admin-notif-empty">
+                                <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-2.5 text-lg">
+                                    <i class="fa-regular fa-bell-slash"></i>
+                                </div>
+                                <h4 class="text-xs font-bold text-slate-700">Belum Ada Pemberitahuan Baru</h4>
+                                <p class="text-[11px] text-slate-500 mt-1 max-w-xs mx-auto">
+                                    Pengajuan akta, pendaftaran warga baru, dan permohonan perubahan data akan tampil di sini.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Footer Links -->
+                        <div class="p-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs font-semibold">
+                            <a href="{{ route('admin.dashboard') }}" class="text-[#0b7c89] hover:text-[#065b65] inline-flex items-center gap-1.5 transition text-[11px]">
+                                <i class="fa-solid fa-gauge-high"></i> Dashboard Admin
+                            </a>
+                            <a href="{{ route('admin.activity_logs.index') }}" class="text-slate-600 hover:text-[#0b7c89] inline-flex items-center gap-1.5 transition text-[11px]">
+                                <i class="fa-solid fa-clock-rotate-left"></i> Log Aktivitas
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
                 <a href="{{ route('home') }}" target="_blank" class="text-sm font-semibold text-[#0b7c89] bg-teal-50 border border-teal-200 px-3 py-1.5 rounded-lg hover:bg-teal-100 transition flex items-center gap-1.5">
                     <i class="fa-solid fa-globe"></i> <span class="hidden md:inline">Lihat Web</span>
                 </a>

@@ -148,11 +148,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('/', [AdminActivityLogController::class, 'index'])->name('index');
         });
 
-        // Pengaturan Profil Admin & Email Notifikasi
+        // Pengaturan Profil Admin
         Route::prefix('profil')->name('profile.')->group(function () {
             Route::get('/', [AdminProfileController::class, 'index'])->name('index');
             Route::put('/', [AdminProfileController::class, 'updateProfile'])->name('update');
-            Route::put('/email-settings', [AdminProfileController::class, 'updateEmailSettings'])->name('email_settings');
             Route::put('/password', [AdminProfileController::class, 'updatePassword'])->name('password');
         });
     });

@@ -18,11 +18,11 @@ class DatabaseSeeder extends Seeder
     {
         // 1. Admin Kalurahan Purwobinangun
         $admin = User::updateOrCreate(
-            ['email' => 'admin@purwobinangun.desa.id'],
+            ['email' => 'purwo34041601@gmail.com'],
             [
                 'name' => 'Petugas Pelayanan Kalurahan',
-                'email' => 'admin@purwobinangun.desa.id',
-                'password' => Hash::make('admin123'),
+                'email' => 'purwo34041601@gmail.com',
+                'password' => Hash::make('Password123'),
                 'role' => 'admin',
                 'status' => 'active',
                 'verified_at' => now(),

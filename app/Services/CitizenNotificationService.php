@@ -138,6 +138,11 @@ class CitizenNotificationService
                     $iconBg = 'bg-teal-50 border border-teal-200';
                     $title = 'Akte Kelahiran Sudah Diambil';
                     $message = "Dokumen Akte Kelahiran an. {$birth->child_name} (No: {$birth->registration_no}) telah selesai diserahkan kepada pemohon.";
+                } elseif ($status === 'archived') {
+                    $iconClass = 'fa-solid fa-box-archive text-slate-600';
+                    $iconBg = 'bg-slate-100 border border-slate-200';
+                    $title = 'Akte Kelahiran Diarsipkan';
+                    $message = "Pengajuan Akte Kelahiran an. {$birth->child_name} (No: {$birth->registration_no}) telah dipindahkan ke arsip.";
                 } else {
                     $iconClass = 'fa-solid fa-clock text-amber-600';
                     $iconBg = 'bg-amber-50 border border-amber-200';
@@ -212,6 +217,11 @@ class CitizenNotificationService
                     $iconBg = 'bg-teal-50 border border-teal-200';
                     $title = 'Surat Kematian Sudah Diambil';
                     $message = "Dokumen Surat Keterangan Kematian an. {$death->deceased_name} (No: {$death->registration_no}) telah selesai diserahkan kepada pemohon.";
+                } elseif ($status === 'archived') {
+                    $iconClass = 'fa-solid fa-box-archive text-slate-600';
+                    $iconBg = 'bg-slate-100 border border-slate-200';
+                    $title = 'Surat Kematian Diarsipkan';
+                    $message = "Pengajuan Surat Keterangan Kematian an. {$death->deceased_name} (No: {$death->registration_no}) telah dipindahkan ke arsip.";
                 } else {
                     $iconClass = 'fa-solid fa-clock text-amber-600';
                     $iconBg = 'bg-amber-50 border border-amber-200';

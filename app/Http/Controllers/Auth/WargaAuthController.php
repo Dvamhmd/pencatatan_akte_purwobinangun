@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
-use App\Services\AdminNotificationService;
 
 class WargaAuthController extends Controller
 {
@@ -284,9 +283,6 @@ class WargaAuthController extends Controller
                 'phone' => $user->phone,
             ],
         ]);
-
-        // Notifikasi email otomatis ke admin/petugas kalurahan
-        AdminNotificationService::notifyNewCitizenRegistration($user);
 
         // Pastikan sesi aktif lama (jika ada) dikeluarkan agar berstatus belum login (guest)
         if (Auth::check()) {

@@ -429,14 +429,12 @@ class WargaAuthAndAccessTest extends TestCase
         ]);
     }
 
-    public function test_citizen_verification_triggers_email_and_whatsapp_notifications()
+    public function test_citizen_verification_displays_website_notifications_without_email_or_whatsapp()
     {
         \Illuminate\Support\Facades\Mail::fake();
-        \Illuminate\Support\Facades\Http::fake([
-            'api.fonnte.com/*' => \Illuminate\Support\Facades\Http::response(['status' => true, 'target' => '6281234567890'], 200),
-        ]);
+        \Illuminate\Support\Facades\Http::fake();
 
-        $admin = User::where('email', 'admin@purwobinangun.desa.id')->first();
+        $admin = User::where('role', 'admin')->first();
         $pendingCitizen = User::firstOrCreate(
             ['nik' => '3404058888880001'],
             [
@@ -456,18 +454,15 @@ class WargaAuthAndAccessTest extends TestCase
             ]
         );
 
-        // 1. Cek halaman menampilkan pop up konfirmasi notifikasi dan toggle
+        // 1. Cek halaman tidak lagi menampilkan pop up konfirmasi email/whatsapp
         $responseShow = $this->actingAs($admin)->get('/admin/warga/' . $pendingCitizen->id);
         $responseShow->assertStatus(200);
-        $responseShow->assertSee('Konfirmasi Pengiriman Notifikasi');
-        $responseShow->assertSee('Email Warga');
-        $responseShow->assertSee('WhatsApp');
+        $responseShow->assertDontSee('Konfirmasi Pengiriman Notifikasi');
+        $responseShow->assertDontSee('WhatsApp');
 
-        // 2. Admin menyetujui akun dengan notifikasi email & whatsapp aktif
+        // 2. Admin menyetujui akun
         $responseApprove = $this->actingAs($admin)->post('/admin/warga/' . $pendingCitizen->id . '/verify', [
             'action' => 'approve',
-            'send_email' => '1',
-            'send_whatsapp' => '1',
         ]);
 
         $responseApprove->assertRedirect('/admin/warga/' . $pendingCitizen->id);
@@ -476,16 +471,14 @@ class WargaAuthAndAccessTest extends TestCase
             'status' => 'active',
         ]);
 
-        \Illuminate\Support\Facades\Mail::assertSent(\App\Mail\CitizenAccountStatusNotification::class, function ($mail) use ($pendingCitizen) {
-            return $mail->citizen->id === $pendingCitizen->id && $mail->actionType === 'approved';
-        });
+        // Pastikan pemberitahuan akun aktif tampil melalui website
+        $notifs = \App\Services\CitizenNotificationService::getNotificationsForUser($pendingCitizen->fresh());
+        $this->assertTrue($notifs->contains(fn ($n) => $n['type'] === 'account' && $n['status'] === 'active'));
 
-        // 3. Admin menghapus akun dengan notifikasi email & whatsapp aktif
+        // 3. Admin menghapus akun ke arsip
         $responseDelete = $this->actingAs($admin)->post('/admin/warga/' . $pendingCitizen->id . '/verify', [
             'action' => 'delete',
             'rejection_reason' => 'Sudah tidak bertempat tinggal di wilayah Kalurahan.',
-            'send_email' => '1',
-            'send_whatsapp' => '1',
         ]);
 
         $responseDelete->assertRedirect('/admin/warga');
@@ -495,8 +488,7 @@ class WargaAuthAndAccessTest extends TestCase
             'rejection_reason' => 'Sudah tidak bertempat tinggal di wilayah Kalurahan.',
         ]);
 
-        \Illuminate\Support\Facades\Mail::assertSent(\App\Mail\CitizenAccountStatusNotification::class, function ($mail) use ($pendingCitizen) {
-            return $mail->citizen->id === $pendingCitizen->id && $mail->actionType === 'deleted';
-        });
+        \Illuminate\Support\Facades\Mail::assertNothingSent();
+        \Illuminate\Support\Facades\Http::assertNothingSent();
     }
 }

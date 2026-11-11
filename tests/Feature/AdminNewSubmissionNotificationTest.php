@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Mail\AdminNewSubmissionNotification;
 use App\Models\BirthCertificate;
 use App\Models\DeathCertificate;
 use App\Models\ProfileUpdateRequest;
@@ -10,7 +9,6 @@ use App\Models\User;
 use App\Services\AdminNotificationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -25,26 +23,7 @@ class AdminNewSubmissionNotificationTest extends TestCase
         Storage::fake('public');
     }
 
-    public function test_admin_recipients_resolution_from_env_and_database(): void
-    {
-        // 1. Buat admin di database
-        User::create([
-            'name' => 'Admin Kalurahan',
-            'email' => 'admin.db@purwobinangun.desa.id',
-            'role' => 'admin',
-            'password' => bcrypt('password123'),
-        ]);
-
-        // 2. Set environment/config admin email
-        Config::set('mail.admin_notification_email', 'admin.env@example.com');
-
-        $recipients = AdminNotificationService::getAdminRecipients();
-
-        $this->assertContains('admin.env@example.com', $recipients);
-        $this->assertContains('admin.db@purwobinangun.desa.id', $recipients);
-    }
-
-    public function test_birth_certificate_submission_triggers_admin_email_notification(): void
+    public function test_birth_certificate_submission_appears_in_admin_website_notifications_without_email(): void
     {
         Mail::fake();
 
@@ -64,7 +43,7 @@ class AdminNewSubmissionNotificationTest extends TestCase
             'password' => bcrypt('password123'),
         ]);
 
-        $response = $this->actingAs($warga)->post('/akte-kelahiran/buat', [
+        $this->actingAs($warga)->post('/akte-kelahiran/buat', [
             'child_name' => 'Bayi Baru Lahir',
             'gender' => 'L',
             'birth_place' => 'Sleman',
@@ -94,16 +73,20 @@ class AdminNewSubmissionNotificationTest extends TestCase
 
         $birth = BirthCertificate::first();
         $this->assertNotNull($birth);
+        Mail::assertNothingSent();
 
-        Mail::assertSent(AdminNewSubmissionNotification::class, function ($mail) use ($admin, $birth) {
-            return $mail->hasTo($admin->email)
-                && $mail->submissionType === 'birth'
-                && $mail->submission->id === $birth->id
-                && str_contains($mail->actionUrl, (string) $birth->id);
-        });
+        $adminNotifs = AdminNotificationService::getNotificationsForAdmin();
+        $this->assertTrue($adminNotifs->contains(fn ($item) => $item['reference_no'] === $birth->registration_no && $item['type'] === 'akte'));
+
+        $responseAdmin = $this->actingAs($admin)->get('/admin/dashboard');
+        $responseAdmin->assertStatus(200);
+        $responseAdmin->assertSee('id="admin-notif-btn"', false);
+        $responseAdmin->assertSee('id="admin-notif-dropdown"', false);
+        $responseAdmin->assertSee($birth->registration_no);
+        $responseAdmin->assertSee('Bayi Baru Lahir');
     }
 
-    public function test_death_certificate_submission_triggers_admin_email_notification(): void
+    public function test_death_certificate_submission_appears_in_admin_website_notifications_without_email(): void
     {
         Mail::fake();
 
@@ -123,14 +106,19 @@ class AdminNewSubmissionNotificationTest extends TestCase
             'password' => bcrypt('password123'),
         ]);
 
-        $response = $this->actingAs($warga)->post('/akte-kematian/buat', [
+        $this->actingAs($warga)->post('/akte-kematian/buat', [
+            'family_card_no' => '3404050101900003',
+            'head_of_family_name' => 'Almarhum Budi',
             'deceased_nik' => '3404050101450001',
             'deceased_name' => 'Almarhum Budi',
             'gender' => 'L',
+            'deceased_birth_place' => 'Sleman',
+            'birth_date' => '1945-01-01',
             'religion' => 'Islam',
             'padukuhan' => 'Donolayan',
             'rt' => '01',
             'rw' => '02',
+            'death_day' => 'Senin',
             'death_date' => '2026-08-10',
             'death_place' => 'Rumah',
             'cause_of_death' => 'Sakit',
@@ -140,34 +128,38 @@ class AdminNewSubmissionNotificationTest extends TestCase
             'applicant_phone' => '08198765432',
             'applicant_relation' => 'Anak',
             'doc_death_statement' => UploadedFile::fake()->create('kematian.pdf', 100),
+            'doc_rt_rw_statement' => UploadedFile::fake()->create('rt_rw.pdf', 100),
             'doc_family_card' => UploadedFile::fake()->create('kk.jpg', 100),
             'doc_deceased_ktp' => UploadedFile::fake()->create('ktp_jenazah.jpg', 100),
-            'doc_applicant_ktp' => UploadedFile::fake()->create('ktp_pelapor.jpg', 100),
+            'doc_heir_family_card' => UploadedFile::fake()->create('kk_waris.jpg', 100),
+            'doc_heir_ktp' => UploadedFile::fake()->create('ktp_pelapor.jpg', 100),
         ]);
 
         $death = DeathCertificate::first();
         $this->assertNotNull($death);
+        Mail::assertNothingSent();
 
-        Mail::assertSent(AdminNewSubmissionNotification::class, function ($mail) use ($admin, $death) {
-            return $mail->hasTo($admin->email)
-                && $mail->submissionType === 'death'
-                && $mail->submission->id === $death->id
-                && str_contains($mail->actionUrl, (string) $death->id);
-        });
+        $adminNotifs = AdminNotificationService::getNotificationsForAdmin();
+        $this->assertTrue($adminNotifs->contains(fn ($item) => $item['reference_no'] === $death->registration_no && $item['type'] === 'akte'));
+
+        $responseAdmin = $this->actingAs($admin)->get('/admin/dashboard');
+        $responseAdmin->assertStatus(200);
+        $responseAdmin->assertSee($death->registration_no);
+        $responseAdmin->assertSee('Almarhum Budi');
     }
 
-    public function test_warga_registration_triggers_admin_email_notification(): void
+    public function test_warga_registration_appears_in_admin_website_notifications_without_email(): void
     {
         Mail::fake();
 
-        $admin = User::create([
+        User::create([
             'name' => 'Admin Petugas',
             'email' => 'petugas@purwobinangun.desa.id',
             'role' => 'admin',
             'password' => bcrypt('password123'),
         ]);
 
-        $response = $this->post('/warga/daftar', [
+        $this->post('/warga/daftar', [
             'nik' => '3404051234560001',
             'family_card_no' => '3404059876540001',
             'name' => 'Warga Pendaftar Baru',
@@ -187,20 +179,17 @@ class AdminNewSubmissionNotificationTest extends TestCase
         $newWarga = User::where('nik', '3404051234560001')->first();
         $this->assertNotNull($newWarga);
         $this->assertEquals('pending', $newWarga->status);
+        Mail::assertNothingSent();
 
-        Mail::assertSent(AdminNewSubmissionNotification::class, function ($mail) use ($admin, $newWarga) {
-            return $mail->hasTo($admin->email)
-                && $mail->submissionType === 'warga_registration'
-                && $mail->submission->id === $newWarga->id
-                && str_contains($mail->actionUrl, (string) $newWarga->id);
-        });
+        $adminNotifs = AdminNotificationService::getNotificationsForAdmin();
+        $this->assertTrue($adminNotifs->contains(fn ($item) => $item['reference_no'] === $newWarga->nik && $item['type'] === 'citizen'));
     }
 
-    public function test_profile_update_request_triggers_admin_email_notification(): void
+    public function test_profile_update_request_appears_in_admin_website_notifications_without_email(): void
     {
         Mail::fake();
 
-        $admin = User::create([
+        User::create([
             'name' => 'Admin Petugas',
             'email' => 'petugas@purwobinangun.desa.id',
             'role' => 'admin',
@@ -225,7 +214,7 @@ class AdminNewSubmissionNotificationTest extends TestCase
             'password' => bcrypt('password123'),
         ]);
 
-        $response = $this->actingAs($warga)->put('/profil', [
+        $this->actingAs($warga)->put('/profil', [
             'nik' => '3404055555666677',
             'family_card_no' => '3404059999888877',
             'name' => 'Warga Profil Baru',
@@ -243,16 +232,13 @@ class AdminNewSubmissionNotificationTest extends TestCase
         $profileReq = ProfileUpdateRequest::where('user_id', $warga->id)->first();
         $this->assertNotNull($profileReq);
         $this->assertEquals('pending', $profileReq->status);
+        Mail::assertNothingSent();
 
-        Mail::assertSent(AdminNewSubmissionNotification::class, function ($mail) use ($admin, $profileReq) {
-            return $mail->hasTo($admin->email)
-                && $mail->submissionType === 'profile_update'
-                && $mail->submission->id === $profileReq->id
-                && str_contains($mail->actionUrl, (string) $profileReq->id);
-        });
+        $adminNotifs = AdminNotificationService::getNotificationsForAdmin();
+        $this->assertTrue($adminNotifs->contains(fn ($item) => $item['type'] === 'profile' && str_contains($item['message'], 'Warga Profil Baru')));
     }
 
-    public function test_admin_can_view_and_update_email_settings_from_profile_page(): void
+    public function test_admin_profile_page_no_longer_has_email_notification_settings(): void
     {
         $admin = User::create([
             'name' => 'Admin Utama',
@@ -261,41 +247,13 @@ class AdminNewSubmissionNotificationTest extends TestCase
             'password' => bcrypt('password123'),
         ]);
 
-        // 1. Cek tampilan halaman profil menampilkan form pengaturan email dan panduan
         $responseGet = $this->actingAs($admin)->get('/admin/profil');
         $responseGet->assertStatus(200);
-        $responseGet->assertSee('Pengaturan Email Notifikasi Sistem & Pengajuan Masuk', false);
-        $responseGet->assertSee('Panduan Konfigurasi SMTP');
-        $responseGet->assertSee('Email Penerima Pengajuan Baru');
-        $responseGet->assertSee('Email Pengirim Notifikasi ke Warga');
+        $responseGet->assertSee('Sistem Pemberitahuan Website');
+        $responseGet->assertDontSee('Pengaturan Email Notifikasi Sistem & Pengajuan Masuk', false);
+        $responseGet->assertDontSee('Panduan Konfigurasi SMTP');
 
-        // 2. Kirim update pengaturan email
-        $responsePut = $this->actingAs($admin)->put('/admin/profil/email-settings', [
-            'admin_notification_email' => 'notif.admin@purwobinangun.desa.id, lurah@purwobinangun.desa.id',
-            'mail_from_address' => 'layanan.resmi@purwobinangun.desa.id',
-            'mail_from_name' => 'Layanan Resmi Kalurahan Purwobinangun',
-            'mail_password' => 'abcdefghijklmnop',
-        ]);
-
-        $responsePut->assertRedirect(route('admin.profile.index'));
-        $responsePut->assertSessionHas('success');
-    }
-
-    public function test_update_email_settings_validates_recipient_email_format(): void
-    {
-        $admin = User::create([
-            'name' => 'Admin Utama',
-            'email' => 'admin.utama2@purwobinangun.desa.id',
-            'role' => 'admin',
-            'password' => bcrypt('password123'),
-        ]);
-
-        $response = $this->actingAs($admin)->put('/admin/profil/email-settings', [
-            'admin_notification_email' => 'email-tidak-valid',
-            'mail_from_address' => 'layanan@example.com',
-            'mail_from_name' => 'Layanan',
-        ]);
-
-        $response->assertSessionHasErrors(['admin_notification_email']);
+        $responsePut = $this->actingAs($admin)->put('/admin/profil/email-settings', []);
+        $responsePut->assertStatus(404);
     }
 }

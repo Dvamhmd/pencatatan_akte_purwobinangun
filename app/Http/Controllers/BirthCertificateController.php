@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use App\Services\AdminNotificationService;
 
 class BirthCertificateController extends Controller
 {
@@ -716,9 +715,6 @@ class BirthCertificateController extends Controller
         } else {
             $birth = BirthCertificate::create($data);
         }
-
-        // Notifikasi email otomatis ke admin/petugas kalurahan
-        AdminNotificationService::notifyNewBirthCertificate($birth);
 
         ActivityLog::record([
             'user_id' => Auth::id(),

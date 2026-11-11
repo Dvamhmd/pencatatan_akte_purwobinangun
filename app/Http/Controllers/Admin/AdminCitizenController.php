@@ -3,19 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Mail\CitizenAccountStatusNotification;
 use App\Models\ActivityLog;
 use App\Models\BirthCertificate;
 use App\Models\DeathCertificate;
 use App\Models\ProfileUpdateRequest;
 use App\Models\User;
-use App\Services\WhatsAppNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
@@ -263,8 +259,6 @@ class AdminCitizenController extends Controller
             'rejection_reason.required_if' => 'Alasan atau catatan penolakan/penghapusan akun wajib diisi.',
         ]);
 
-        $sendEmail = $request->boolean('send_email');
-        $sendWhatsApp = $request->boolean('send_whatsapp');
         $verifierName = Auth::user()->name;
 
         if ($validated['action'] === 'approve') {
@@ -287,37 +281,7 @@ class AdminCitizenController extends Controller
                 'subject_id' => $citizen->id,
             ]);
 
-            $message = 'Akun warga (' . $citizen->name . ') berhasil diverifikasi dan diaktifkan!';
-
-            // Kirim notifikasi Email jika diaktifkan
-            if ($sendEmail && $citizen->email) {
-                try {
-                    Mail::to($citizen->email)->send(new CitizenAccountStatusNotification(
-                        citizen: $citizen,
-                        actionType: 'approved',
-                        reason: null,
-                        processedBy: $verifierName
-                    ));
-                    $message .= ' Notifikasi telah otomatis dikirimkan ke email warga (' . $citizen->email . ').';
-                } catch (\Throwable $e) {
-                    Log::error('Gagal mengirim email notifikasi verifikasi akun: ' . $e->getMessage());
-                    $message .= ' (Status tersimpan, namun notifikasi email gagal dikirim. Silakan periksa konfigurasi SMTP).';
-                }
-            }
-
-            // Kirim notifikasi WhatsApp jika diaktifkan
-            if ($sendWhatsApp && $citizen->phone) {
-                $waSent = WhatsAppNotificationService::sendCitizenAccountStatusNotification(
-                    citizen: $citizen,
-                    actionType: 'approved',
-                    reason: null,
-                    adminName: $verifierName
-                );
-
-                if ($waSent) {
-                    $message .= ' Notifikasi WhatsApp berhasil dikirim ke ' . $citizen->phone . '.';
-                }
-            }
+            $message = 'Akun warga (' . $citizen->name . ') berhasil diverifikasi dan diaktifkan! Pemberitahuan telah ditampilkan di portal notifikasi warga.';
 
             return redirect()->route('admin.citizens.show', $citizen)
                 ->with('success', $message);
@@ -370,36 +334,6 @@ class AdminCitizenController extends Controller
 
             $message = 'Akun warga (' . $citizen->name . ') telah berhasil dihapus dari daftar aktif dan seluruh riwayat datanya telah disimpan ke dalam Arsip Database.';
 
-            // Kirim notifikasi Email jika diaktifkan
-            if ($sendEmail && $citizen->email) {
-                try {
-                    Mail::to($citizen->email)->send(new CitizenAccountStatusNotification(
-                        citizen: $citizen,
-                        actionType: 'deleted',
-                        reason: $validated['rejection_reason'],
-                        processedBy: $verifierName
-                    ));
-                    $message .= ' Notifikasi telah otomatis dikirimkan ke email warga (' . $citizen->email . ').';
-                } catch (\Throwable $e) {
-                    Log::error('Gagal mengirim email notifikasi penghapusan akun: ' . $e->getMessage());
-                    $message .= ' (Status tersimpan, namun notifikasi email gagal dikirim. Silakan periksa konfigurasi SMTP).';
-                }
-            }
-
-            // Kirim notifikasi WhatsApp jika diaktifkan
-            if ($sendWhatsApp && $citizen->phone) {
-                $waSent = WhatsAppNotificationService::sendCitizenAccountStatusNotification(
-                    citizen: $citizen,
-                    actionType: 'deleted',
-                    reason: $validated['rejection_reason'],
-                    adminName: $verifierName
-                );
-
-                if ($waSent) {
-                    $message .= ' Notifikasi WhatsApp berhasil dikirim ke ' . $citizen->phone . '.';
-                }
-            }
-
             return redirect()->route('admin.citizens.index')
                 ->with('success', $message);
         } else {
@@ -409,7 +343,6 @@ class AdminCitizenController extends Controller
                 return back()->with('error', 'Akun warga (' . $citizen->name . ') tidak dapat dinonaktifkan/dihapus karena masih memiliki permohonan akta aktif.');
             }
 
-            $actionType = $wasActive ? 'deactivated' : 'rejected';
             $citizen->status = 'rejected';
             $citizen->rejection_reason = $validated['rejection_reason'];
             $citizen->verified_at = now();
@@ -432,36 +365,6 @@ class AdminCitizenController extends Controller
             $message = $wasActive
                 ? 'Akun warga (' . $citizen->name . ') telah dinonaktifkan.'
                 : 'Pendaftaran akun warga (' . $citizen->name . ') telah ditolak dengan catatan yang diberikan.';
-
-            // Kirim notifikasi Email jika diaktifkan
-            if ($sendEmail && $citizen->email) {
-                try {
-                    Mail::to($citizen->email)->send(new CitizenAccountStatusNotification(
-                        citizen: $citizen,
-                        actionType: $actionType,
-                        reason: $validated['rejection_reason'],
-                        processedBy: $verifierName
-                    ));
-                    $message .= ' Notifikasi telah otomatis dikirimkan ke email warga (' . $citizen->email . ').';
-                } catch (\Throwable $e) {
-                    Log::error('Gagal mengirim email notifikasi penolakan/penonaktifan akun: ' . $e->getMessage());
-                    $message .= ' (Status tersimpan, namun notifikasi email gagal dikirim. Silakan periksa konfigurasi SMTP).';
-                }
-            }
-
-            // Kirim notifikasi WhatsApp jika diaktifkan
-            if ($sendWhatsApp && $citizen->phone) {
-                $waSent = WhatsAppNotificationService::sendCitizenAccountStatusNotification(
-                    citizen: $citizen,
-                    actionType: $actionType,
-                    reason: $validated['rejection_reason'],
-                    adminName: $verifierName
-                );
-
-                if ($waSent) {
-                    $message .= ' Notifikasi WhatsApp berhasil dikirim ke ' . $citizen->phone . '.';
-                }
-            }
 
             return redirect()->route('admin.citizens.show', $citizen)
                 ->with('success', $message);

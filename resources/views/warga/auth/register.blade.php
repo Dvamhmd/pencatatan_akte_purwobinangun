@@ -327,7 +327,7 @@
                         </label>
                         <input type="email" name="email" id="email" value="{{ old('email', $prefill->email ?? '') }}" required autocomplete="email" placeholder="email@contoh.com" class="w-full text-xs px-3.5 py-2.5 rounded-lg border {{ $errors->has('email') ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300' }} focus:outline-none focus:ring-2 focus:ring-[#095b8c]/20 placeholder:text-slate-400 placeholder:text-xs">
                         <p class="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
-                            <i class="fa-solid fa-circle-info text-[#095b8c]"></i> Digunakan untuk menerima notifikasi status pengajuan berkas secara otomatis.
+                            <i class="fa-solid fa-circle-info text-[#095b8c]"></i> Digunakan sebagai alamat email resmi akun warga. Seluruh notifikasi status tampil langsung melalui website ini.
                         </p>
                         @error('email')
                             <p class="text-rose-600 text-[11px] mt-1 font-medium">{{ $message }}</p>
