@@ -27,13 +27,8 @@
                 </div>
 
                 <h2 class="text-xl md:text-2xl font-extrabold text-slate-900 tracking-tight">
-                    Pencatatan & Pengurusan Surat Pengantar Akte Kelahiran dan Akte Kematian
+                    Pencatatan Surat Pengantar Akte Kelahiran dan Akte Kematian
                 </h2>
-                <p class="text-xs md:text-sm text-slate-600 mt-2 leading-relaxed">
-                    Selamat datang di menu pelayanan kependudukan Pemerintah Kalurahan Purwobinangun. Warga dapat mengajukan permohonan penerbitan surat pengantar pembuatan akta secara online, mengunggah berkas persyaratan, dan memantau proses verifikasi secara transparan.
-                </p>
-
-
             </div>
         </div>
 
@@ -45,10 +40,7 @@
                 <div>
                     <!-- Header Kartu -->
                     <div class="bg-gradient-to-br from-[#095b8c] to-[#059cb8] p-5 text-white relative">
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="bg-amber-400 text-slate-950 font-bold text-[10px] uppercase px-2.5 py-0.5 rounded shadow-xs">
-                                Layanan Kelahiran
-                            </span>
+                        <div class="flex items-center justify-end mb-3">
                             <i class="fa-solid fa-baby text-3xl text-white/30"></i>
                         </div>
                         <h3 class="text-lg font-bold text-white leading-snug">
@@ -61,11 +53,6 @@
 
                     <!-- Body Info -->
                     <div class="p-4 space-y-2.5 text-xs text-slate-600 bg-slate-50/50">
-                        <div class="flex items-center gap-2 text-[11px] text-slate-500 pb-2 border-b border-slate-200/60">
-                            <span class="flex items-center gap-1"><i class="fa-solid fa-clock text-[#059cb8]"></i> Proses 1-2 Hari Kerja</span>
-                            <span>•</span>
-                            <span class="text-emerald-600 font-semibold flex items-center gap-1"><i class="fa-solid fa-check-circle"></i> Gratis</span>
-                        </div>
                         <ul class="space-y-1.5 text-[11px]">
                             <li class="flex items-start gap-1.5">
                                 <i class="fa-solid fa-file-lines text-[#059cb8] mt-0.5"></i>
@@ -96,10 +83,7 @@
                 <div>
                     <!-- Header Kartu -->
                     <div class="bg-gradient-to-br from-rose-700 to-rose-900 p-5 text-white relative">
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="bg-amber-400 text-slate-950 font-bold text-[10px] uppercase px-2.5 py-0.5 rounded shadow-xs">
-                                Layanan Kematian
-                            </span>
+                        <div class="flex items-center justify-end mb-3">
                             <i class="fa-solid fa-book-skull text-3xl text-white/30"></i>
                         </div>
                         <h3 class="text-lg font-bold text-white leading-snug">
@@ -112,11 +96,6 @@
 
                     <!-- Body Info -->
                     <div class="p-4 space-y-2.5 text-xs text-slate-600 bg-slate-50/50">
-                        <div class="flex items-center gap-2 text-[11px] text-slate-500 pb-2 border-b border-slate-200/60">
-                            <span class="flex items-center gap-1"><i class="fa-solid fa-clock text-rose-600"></i> Proses 1-2 Hari Kerja</span>
-                            <span>•</span>
-                            <span class="text-emerald-600 font-semibold flex items-center gap-1"><i class="fa-solid fa-check-circle"></i> Gratis</span>
-                        </div>
                         <ul class="space-y-1.5 text-[11px]">
                             <li class="flex items-start gap-1.5">
                                 <i class="fa-solid fa-file-lines text-rose-600 mt-0.5"></i>
