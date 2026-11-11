@@ -43,9 +43,9 @@ class AdminNotificationService
                     'icon_class' => $isRevision ? 'fa-solid fa-file-pen text-amber-600' : 'fa-solid fa-baby text-teal-600',
                     'icon_bg' => $isRevision ? 'bg-amber-50 border border-amber-200' : 'bg-teal-50 border border-teal-200',
                     'title' => $isRevision
-                        ? 'Revisi Akte Kelahiran Perlu Ditinjau'
+                        ? 'Revisi Akte Kelahiran'
                         : 'Pengajuan Akte Kelahiran Baru',
-                    'message' => "Permohonan Akte Kelahiran an. <strong>" . e($birth->child_name) . "</strong> (Pemohon: " . e($birth->applicant_name) . ").",
+                    'message' => "An. <strong>" . e($birth->child_name) . "</strong> (Pemohon: " . e($birth->applicant_name) . ").",
                     'reference_no' => $birth->registration_no,
                     'time' => $time,
                     'formatted_time' => Carbon::parse($time)->locale('id')->diffForHumans(),
@@ -79,9 +79,9 @@ class AdminNotificationService
                     'icon_class' => $isRevision ? 'fa-solid fa-file-pen text-amber-600' : 'fa-solid fa-book-skull text-rose-600',
                     'icon_bg' => $isRevision ? 'bg-amber-50 border border-amber-200' : 'bg-rose-50 border border-rose-200',
                     'title' => $isRevision
-                        ? 'Revisi Akte Kematian Perlu Ditinjau'
+                        ? 'Revisi Akte Kematian'
                         : 'Pengajuan Akte Kematian Baru',
-                    'message' => "Permohonan Akte Kematian an. <strong>" . e($death->deceased_name) . "</strong> (Pelapor: " . e($death->applicant_name) . ").",
+                    'message' => "An. <strong>" . e($death->deceased_name) . "</strong> (Pelapor: " . e($death->applicant_name) . ").",
                     'reference_no' => $death->registration_no,
                     'time' => $time,
                     'formatted_time' => Carbon::parse($time)->locale('id')->diffForHumans(),
@@ -113,8 +113,8 @@ class AdminNotificationService
                     'status_badge_class' => 'bg-amber-100 text-amber-800 border-amber-300',
                     'icon_class' => 'fa-solid fa-user-clock text-amber-600',
                     'icon_bg' => 'bg-amber-50 border border-amber-200',
-                    'title' => 'Pendaftaran Akun Warga Baru',
-                    'message' => "Warga <strong>" . e($citizen->name) . "</strong> (NIK: " . e($citizen->nik) . ") mendaftar dan menunggu verifikasi.",
+                    'title' => 'Pendaftaran Akun Baru',
+                    'message' => "<strong>" . e($citizen->name) . "</strong> (NIK: " . e($citizen->nik) . ") menunggu verifikasi.",
                     'reference_no' => $citizen->nik,
                     'time' => $time,
                     'formatted_time' => Carbon::parse($time)->locale('id')->diffForHumans(),
@@ -146,8 +146,8 @@ class AdminNotificationService
                     'status_badge_class' => 'bg-amber-100 text-amber-800 border-amber-300',
                     'icon_class' => 'fa-solid fa-user-pen text-indigo-600',
                     'icon_bg' => 'bg-indigo-50 border border-indigo-200',
-                    'title' => 'Permohonan Perubahan Data Warga',
-                    'message' => "Warga <strong>" . e($profileReq->name) . "</strong> mengajukan pembaruan data profil / anggota KK.",
+                    'title' => 'Perubahan Data Warga',
+                    'message' => "<strong>" . e($profileReq->name) . "</strong> mengajukan pembaruan profil / KK.",
                     'reference_no' => $profileReq->family_card_no ?: ($profileReq->user?->nik),
                     'time' => $time,
                     'formatted_time' => Carbon::parse($time)->locale('id')->diffForHumans(),

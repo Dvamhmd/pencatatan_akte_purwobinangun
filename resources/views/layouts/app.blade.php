@@ -74,14 +74,8 @@
                             
                             <!-- Header Panel -->
                             <div class="p-3.5 bg-gradient-to-r from-[#095b8c] to-[#059cb8] text-white flex items-center justify-between shadow-xs">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center text-amber-300">
-                                        <i class="fa-solid fa-bell"></i>
-                                    </div>
-                                    <div>
-                                        <h3 class="font-bold text-sm text-white leading-tight">Notifikasi Masuk</h3>
-                                        <p class="text-[10px] text-teal-100 font-normal">Informasi permohonan, akun, & data warga</p>
-                                    </div>
+                                <div class="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center text-amber-300">
+                                    <i class="fa-solid fa-bell"></i>
                                 </div>
                                 <div class="flex items-center gap-1.5 flex-wrap">
                                     <button type="button" 
@@ -211,16 +205,6 @@
                                         Status pengajuan akta, verifikasi akun, dan perubahan data kependudukan akan tampil di sini.
                                     </p>
                                 </div>
-                            </div>
-
-                            <!-- Footer Links -->
-                            <div class="p-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs font-semibold">
-                                <a href="{{ route('submissions.index') }}" class="text-[#095b8c] hover:text-[#059cb8] inline-flex items-center gap-1.5 transition text-[11px]">
-                                    <i class="fa-solid fa-list-check"></i> Semua Pengajuan
-                                </a>
-                                <a href="{{ route('profile.index') }}" class="text-slate-600 hover:text-[#095b8c] inline-flex items-center gap-1.5 transition text-[11px]">
-                                    <i class="fa-solid fa-user-gear"></i> Profil Saya
-                                </a>
                             </div>
 
                         </div>

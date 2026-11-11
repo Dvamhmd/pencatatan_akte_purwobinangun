@@ -115,7 +115,7 @@ class CitizenNotificationTest extends TestCase
         $birthNotif = $notifs->firstWhere('type', 'birth');
         $this->assertNotNull($birthNotif);
         $this->assertStringContainsString('Ahmad Budi', $birthNotif['message']);
-        $this->assertStringContainsString('SIAP DIAMBIL', $birthNotif['message']);
+        $this->assertStringContainsString('siap diambil', $birthNotif['message']);
 
         // Check death notif
         $deathNotif = $notifs->firstWhere('type', 'death');
@@ -147,7 +147,8 @@ class CitizenNotificationTest extends TestCase
         $response->assertSee('id="warga-notif-dropdown"', false);
         $response->assertSee('fa-solid fa-bell', false);
         $response->assertSee('Pengaduan');
-        $response->assertSee('Notifikasi Masuk');
+        $response->assertDontSee('Notifikasi Masuk');
+        $response->assertDontSee('Informasi permohonan, akun');
     }
 
     public function test_headbar_does_not_display_warga_notification_bell_for_guest(): void

@@ -41,8 +41,8 @@ class CitizenNotificationService
                 'status_badge_class' => 'bg-emerald-100 text-emerald-800 border-emerald-300',
                 'icon_class' => 'fa-solid fa-circle-check text-emerald-600',
                 'icon_bg' => 'bg-emerald-50 border border-emerald-200',
-                'title' => 'Akun Warga Aktif & Terverifikasi',
-                'message' => 'Akun kependudukan Anda (NIK: ' . $user->nik . ') telah aktif dan diverifikasi resmi oleh pihak Kalurahan Purwobinangun. Anda dapat menggunakan seluruh layanan permohonan akta dan administrasi kependudukan.',
+                'title' => 'Akun Terverifikasi',
+                'message' => 'Akun warga (NIK: ' . $user->nik . ') telah aktif.',
                 'admin_note' => null,
                 'reference_no' => $user->nik,
                 'time' => $time,
@@ -63,8 +63,8 @@ class CitizenNotificationService
                 'status_badge_class' => 'bg-amber-100 text-amber-800 border-amber-300',
                 'icon_class' => 'fa-solid fa-clock text-amber-600',
                 'icon_bg' => 'bg-amber-50 border border-amber-200',
-                'title' => 'Pendaftaran Akun Menunggu Verifikasi',
-                'message' => 'Pendaftaran akun baru Anda sedang dalam antrean verifikasi oleh Administrator Kalurahan Purwobinangun.',
+                'title' => 'Menunggu Verifikasi Akun',
+                'message' => 'Pendaftaran akun sedang menunggu verifikasi.',
                 'admin_note' => null,
                 'reference_no' => $user->nik,
                 'time' => $time,
@@ -85,8 +85,8 @@ class CitizenNotificationService
                 'status_badge_class' => 'bg-rose-100 text-rose-800 border-rose-300',
                 'icon_class' => 'fa-solid fa-circle-xmark text-rose-600',
                 'icon_bg' => 'bg-rose-50 border border-rose-200',
-                'title' => 'Pendaftaran Akun Warga Ditolak',
-                'message' => 'Pendaftaran akun Anda ditolak oleh Administrator Kalurahan.',
+                'title' => 'Pendaftaran Akun Ditolak',
+                'message' => 'Pendaftaran akun Anda ditolak.',
                 'admin_note' => $user->rejection_reason ?: 'Data NIK/KK atau dokumen yang dilampirkan tidak sesuai.',
                 'reference_no' => $user->nik,
                 'time' => $time,
@@ -116,38 +116,38 @@ class CitizenNotificationService
                 if (in_array($status, ['ready_for_pickup', 'completed'])) {
                     $iconClass = 'fa-solid fa-circle-check text-emerald-600';
                     $iconBg = 'bg-emerald-50 border border-emerald-200';
-                    $title = 'Akte Kelahiran Selesai / Siap Diambil';
-                    $message = "Pengajuan Akte Kelahiran an. {$birth->child_name} (No: {$birth->registration_no}) telah DISETUJUI dan SIAP DIAMBIL di Kantor Kalurahan Purwobinangun.";
+                    $title = 'Akte Kelahiran Siap Diambil';
+                    $message = "Akte Kelahiran an. {$birth->child_name} siap diambil.";
                 } elseif ($status === 'rejected') {
                     $iconClass = 'fa-solid fa-circle-xmark text-rose-600';
                     $iconBg = 'bg-rose-50 border border-rose-200';
-                    $title = 'Pengajuan Akte Kelahiran Ditolak / Dibatalkan';
-                    $message = "Pengajuan Akte Kelahiran an. {$birth->child_name} (No: {$birth->registration_no}) ditolak oleh petugas.";
+                    $title = 'Akte Kelahiran Ditolak';
+                    $message = "Pengajuan Akte Kelahiran an. {$birth->child_name} ditolak.";
                 } elseif ($status === 'revision') {
                     $iconClass = 'fa-solid fa-triangle-exclamation text-amber-600';
                     $iconBg = 'bg-amber-50 border border-amber-200';
-                    $title = 'Akte Kelahiran Memerlukan Revisi Berkas';
-                    $message = "Pengajuan Akte Kelahiran an. {$birth->child_name} (No: {$birth->registration_no}) memerlukan perbaikan atau berkas tambahan.";
+                    $title = 'Revisi Akte Kelahiran';
+                    $message = "Pengajuan Akte Kelahiran an. {$birth->child_name} perlu revisi berkas.";
                 } elseif (in_array($status, ['in_process', 'verified'])) {
                     $iconClass = 'fa-solid fa-arrows-rotate text-blue-600';
                     $iconBg = 'bg-blue-50 border border-blue-200';
-                    $title = 'Akte Kelahiran Sedang Diproses';
-                    $message = "Pengajuan Akte Kelahiran an. {$birth->child_name} (No: {$birth->registration_no}) sedang dalam tahap verifikasi & proses administrasi.";
+                    $title = 'Akte Kelahiran Diproses';
+                    $message = "Pengajuan Akte Kelahiran an. {$birth->child_name} sedang diproses.";
                 } elseif ($status === 'picked_up') {
                     $iconClass = 'fa-solid fa-clipboard-check text-teal-600';
                     $iconBg = 'bg-teal-50 border border-teal-200';
-                    $title = 'Akte Kelahiran Sudah Diambil';
-                    $message = "Dokumen Akte Kelahiran an. {$birth->child_name} (No: {$birth->registration_no}) telah selesai diserahkan kepada pemohon.";
+                    $title = 'Akte Kelahiran Diambil';
+                    $message = "Akte Kelahiran an. {$birth->child_name} sudah diambil.";
                 } elseif ($status === 'archived') {
                     $iconClass = 'fa-solid fa-box-archive text-slate-600';
                     $iconBg = 'bg-slate-100 border border-slate-200';
                     $title = 'Akte Kelahiran Diarsipkan';
-                    $message = "Pengajuan Akte Kelahiran an. {$birth->child_name} (No: {$birth->registration_no}) telah dipindahkan ke arsip.";
+                    $message = "Pengajuan Akte Kelahiran an. {$birth->child_name} diarsipkan.";
                 } else {
                     $iconClass = 'fa-solid fa-clock text-amber-600';
                     $iconBg = 'bg-amber-50 border border-amber-200';
-                    $title = 'Pengajuan Akte Kelahiran Terkirim';
-                    $message = "Pengajuan Akte Kelahiran an. {$birth->child_name} (No: {$birth->registration_no}) berhasil dikirim dan menunggu verifikasi petugas.";
+                    $title = 'Akte Kelahiran Terkirim';
+                    $message = "Pengajuan Akte Kelahiran an. {$birth->child_name} menunggu verifikasi.";
                 }
 
                 $notifications->push([
@@ -195,38 +195,38 @@ class CitizenNotificationService
                 if (in_array($status, ['ready_for_pickup', 'completed'])) {
                     $iconClass = 'fa-solid fa-circle-check text-emerald-600';
                     $iconBg = 'bg-emerald-50 border border-emerald-200';
-                    $title = 'Surat Kematian Selesai / Siap Diambil';
-                    $message = "Pengajuan Surat Keterangan Kematian an. {$death->deceased_name} (No: {$death->registration_no}) telah DISETUJUI dan SIAP DIAMBIL di Kantor Kalurahan.";
+                    $title = 'Surat Kematian Siap Diambil';
+                    $message = "Surat Kematian an. {$death->deceased_name} siap diambil.";
                 } elseif ($status === 'rejected') {
                     $iconClass = 'fa-solid fa-circle-xmark text-rose-600';
                     $iconBg = 'bg-rose-50 border border-rose-200';
-                    $title = 'Pengajuan Surat Kematian Ditolak / Dibatalkan';
-                    $message = "Pengajuan Surat Keterangan Kematian an. {$death->deceased_name} (No: {$death->registration_no}) ditolak oleh petugas.";
+                    $title = 'Surat Kematian Ditolak';
+                    $message = "Pengajuan Surat Kematian an. {$death->deceased_name} ditolak.";
                 } elseif ($status === 'revision') {
                     $iconClass = 'fa-solid fa-triangle-exclamation text-amber-600';
                     $iconBg = 'bg-amber-50 border border-amber-200';
-                    $title = 'Surat Kematian Memerlukan Revisi Berkas';
-                    $message = "Pengajuan Surat Kematian an. {$death->deceased_name} (No: {$death->registration_no}) membutuhkan perbaikan / unggah ulang berkas.";
+                    $title = 'Revisi Surat Kematian';
+                    $message = "Pengajuan Surat Kematian an. {$death->deceased_name} perlu revisi berkas.";
                 } elseif (in_array($status, ['in_process', 'verified'])) {
                     $iconClass = 'fa-solid fa-arrows-rotate text-blue-600';
                     $iconBg = 'bg-blue-50 border border-blue-200';
-                    $title = 'Surat Kematian Sedang Diproses';
-                    $message = "Pengajuan Surat Keterangan Kematian an. {$death->deceased_name} (No: {$death->registration_no}) sedang dalam tahap verifikasi & penerbitan.";
+                    $title = 'Surat Kematian Diproses';
+                    $message = "Pengajuan Surat Kematian an. {$death->deceased_name} sedang diproses.";
                 } elseif ($status === 'picked_up') {
                     $iconClass = 'fa-solid fa-clipboard-check text-teal-600';
                     $iconBg = 'bg-teal-50 border border-teal-200';
-                    $title = 'Surat Kematian Sudah Diambil';
-                    $message = "Dokumen Surat Keterangan Kematian an. {$death->deceased_name} (No: {$death->registration_no}) telah selesai diserahkan kepada pemohon.";
+                    $title = 'Surat Kematian Diambil';
+                    $message = "Surat Kematian an. {$death->deceased_name} sudah diambil.";
                 } elseif ($status === 'archived') {
                     $iconClass = 'fa-solid fa-box-archive text-slate-600';
                     $iconBg = 'bg-slate-100 border border-slate-200';
                     $title = 'Surat Kematian Diarsipkan';
-                    $message = "Pengajuan Surat Keterangan Kematian an. {$death->deceased_name} (No: {$death->registration_no}) telah dipindahkan ke arsip.";
+                    $message = "Pengajuan Surat Kematian an. {$death->deceased_name} diarsipkan.";
                 } else {
                     $iconClass = 'fa-solid fa-clock text-amber-600';
                     $iconBg = 'bg-amber-50 border border-amber-200';
-                    $title = 'Pengajuan Surat Kematian Terkirim';
-                    $message = "Pengajuan Surat Keterangan Kematian an. {$death->deceased_name} (No: {$death->registration_no}) berhasil dikirim dan menunggu verifikasi petugas.";
+                    $title = 'Surat Kematian Terkirim';
+                    $message = "Pengajuan Surat Kematian an. {$death->deceased_name} menunggu verifikasi.";
                 }
 
                 $notifications->push([
@@ -273,22 +273,22 @@ class CitizenNotificationService
                     $iconClass = 'fa-solid fa-user-gear text-teal-600';
                     $iconBg = 'bg-teal-50 border border-teal-200';
                     $title = 'Perubahan Data oleh Admin';
-                    $message = 'Administrator Kalurahan Purwobinangun telah melakukan pembaruan langsung pada data profil / susunan Kartu Keluarga Anda.';
+                    $message = 'Data profil / KK Anda diperbarui oleh admin.';
                 } elseif ($status === 'approved') {
                     $iconClass = 'fa-solid fa-circle-check text-emerald-600';
                     $iconBg = 'bg-emerald-50 border border-emerald-200';
-                    $title = 'Pengajuan Perubahan Profil Disetujui';
-                    $message = 'Permohonan pembaruan data profil dan susunan Kartu Keluarga Anda telah DISETUJUI oleh admin dan data profil Anda telah diperbarui.';
+                    $title = 'Perubahan Profil Disetujui';
+                    $message = 'Perubahan data profil & KK Anda disetujui.';
                 } elseif ($status === 'rejected') {
                     $iconClass = 'fa-solid fa-circle-xmark text-rose-600';
                     $iconBg = 'bg-rose-50 border border-rose-200';
-                    $title = 'Pengajuan Perubahan Profil Ditolak';
-                    $message = 'Permohonan pembaruan data profil dan susunan Kartu Keluarga Anda DITOLAK oleh admin.';
+                    $title = 'Perubahan Profil Ditolak';
+                    $message = 'Perubahan data profil & KK Anda ditolak.';
                 } else {
                     $iconClass = 'fa-solid fa-clock text-amber-600';
                     $iconBg = 'bg-amber-50 border border-amber-200';
-                    $title = 'Permohonan Perubahan Profil Menunggu Verifikasi';
-                    $message = 'Pengajuan permohonan pembaruan data profil dan Kartu Keluarga Anda sedang menunggu peninjauan oleh petugas.';
+                    $title = 'Perubahan Profil Menunggu Verifikasi';
+                    $message = 'Pengajuan perubahan profil & KK menunggu verifikasi.';
                 }
 
                 $notifications->push([
