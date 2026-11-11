@@ -29,7 +29,7 @@
 
         @page {
             size: A4 portrait;
-            margin: 12mm 15mm 12mm 15mm;
+            margin: 0;
         }
 
         @media print {
@@ -45,10 +45,13 @@
             .a4-container {
                 box-shadow: none !important;
                 border: none !important;
-                padding: 0 !important;
+                padding: 12mm 15mm !important;
                 margin: 0 !important;
                 width: 100% !important;
                 max-width: 100% !important;
+                box-sizing: border-box !important;
+                -webkit-box-decoration-break: clone;
+                box-decoration-break: clone;
             }
             .section-block {
                 page-break-inside: avoid;
