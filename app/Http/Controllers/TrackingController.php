@@ -116,27 +116,20 @@ class TrackingController extends Controller
     public function printLetter($type, $registrationNo)
     {
         if (!Auth::check()) {
-            return redirect()->guest(route('warga.login'))
-                ->with('info', 'Silakan masuk ke akun warga Anda untuk mencetak surat keterangan.');
+            return redirect()->guest(route('admin.login'))
+                ->with('error', 'Silakan masuk ke panel admin petugas terlebih dahulu.');
         }
 
         $user = Auth::user();
+        if (!$user->isAdmin()) {
+            abort(403, 'Akses Ditolak: Hanya Admin / Petugas Kalurahan yang berhak mencetak Surat Keterangan.');
+        }
 
         if ($type === 'birth') {
             $birth = BirthCertificate::where('registration_no', $registrationNo)->firstOrFail();
-            if ($user->isWarga()) {
-                if ($birth->family_card_no && $birth->family_card_no !== $user->family_card_no) {
-                    abort(403, 'Akses Ditolak: Anda hanya berhak mencetak surat dari Kartu Keluarga (KK) Anda sendiri.');
-                }
-            }
             return view('admin.birth.print-letter', compact('birth'));
         } elseif ($type === 'death') {
             $death = DeathCertificate::where('registration_no', $registrationNo)->firstOrFail();
-            if ($user->isWarga()) {
-                if ($death->family_card_no && $death->family_card_no !== $user->family_card_no) {
-                    abort(403, 'Akses Ditolak: Anda hanya berhak mencetak surat dari Kartu Keluarga (KK) Anda sendiri.');
-                }
-            }
             return view('admin.death.print-letter', compact('death'));
         } else {
             abort(404, 'Jenis permohonan tidak mendukung cetak surat ini.');

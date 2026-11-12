@@ -28,38 +28,54 @@
                 </div>
                 <div class="p-4 bg-white space-y-4 text-xs text-slate-700">
                     <p class="leading-relaxed">
-                        Permohonan akte kelahiran dianjurkan dilakukan selambat-lambatnya <strong>60 (enam puluh) hari</strong> sejak peristiwa kelahiran bayi. Berkas yang harus disiapkan dalam bentuk scan/foto asli:
+                        Permohonan akte kelahiran dianjurkan dilakukan selambat-lambatnya <strong>60 (enam puluh) hari</strong> sejak peristiwa kelahiran bayi. Berkas yang harus disiapkan dan diunggah (format: <strong>JPG, PNG, atau PDF</strong>, maks. <strong>3 MB</strong>):
                     </p>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div class="p-3 bg-slate-50 rounded-lg border border-slate-200/60 flex items-start gap-2.5">
                             <span class="w-5 h-5 rounded-full bg-teal-100 text-[#0b7c89] font-bold text-[10px] flex items-center justify-center flex-shrink-0 mt-0.5">1</span>
                             <div>
-                                <h4 class="font-bold text-slate-800">Surat Keterangan Kelahiran</h4>
-                                <p class="text-[11px] text-slate-500">Asli dari Rumah Sakit / Puskesmas / Bidan penolong persalinan.</p>
+                                <h4 class="font-bold text-slate-800">Dokumen KTP</h4>
+                                <p class="text-[11px] text-slate-500">Foto / Scan KTP-el Pelapor atau Orang Tua.</p>
                             </div>
                         </div>
 
                         <div class="p-3 bg-slate-50 rounded-lg border border-slate-200/60 flex items-start gap-2.5">
                             <span class="w-5 h-5 rounded-full bg-teal-100 text-[#0b7c89] font-bold text-[10px] flex items-center justify-center flex-shrink-0 mt-0.5">2</span>
                             <div>
-                                <h4 class="font-bold text-slate-800">Buku Nikah / Akta Perkawinan</h4>
-                                <p class="text-[11px] text-slate-500">Fotokopi / scan legalisir buku nikah orang tua.</p>
+                                <h4 class="font-bold text-slate-800">Kartu Keluarga (KK)</h4>
+                                <p class="text-[11px] text-slate-500">Foto / Scan Kartu Keluarga asli orang tua.</p>
                             </div>
                         </div>
 
                         <div class="p-3 bg-slate-50 rounded-lg border border-slate-200/60 flex items-start gap-2.5">
                             <span class="w-5 h-5 rounded-full bg-teal-100 text-[#0b7c89] font-bold text-[10px] flex items-center justify-center flex-shrink-0 mt-0.5">3</span>
                             <div>
-                                <h4 class="font-bold text-slate-800">Kartu Keluarga (KK)</h4>
-                                <p class="text-[11px] text-slate-500">KK orang tua yang beralamat di wilayah Kalurahan Purwobinangun.</p>
+                                <h4 class="font-bold text-slate-800">Surat Kelahiran RS/Bidan</h4>
+                                <p class="text-[11px] text-slate-500">Surat Keterangan Lahir dari RS / Puskesmas / Bidan.</p>
                             </div>
                         </div>
 
                         <div class="p-3 bg-slate-50 rounded-lg border border-slate-200/60 flex items-start gap-2.5">
                             <span class="w-5 h-5 rounded-full bg-teal-100 text-[#0b7c89] font-bold text-[10px] flex items-center justify-center flex-shrink-0 mt-0.5">4</span>
                             <div>
-                                <h4 class="font-bold text-slate-800">KTP-el Kedua Orang Tua & Saksi</h4>
-                                <p class="text-[11px] text-slate-500">Foto KTP Ayah, Ibu, serta 2 (dua) orang saksi peristiwa kelahiran.</p>
+                                <h4 class="font-bold text-slate-800">Buku Nikah / Akta Perkawinan</h4>
+                                <p class="text-[11px] text-slate-500">Foto / Scan Buku Nikah orang tua atau Akta Perkawinan.</p>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-slate-50 rounded-lg border border-slate-200/60 flex items-start gap-2.5">
+                            <span class="w-5 h-5 rounded-full bg-teal-100 text-[#0b7c89] font-bold text-[10px] flex items-center justify-center flex-shrink-0 mt-0.5">5</span>
+                            <div>
+                                <h4 class="font-bold text-slate-800">Surat Pengantar RT/RW</h4>
+                                <p class="text-[11px] text-slate-500">Foto / Scan Surat Pengantar dari Ketua RT atau RW setempat.</p>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-slate-50 rounded-lg border border-slate-200/60 flex items-start gap-2.5">
+                            <span class="w-5 h-5 rounded-full bg-teal-100 text-[#0b7c89] font-bold text-[10px] flex items-center justify-center flex-shrink-0 mt-0.5">6</span>
+                            <div>
+                                <h4 class="font-bold text-slate-800">Tanda Tangan Digital Pemohon</h4>
+                                <p class="text-[11px] text-slate-500">Tanda tangan digital pemohon yang digoreskan langsung pada formulir pengajuan.</p>
                             </div>
                         </div>
                     </div>
@@ -78,22 +94,22 @@
                 </div>
                 <div class="p-4 bg-white space-y-4 text-xs text-slate-700">
                     <p class="leading-relaxed">
-                        Pelaporan kematian wajib dilakukan oleh pihak keluarga / ahli waris selambat-lambatnya <strong>30 (tiga puluh) hari</strong> sejak peristiwa kematian:
+                        Pelaporan kematian wajib dilakukan oleh pihak keluarga / ahli waris selambat-lambatnya <strong>30 (tiga puluh) hari</strong> sejak peristiwa kematian. Berkas yang harus disiapkan dan diunggah (format: <strong>JPG, PNG, atau PDF</strong>, maks. <strong>3 MB</strong>):
                     </p>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div class="p-3 bg-slate-50 rounded-lg border border-slate-200/60 flex items-start gap-2.5">
                             <span class="w-5 h-5 rounded-full bg-rose-100 text-rose-700 font-bold text-[10px] flex items-center justify-center flex-shrink-0 mt-0.5">1</span>
                             <div>
-                                <h4 class="font-bold text-slate-800">Surat Keterangan Kematian</h4>
-                                <p class="text-[11px] text-slate-500">Asli dari Rumah Sakit/Dokter atau Surat Pengantar dari RT/RW/Dukuh jika meninggal di rumah.</p>
+                                <h4 class="font-bold text-slate-800">Surat Kematian</h4>
+                                <p class="text-[11px] text-slate-500">Dari RS, Puskesmas, Dokter, atau RT.</p>
                             </div>
                         </div>
 
                         <div class="p-3 bg-slate-50 rounded-lg border border-slate-200/60 flex items-start gap-2.5">
                             <span class="w-5 h-5 rounded-full bg-rose-100 text-rose-700 font-bold text-[10px] flex items-center justify-center flex-shrink-0 mt-0.5">2</span>
                             <div>
-                                <h4 class="font-bold text-slate-800">KTP-el Asli Almarhum/Almarhumah</h4>
-                                <p class="text-[11px] text-slate-500">Identitas KTP jenazah yang meninggal dunia.</p>
+                                <h4 class="font-bold text-slate-800">Surat Pengantar RT / RW</h4>
+                                <p class="text-[11px] text-slate-500">Surat pengantar kematian RT/RW.</p>
                             </div>
                         </div>
 
@@ -101,15 +117,31 @@
                             <span class="w-5 h-5 rounded-full bg-rose-100 text-rose-700 font-bold text-[10px] flex items-center justify-center flex-shrink-0 mt-0.5">3</span>
                             <div>
                                 <h4 class="font-bold text-slate-800">Kartu Keluarga (KK)</h4>
-                                <p class="text-[11px] text-slate-500">Kartu Keluarga yang mencantumkan nama almarhum/almarhumah.</p>
+                                <p class="text-[11px] text-slate-500">KK almarhum / almarhumah.</p>
                             </div>
                         </div>
 
                         <div class="p-3 bg-slate-50 rounded-lg border border-slate-200/60 flex items-start gap-2.5">
                             <span class="w-5 h-5 rounded-full bg-rose-100 text-rose-700 font-bold text-[10px] flex items-center justify-center flex-shrink-0 mt-0.5">4</span>
                             <div>
-                                <h4 class="font-bold text-slate-800">KTP-el Pelapor & Saksi</h4>
-                                <p class="text-[11px] text-slate-500">KTP pelapor (ahli waris) dan saksi yang mengetahui peristiwa kematian.</p>
+                                <h4 class="font-bold text-slate-800">KTP Almarhum / Almarhumah</h4>
+                                <p class="text-[11px] text-slate-500">KTP-el asli yang meninggal.</p>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-slate-50 rounded-lg border border-slate-200/60 flex items-start gap-2.5">
+                            <span class="w-5 h-5 rounded-full bg-rose-100 text-rose-700 font-bold text-[10px] flex items-center justify-center flex-shrink-0 mt-0.5">5</span>
+                            <div>
+                                <h4 class="font-bold text-slate-800">KK Ahli Waris</h4>
+                                <p class="text-[11px] text-slate-500">Kartu Keluarga ahli waris.</p>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-slate-50 rounded-lg border border-slate-200/60 flex items-start gap-2.5">
+                            <span class="w-5 h-5 rounded-full bg-rose-100 text-rose-700 font-bold text-[10px] flex items-center justify-center flex-shrink-0 mt-0.5">6</span>
+                            <div>
+                                <h4 class="font-bold text-slate-800">KTP Ahli Waris</h4>
+                                <p class="text-[11px] text-slate-500">KTP-el asli ahli waris / pelapor.</p>
                             </div>
                         </div>
                     </div>

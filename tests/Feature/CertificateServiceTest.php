@@ -876,17 +876,20 @@ class CertificateServiceTest extends TestCase
             'status' => 'pending',
         ]);
 
-        // Warga dapat mencetak surat akte kelahiran miliknya
-        $response = $this->actingAs($warga)->get(route('birth.print_letter', $birth));
-        $response->assertStatus(200);
-        $response->assertSee('SURAT KETERANGAN');
-        $response->assertSee('PEMERINTAH KALURAHAN PURWOBINANGUN');
-        $response->assertSee('R. Heri Suasana');
-        $response->assertSee('Lurah Purwobinangun');
-        $response->assertSee('Mohon Akta Kelahiran untuk ANANDA PUTRI');
-        $response->assertSee('Dinas Kependudukan dan Catatan Sipil');
+        // Warga tidak dapat mencetak surat keterangan hasil kelurahan (hanya tanda terima permohonan)
+        $this->actingAs($warga)->get(route('birth.print_letter', $birth))->assertStatus(403);
+        $this->actingAs($warga)->get(route('tracking.print_letter', ['type' => 'birth', 'registrationNo' => $birth->registration_no]))->assertStatus(403);
 
-        // Admin juga dapat mencetak surat akte kelahiran
+        $trackingResponse = $this->actingAs($warga)->get(route('tracking.show', ['type' => 'birth', 'registrationNo' => $birth->registration_no]));
+        $trackingResponse->assertStatus(200);
+        $trackingResponse->assertDontSee('Cetak Surat Keterangan (A4)');
+        $trackingResponse->assertSee('Cetak Tanda Terima Permohonan');
+
+        $receiptResponse = $this->actingAs($warga)->get(route('tracking.print_receipt', ['type' => 'birth', 'registrationNo' => $birth->registration_no]));
+        $receiptResponse->assertStatus(200);
+        $receiptResponse->assertSee('TANDA TERIMA PENDAFTARAN PELAYANAN KEPENDUDUKAN');
+
+        // Hanya admin yang dapat mencetak surat keterangan hasil kelurahan
         $admin = User::create([
             'name' => 'Petugas Kalurahan',
             'email' => 'petugas_print@purwobinangun.desa.id',
@@ -898,6 +901,34 @@ class CertificateServiceTest extends TestCase
         $adminResponse = $this->actingAs($admin)->get(route('admin.birth.print_letter', $birth));
         $adminResponse->assertStatus(200);
         $adminResponse->assertSee('SURAT KETERANGAN');
+        $adminResponse->assertSee('PEMERINTAH KALURAHAN PURWOBINANGUN');
         $adminResponse->assertSee('R. Heri Suasana');
+        $adminResponse->assertSee('Lurah Purwobinangun');
+        $adminResponse->assertSee('Mohon Akta Kelahiran untuk ANANDA PUTRI');
+        $adminResponse->assertSee('Dinas Kependudukan dan Catatan Sipil');
+
+        $death = DeathCertificate::create([
+            'user_id' => $warga->id,
+            'registration_no' => 'AKM-20261030-0099',
+            'family_card_no' => '3404050101900002',
+            'deceased_nik' => '3404050101450009',
+            'deceased_name' => 'Almarhum Marto',
+            'gender' => 'L',
+            'religion' => 'Islam',
+            'padukuhan' => 'Watuadeg',
+            'rt' => '02',
+            'rw' => '05',
+            'death_date' => '2026-10-01',
+            'death_place' => 'Rumah',
+            'cause_of_death' => 'Sakit',
+            'applicant_nik' => '3404051101900001',
+            'applicant_name' => 'Warga Purwobinangun',
+            'applicant_phone' => '081234567890',
+            'applicant_relation' => 'Anak',
+            'status' => 'pending',
+        ]);
+
+        $this->actingAs($warga)->get(route('tracking.print_letter', ['type' => 'death', 'registrationNo' => $death->registration_no]))->assertStatus(403);
+        $this->actingAs($admin)->get(route('admin.death.print_letter', $death))->assertStatus(200)->assertSee('SURAT KETERANGAN KEMATIAN');
     }
 }

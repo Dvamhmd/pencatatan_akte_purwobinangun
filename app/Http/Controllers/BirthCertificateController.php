@@ -913,16 +913,8 @@ class BirthCertificateController extends Controller
 
     public function printLetter(BirthCertificate $birth)
     {
-        if (!Auth::check()) {
-            return redirect()->guest(route('warga.login'))
-                ->with('info', 'Silakan masuk ke akun warga Anda untuk mencetak surat keterangan.');
-        }
-
-        $user = Auth::user();
-        if ($user->isWarga()) {
-            if ($birth->family_card_no && $birth->family_card_no !== $user->family_card_no) {
-                abort(403, 'Akses Ditolak: Anda hanya berhak mencetak surat dari Kartu Keluarga (KK) Anda sendiri.');
-            }
+        if (!Auth::check() || !Auth::user()->isAdmin()) {
+            abort(403, 'Akses Ditolak: Hanya Admin / Petugas Kalurahan yang berhak mencetak Surat Keterangan.');
         }
 
         return view('admin.birth.print-letter', compact('birth'));
