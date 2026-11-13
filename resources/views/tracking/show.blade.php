@@ -148,8 +148,8 @@
                     <i class="fa-solid fa-arrow-left"></i> Lacak Nomor Lain
                 </a>
                 <div class="flex flex-wrap items-center gap-2">
-                    @if($data->status === 'revision' && $type === 'birth')
-                        <a href="{{ route('birth.create', ['revision' => $data->registration_no]) }}" class="bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs px-5 py-2.5 rounded-lg shadow-sm transition flex items-center gap-2">
+                    @if($data->status === 'revision')
+                        <a href="{{ $type === 'birth' ? route('birth.create', ['revision' => $data->registration_no]) : route('death.create', ['revision' => $data->registration_no]) }}" class="bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs px-5 py-2.5 rounded-lg shadow-sm transition flex items-center gap-2">
                             <i class="fa-solid fa-pen-to-square"></i> Revisi Berkas
                         </a>
                     @endif

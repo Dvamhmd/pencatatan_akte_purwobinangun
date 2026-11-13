@@ -75,7 +75,9 @@ class TrackingController extends Controller
 
         $user = Auth::user();
         if ($user->isWarga()) {
-            if ($data->family_card_no && $data->family_card_no !== $user->family_card_no) {
+            $isSameKK = $data->family_card_no && $data->family_card_no === $user->family_card_no;
+            $isSameUser = $data->user_id && $data->user_id === $user->id;
+            if (!$isSameKK && !$isSameUser) {
                 abort(403, 'Akses Ditolak: Anda hanya berhak melihat dokumen dan status pengajuan dari Kartu Keluarga (KK) Anda sendiri.');
             }
         }
@@ -105,7 +107,9 @@ class TrackingController extends Controller
 
         $user = Auth::user();
         if ($user->isWarga()) {
-            if ($data->family_card_no && $data->family_card_no !== $user->family_card_no) {
+            $isSameKK = $data->family_card_no && $data->family_card_no === $user->family_card_no;
+            $isSameUser = $data->user_id && $data->user_id === $user->id;
+            if (!$isSameKK && !$isSameUser) {
                 abort(403, 'Akses Ditolak: Anda hanya berhak mencetak bukti pengajuan dari Kartu Keluarga (KK) Anda sendiri.');
             }
         }

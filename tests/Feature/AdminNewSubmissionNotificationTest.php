@@ -107,13 +107,18 @@ class AdminNewSubmissionNotificationTest extends TestCase
         ]);
 
         $this->actingAs($warga)->post('/akte-kematian/buat', [
+            'family_card_no' => '3404050101900003',
+            'head_of_family_name' => 'Kepala Keluarga',
             'deceased_nik' => '3404050101450001',
             'deceased_name' => 'Almarhum Budi',
             'gender' => 'L',
+            'deceased_birth_place' => 'Sleman',
+            'birth_date' => '1950-01-01',
             'religion' => 'Islam',
             'padukuhan' => 'Donolayan',
             'rt' => '01',
             'rw' => '02',
+            'death_day' => 'Senin',
             'death_date' => '2026-08-10',
             'death_place' => 'Rumah',
             'cause_of_death' => 'Sakit',
@@ -123,9 +128,11 @@ class AdminNewSubmissionNotificationTest extends TestCase
             'applicant_phone' => '08198765432',
             'applicant_relation' => 'Anak',
             'doc_death_statement' => UploadedFile::fake()->create('kematian.pdf', 100),
+            'doc_rt_rw_statement' => UploadedFile::fake()->create('rt_rw.pdf', 100),
             'doc_family_card' => UploadedFile::fake()->create('kk.jpg', 100),
             'doc_deceased_ktp' => UploadedFile::fake()->create('ktp_jenazah.jpg', 100),
-            'doc_applicant_ktp' => UploadedFile::fake()->create('ktp_pelapor.jpg', 100),
+            'doc_heir_family_card' => UploadedFile::fake()->create('kk_ahli_waris.jpg', 100),
+            'doc_heir_ktp' => UploadedFile::fake()->create('ktp_ahli_waris.jpg', 100),
         ]);
 
         $death = DeathCertificate::first();
@@ -242,7 +249,7 @@ class AdminNewSubmissionNotificationTest extends TestCase
 
         $responseGet = $this->actingAs($admin)->get('/admin/profil');
         $responseGet->assertStatus(200);
-        $responseGet->assertSee('Sistem Pemberitahuan Website');
+        $responseGet->assertDontSee('Sistem Pemberitahuan Website');
         $responseGet->assertDontSee('Pengaturan Email Notifikasi Sistem & Pengajuan Masuk', false);
         $responseGet->assertDontSee('Panduan Konfigurasi SMTP');
 

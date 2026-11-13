@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Storage;
 
 class DeathCertificateController extends Controller
 {
-    public function create()
+    public function create(Request $request)
     {
         $padukuhanList = [
             'Babadan', 'Beneran', 'Donolayan', 'Gadingan', 'Jamblangan',
@@ -65,16 +65,41 @@ class DeathCertificateController extends Controller
 
         $user = Auth::user();
 
-        return view('death.create', compact('padukuhanList', 'pekerjaanList', 'user'));
+        $revisionNo = $request->query('revision');
+        $revisionDeath = null;
+        if ($revisionNo) {
+            $revisionDeath = DeathCertificate::where('registration_no', $revisionNo)->first();
+            if ($revisionDeath && $user && $user->isWarga()) {
+                if ($revisionDeath->family_card_no && $revisionDeath->family_card_no !== $user->family_card_no && $revisionDeath->user_id !== $user->id) {
+                    abort(403, 'Akses Ditolak: Anda tidak berhak merevisi permohonan dari Kartu Keluarga lain.');
+                }
+            }
+        }
+
+        return view('death.create', compact('padukuhanList', 'pekerjaanList', 'user', 'revisionDeath'));
     }
 
     public function store(Request $request)
     {
         $user = Auth::user();
 
+        $registrationNoInput = $request->input('registration_no');
+        $isRevision = false;
+        $existingDeath = null;
+
+        if ($registrationNoInput) {
+            $existingDeath = DeathCertificate::where('registration_no', $registrationNoInput)->first();
+            if ($existingDeath && $existingDeath->status === 'revision') {
+                if ($user && $user->isWarga() && $existingDeath->family_card_no && $existingDeath->family_card_no !== $user->family_card_no && $existingDeath->user_id !== $user->id) {
+                    abort(403, 'Akses Ditolak: Anda tidak memiliki hak akses untuk merevisi permohonan ini.');
+                }
+                $isRevision = true;
+            }
+        }
+
         $validated = $request->validate([
-            // Header KK
-            'family_card_no' => 'required|digits:16',
+            // Header KK: jika warga login, KK otomatis dari akun jika tidak diinput
+            'family_card_no' => $user ? 'nullable|digits:16' : 'required|digits:16',
             'head_of_family_name' => 'required|string|max:255',
 
             // 1. Data Jenazah
@@ -140,12 +165,12 @@ class DeathCertificateController extends Controller
             'witness2_address' => 'nullable|string|max:255',
 
             // 5. Berkas Unggahan Persyaratan
-            'doc_death_statement' => 'required|file|mimes:jpg,jpeg,png,pdf|max:3072',
-            'doc_rt_rw_statement' => 'required|file|mimes:jpg,jpeg,png,pdf|max:3072',
-            'doc_family_card' => 'required|file|mimes:jpg,jpeg,png,pdf|max:3072',
-            'doc_deceased_ktp' => 'required|file|mimes:jpg,jpeg,png,pdf|max:3072',
-            'doc_heir_family_card' => 'required|file|mimes:jpg,jpeg,png,pdf|max:3072',
-            'doc_heir_ktp' => 'required|file|mimes:jpg,jpeg,png,pdf|max:3072',
+            'doc_death_statement' => ($isRevision && $existingDeath?->doc_death_statement) ? 'nullable|file|mimes:jpg,jpeg,png,pdf|max:3072' : 'required|file|mimes:jpg,jpeg,png,pdf|max:3072',
+            'doc_rt_rw_statement' => ($isRevision && $existingDeath?->doc_rt_rw_statement) ? 'nullable|file|mimes:jpg,jpeg,png,pdf|max:3072' : 'required|file|mimes:jpg,jpeg,png,pdf|max:3072',
+            'doc_family_card' => ($isRevision && $existingDeath?->doc_family_card) ? 'nullable|file|mimes:jpg,jpeg,png,pdf|max:3072' : 'required|file|mimes:jpg,jpeg,png,pdf|max:3072',
+            'doc_deceased_ktp' => ($isRevision && $existingDeath?->doc_deceased_ktp) ? 'nullable|file|mimes:jpg,jpeg,png,pdf|max:3072' : 'required|file|mimes:jpg,jpeg,png,pdf|max:3072',
+            'doc_heir_family_card' => ($isRevision && $existingDeath?->doc_heir_family_card) ? 'nullable|file|mimes:jpg,jpeg,png,pdf|max:3072' : 'required|file|mimes:jpg,jpeg,png,pdf|max:3072',
+            'doc_heir_ktp' => ($isRevision && $existingDeath?->doc_heir_ktp) ? 'nullable|file|mimes:jpg,jpeg,png,pdf|max:3072' : 'required|file|mimes:jpg,jpeg,png,pdf|max:3072',
         ], [
             'required' => ':attribute wajib diisi.',
             'digits' => ':attribute harus berisi persis :digits digit angka.',
@@ -154,14 +179,19 @@ class DeathCertificateController extends Controller
         ]);
 
         $data = $validated;
-        $data['registration_no'] = DeathCertificate::generateRegistrationNo();
-        $data['status'] = 'pending';
 
-        // Bind data KK dan Akun Warga yang login
-        $data['user_id'] = $user ? $user->id : null;
-        if ($user && empty($data['family_card_no'])) {
-            $data['family_card_no'] = $user->family_card_no;
+        // Penomoran & Status
+        if ($isRevision && $existingDeath) {
+            $data['registration_no'] = $existingDeath->registration_no;
+            $data['status'] = 'pending';
+        } else {
+            $data['registration_no'] = DeathCertificate::generateRegistrationNo();
+            $data['status'] = 'pending';
         }
+
+        // Bind data KK dan Akun Warga yang login (Penegakan Isolasi KK)
+        $data['user_id'] = $user ? $user->id : null;
+        $data['family_card_no'] = $user ? $user->family_card_no : ($request->input('family_card_no') ?? null);
 
         // Backward compatibility mappings
         $data['witness_nik'] = $data['witness1_nik'] ?? null;
@@ -182,22 +212,31 @@ class DeathCertificateController extends Controller
             if ($request->hasFile($field)) {
                 $path = $request->file($field)->store('uploads/death_certs', 'public');
                 $data[$field] = $path;
+            } elseif ($isRevision && $existingDeath && !empty($existingDeath->$field)) {
+                $data[$field] = $existingDeath->$field;
             }
         }
 
         $data['doc_applicant_ktp'] = $data['doc_heir_ktp'] ?? null;
 
-        $death = DeathCertificate::create($data);
+        if ($isRevision && $existingDeath) {
+            $existingDeath->update($data);
+            $death = $existingDeath;
+        } else {
+            $death = DeathCertificate::create($data);
+        }
 
-        // Catat aktivitas log pengajuan akte kematian oleh warga
+        // Catat aktivitas log pengajuan / revisi akte kematian oleh warga
         \App\Models\ActivityLog::record([
             'actor_id' => $user?->id,
             'actor_name' => $user ? $user->name : $death->applicant_name,
             'actor_role' => 'warga',
             'actor_nik' => $user?->nik ?? $death->applicant_nik,
             'module' => 'akte_kematian',
-            'action' => 'pengajuan',
-            'description' => "Pengajuan permohonan Akte Kematian baru (Almarhum/ah: {$death->deceased_name}).",
+            'action' => $isRevision ? 'revisi' : 'pengajuan',
+            'description' => $isRevision
+                ? "Pengiriman revisi berkas permohonan Akte Kematian (Almarhum/ah: {$death->deceased_name})."
+                : "Pengajuan permohonan Akte Kematian baru (Almarhum/ah: {$death->deceased_name}).",
             'subject_type' => DeathCertificate::class,
             'subject_id' => $death->id,
             'reference_no' => $death->registration_no,
@@ -211,8 +250,12 @@ class DeathCertificateController extends Controller
             ],
         ]);
 
+        $successMsg = $isRevision
+            ? 'Revisi berkas permohonan Akte Kematian berhasil dikirimkan!'
+            : 'Permohonan Akte Kematian berhasil diajukan!';
+
         return redirect()->route('death.success', ['registration_no' => $death->registration_no])
-            ->with('success', 'Permohonan Akte Kematian berhasil diajukan!');
+            ->with('success', $successMsg);
     }
 
     public function success(Request $request)

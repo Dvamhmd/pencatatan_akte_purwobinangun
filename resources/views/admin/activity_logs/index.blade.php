@@ -131,9 +131,6 @@
                 </h3>
                 <p class="text-xs text-slate-500 mt-0.5">Catatan lengkap pengajuan oleh warga, verifikasi/ACC oleh admin, perubahan data, arsip, hingga penghapusan.</p>
             </div>
-            <div class="text-xs font-medium text-slate-500 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
-                Default: <strong>10 data per halaman</strong>
-            </div>
         </div>
 
         <div class="overflow-x-auto">

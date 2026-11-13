@@ -2,6 +2,7 @@
 
 @section('title', 'Pengaturan Profil Admin')
 @section('page_title', 'Pengaturan Profil Akun Petugas')
+@section('hide_page_subtitle', true)
 
 @section('content')
 <div class="max-w-5xl mx-auto space-y-6">
@@ -34,15 +35,6 @@
                     </div>
                 </div>
             </div>
-
-            <div class="px-4 py-3.5 rounded-xl text-xs max-w-sm shrink-0 w-full md:w-auto" style="background-color: rgba(0, 0, 0, 0.22); border: 1px solid rgba(255, 255, 255, 0.18);">
-                <p class="font-bold flex items-center gap-1.5 text-white mb-1">
-                    <i class="fa-solid fa-bell text-amber-300"></i> Sistem Pemberitahuan Website
-                </p>
-                <p class="text-[11px] leading-relaxed text-teal-50/90 font-normal">
-                    Seluruh notifikasi pengajuan baru dan pembaruan status ditampilkan langsung melalui portal website admin &amp; warga.
-                </p>
-            </div>
         </div>
 
         <!-- Decorative background elements -->
@@ -59,7 +51,6 @@
                     <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
                         <i class="fa-solid fa-user-pen text-[#0b7c89]"></i> Data Akun Petugas
                     </h3>
-                    <p class="text-xs text-slate-500 mt-0.5">Perbarui nama lengkap, email login admin, dan nomor kontak</p>
                 </div>
             </div>
 
@@ -96,9 +87,6 @@
                             <i class="fa-regular fa-envelope text-xs"></i>
                         </span>
                     </div>
-                    <p class="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
-                        <i class="fa-solid fa-circle-info text-[#0b7c89]"></i> Email ini digunakan untuk otentikasi/masuk ke panel admin.
-                    </p>
                     @error('email')
                         <p class="text-rose-600 text-[11px] mt-1 font-medium">{{ $message }}</p>
                     @enderror

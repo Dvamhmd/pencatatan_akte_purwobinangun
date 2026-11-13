@@ -40,8 +40,14 @@ class AdminActivityLogTest extends TestCase
         $response->assertSee('Petugas Kelurahan');
         $response->assertSee('Detail');
         $response->assertDontSee('IP & Perangkat');
-        $response->assertSee('10 data per halaman');
+        $response->assertDontSee('Default: 10 data per halaman', false);
         $response->assertSee('total riwayat aktivitas');
+        $response->assertSee('Sebelumnya');
+        $response->assertSee('Selanjutnya');
+        $response->assertDontSee('pagination.previous');
+        $response->assertDontSee('pagination.next');
+        $response->assertDontSee('next.pagination');
+        $response->assertDontSee('prev.pagination');
     }
 
     public function test_non_admin_cannot_access_activity_logs_page()

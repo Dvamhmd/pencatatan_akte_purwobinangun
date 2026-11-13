@@ -347,13 +347,18 @@ class CertificateServiceTest extends TestCase
         ]);
 
         $response = $this->actingAs($warga)->post('/akte-kematian/buat', [
+            'family_card_no' => '3404050101900003',
+            'head_of_family_name' => 'Kepala Keluarga',
             'deceased_nik' => '3404050101450001',
             'deceased_name' => 'Almarhum Budi',
             'gender' => 'L',
+            'deceased_birth_place' => 'Sleman',
+            'birth_date' => '1950-01-01',
             'religion' => 'Islam',
             'padukuhan' => 'Donolayan',
             'rt' => '01',
             'rw' => '02',
+            'death_day' => 'Senin',
             'death_date' => '2026-08-10',
             'death_place' => 'Rumah',
             'cause_of_death' => 'Sakit',
@@ -363,9 +368,11 @@ class CertificateServiceTest extends TestCase
             'applicant_phone' => '08198765432',
             'applicant_relation' => 'Anak',
             'doc_death_statement' => UploadedFile::fake()->create('kematian.pdf', 100),
+            'doc_rt_rw_statement' => UploadedFile::fake()->create('rt_rw.pdf', 100),
             'doc_family_card' => UploadedFile::fake()->create('kk.jpg', 100),
             'doc_deceased_ktp' => UploadedFile::fake()->create('ktp_jenazah.jpg', 100),
-            'doc_applicant_ktp' => UploadedFile::fake()->create('ktp_pelapor.jpg', 100),
+            'doc_heir_family_card' => UploadedFile::fake()->create('kk_ahli_waris.jpg', 100),
+            'doc_heir_ktp' => UploadedFile::fake()->create('ktp_ahli_waris.jpg', 100),
         ]);
 
         $this->assertDatabaseHas('death_certificates', [
@@ -845,6 +852,101 @@ class CertificateServiceTest extends TestCase
         $this->assertEquals('pending', $refreshed->status);
         $this->assertEquals('uploads/birth_certs/old_ktp.jpg', $refreshed->doc_parents_ktp);
         $this->assertEquals('signatures/old_sig.png', $refreshed->applicant_signature);
+    }
+
+    public function test_death_certificate_revision_flow(): void
+    {
+        Storage::fake('public');
+
+        $warga = User::create([
+            'name' => 'Warga Pelapor Kematian',
+            'nik' => '3404051205900099',
+            'family_card_no' => '3404050101900099',
+            'role' => 'warga',
+            'status' => 'active',
+            'password' => bcrypt('password123'),
+        ]);
+
+        $death = DeathCertificate::create([
+            'user_id' => $warga->id,
+            'registration_no' => 'AKM-20261027-0001',
+            'family_card_no' => '3404050101900099',
+            'head_of_family_name' => 'Kepala Keluarga',
+            'deceased_nik' => '3404050101450001',
+            'deceased_name' => 'Almarhum Budi Lama',
+            'gender' => 'L',
+            'deceased_birth_place' => 'Sleman',
+            'birth_date' => '1950-01-01',
+            'religion' => 'Islam',
+            'padukuhan' => 'Donolayan',
+            'rt' => '01',
+            'rw' => '02',
+            'death_day' => 'Senin',
+            'death_date' => '2026-08-10',
+            'death_place' => 'Rumah',
+            'cause_of_death' => 'Sakit',
+            'reported_by_title' => 'Dokter',
+            'applicant_nik' => '3404051205900099',
+            'applicant_name' => 'Warga Pelapor Kematian',
+            'applicant_phone' => '081234567890',
+            'applicant_relation' => 'Anak',
+            'status' => 'revision',
+            'rejection_note' => 'Mohon perbaiki nama jenazah sesuai KTP asli.',
+            'doc_death_statement' => 'uploads/death_certs/old_statement.pdf',
+            'doc_rt_rw_statement' => 'uploads/death_certs/old_rtrw.pdf',
+            'doc_family_card' => 'uploads/death_certs/old_kk.jpg',
+            'doc_deceased_ktp' => 'uploads/death_certs/old_ktp.jpg',
+            'doc_heir_family_card' => 'uploads/death_certs/old_heir_kk.jpg',
+            'doc_heir_ktp' => 'uploads/death_certs/old_heir_ktp.jpg',
+        ]);
+
+        // 1. Pada halaman lacak, pastikan tombol 'Revisi Berkas' muncul untuk death
+        $trackingResponse = $this->actingAs($warga)->get('/lacak/death/' . $death->registration_no);
+        $trackingResponse->assertStatus(200);
+        $trackingResponse->assertSee('Revisi Berkas');
+        $trackingResponse->assertSee(route('death.create', ['revision' => $death->registration_no]));
+        $trackingResponse->assertSee('disabled');
+
+        // 2. Akses halaman revisi death
+        $createResponse = $this->actingAs($warga)->get(route('death.create', ['revision' => $death->registration_no]));
+        $createResponse->assertStatus(200);
+        $createResponse->assertSee('Mode Revisi Berkas Permohonan: AKM-20261027-0001');
+
+        // 3. Kirim perbaikan form revisi tanpa mengunggah ulang semua file
+        $revisionPayload = [
+            'registration_no' => 'AKM-20261027-0001',
+            'family_card_no' => '3404050101900099',
+            'head_of_family_name' => 'Kepala Keluarga',
+            'deceased_nik' => '3404050101450001',
+            'deceased_name' => 'Almarhum Budi Sudarsono',
+            'gender' => 'L',
+            'deceased_birth_place' => 'Sleman',
+            'birth_date' => '1950-01-01',
+            'religion' => 'Islam',
+            'padukuhan' => 'Donolayan',
+            'rt' => '01',
+            'rw' => '02',
+            'death_day' => 'Senin',
+            'death_date' => '2026-08-10',
+            'death_place' => 'Rumah',
+            'cause_of_death' => 'Sakit',
+            'reported_by_title' => 'Dokter',
+            'applicant_nik' => '3404051205900099',
+            'applicant_name' => 'Warga Pelapor Kematian',
+            'applicant_phone' => '081234567890',
+            'applicant_relation' => 'Anak',
+        ];
+
+        $submitResponse = $this->actingAs($warga)->post(route('death.store'), $revisionPayload);
+        $submitResponse->assertRedirect(route('death.success', ['registration_no' => 'AKM-20261027-0001']));
+
+        // Pastikan tidak ada duplikasi data
+        $this->assertEquals(1, DeathCertificate::where('registration_no', 'AKM-20261027-0001')->count());
+
+        $refreshed = $death->fresh();
+        $this->assertEquals('Almarhum Budi Sudarsono', $refreshed->deceased_name);
+        $this->assertEquals('pending', $refreshed->status);
+        $this->assertEquals('uploads/death_certs/old_statement.pdf', $refreshed->doc_death_statement);
     }
 
     public function test_birth_certificate_letter_can_be_printed_in_a4_format(): void

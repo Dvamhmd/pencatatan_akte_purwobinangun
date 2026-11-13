@@ -145,7 +145,9 @@
         <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-6 shrink-0">
             <div>
                 <h1 class="text-lg font-bold text-slate-800">@yield('page_title', 'Dashboard')</h1>
-                <p class="text-xs text-slate-500">Sistem Pelayanan Administrasi Kependudukan Kalurahan Purwobinangun</p>
+                @if(!View::hasSection('hide_page_subtitle'))
+                    <p class="text-xs text-slate-500">Sistem Pelayanan Administrasi Kependudukan Kalurahan Purwobinangun</p>
+                @endif
             </div>
             <div class="flex items-center gap-3 sm:gap-4">
                 <span class="text-sm text-slate-500 hidden sm:inline">

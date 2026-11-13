@@ -23,6 +23,9 @@
 @endpush
 
 @section('content')
+@php
+    $rev = $revisionDeath ?? null;
+@endphp
 <div class="space-y-6">
 
     <!-- Card Utama Form Permohonan -->
@@ -107,6 +110,18 @@
         <!-- Form Element Utama -->
         <form id="death-application-form" action="{{ route('death.store') }}" method="POST" enctype="multipart/form-data" class="p-5 md:p-6">
             @csrf
+
+            @if(isset($rev) && $rev)
+                <input type="hidden" name="registration_no" value="{{ $rev->registration_no }}">
+                <div class="mb-5 p-4 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 flex items-start gap-3">
+                    <i class="fa-solid fa-triangle-exclamation text-amber-600 text-lg mt-0.5 shrink-0"></i>
+                    <div>
+                        <h4 class="font-bold text-amber-900">Mode Revisi Berkas Permohonan: {{ $rev->registration_no }}</h4>
+                        <p class="mt-0.5 text-amber-800">Catatan Petugas: <strong>{{ $rev->rejection_note ?: 'Mohon perbaiki data atau berkas dokumen yang belum sesuai.' }}</strong></p>
+                        <p class="mt-1 text-[11px] text-amber-700">Berkas yang tidak Anda unggah ulang akan tetap menggunakan berkas yang sebelumnya telah Anda kirimkan.</p>
+                    </div>
+                </div>
+            @endif
 
             @if($errors->any())
                 <div class="mb-5 p-3.5 bg-rose-50 border border-rose-200 rounded-lg text-xs text-rose-800">

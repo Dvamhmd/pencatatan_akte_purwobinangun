@@ -250,7 +250,7 @@ class WargaAuthAndAccessTest extends TestCase
 
     public function test_admin_can_verify_and_reject_citizens()
     {
-        $admin = User::where('email', 'admin@purwobinangun.desa.id')->first();
+        $admin = User::where('role', 'admin')->first();
         $pendingCitizen = User::firstOrCreate(
             ['nik' => '3404059999990001'],
             [
@@ -316,7 +316,7 @@ class WargaAuthAndAccessTest extends TestCase
 
     public function test_cannot_delete_citizen_with_active_applications()
     {
-        $admin = User::where('email', 'admin@purwobinangun.desa.id')->first();
+        $admin = User::where('role', 'admin')->first();
         $citizen = User::where('status', 'active')->where('role', 'warga')->first();
 
         // Buat pengajuan akte kelahiran yang aktif
@@ -349,7 +349,7 @@ class WargaAuthAndAccessTest extends TestCase
 
     public function test_admin_can_access_archive_menu_and_restore_items()
     {
-        $admin = User::where('email', 'admin@purwobinangun.desa.id')->first();
+        $admin = User::where('role', 'admin')->first();
         $citizen = User::where('role', 'warga')->first();
         $citizen->update(['status' => 'archived', 'rejection_reason' => 'Berkas belum lengkap']);
 
@@ -377,7 +377,7 @@ class WargaAuthAndAccessTest extends TestCase
 
     public function test_admin_can_permanently_delete_archived_citizen_from_archive_menu()
     {
-        $admin = User::where('email', 'admin@purwobinangun.desa.id')->first();
+        $admin = User::where('role', 'admin')->first();
         $citizen = User::create([
             'name' => 'Warga Arsip Mandiri',
             'email' => 'arsip_mandiri@example.com',
