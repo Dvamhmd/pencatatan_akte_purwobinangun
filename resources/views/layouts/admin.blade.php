@@ -189,10 +189,6 @@
                                 <div class="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center text-amber-300">
                                     <i class="fa-solid fa-bell"></i>
                                 </div>
-                                <div>
-                                    <h3 class="font-bold text-sm text-white leading-tight">Pemberitahuan Masuk</h3>
-                                    <p class="text-[10px] text-teal-100 font-normal">Pengajuan akta, pendaftaran &amp; perubahan data</p>
-                                </div>
                             </div>
                             <div class="flex items-center gap-1.5 flex-wrap">
                                 <button type="button"
